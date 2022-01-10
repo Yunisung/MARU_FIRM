@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry kind="src" path="src"/>
+	<classpathentry kind="lib" path="lib/gson-2.8.0.jar"/>
+	<classpathentry kind="lib" path="lib/guava-23.0.jar"/>
+	<classpathentry kind="lib" path="lib/HikariCP-2.7.6.jar"/>
+	<classpathentry kind="lib" path="lib/jcl-over-slf4j-1.7.22.jar"/>
+	<classpathentry kind="lib" path="lib/jstl-1.2.jar"/>
+	<classpathentry kind="lib" path="lib/jul-to-slf4j-1.7.22.jar"/>
+	<classpathentry kind="lib" path="lib/logback-access-1.1.8.jar"/>
+	<classpathentry kind="lib" path="lib/logback-classic-1.1.8.jar"/>
+	<classpathentry kind="lib" path="lib/logback-core-1.1.8.jar"/>
+	<classpathentry kind="lib" path="lib/mariadb-java-client-2.2.5.jar"/>
+	<classpathentry kind="lib" path="lib/netty-all-4.1.5.Final.jar"/>
+	<classpathentry kind="lib" path="lib/slf4j-api-1.7.22.jar"/>
+	<classpathentry kind="lib" path="lib/MARU_lib.jar"/>
+	<classpathentry kind="output" path="classes"/>
+</classpath>

@@ -1,0 +1,176 @@
+/* 
+ * Project Name : 
+ * Project      : TrustMate_SPEC
+ * File Name    : FB0600400Bean.java
+ * Date	        : Jul 15, 2008
+ * Version      : 1.0
+ * Author       : 
+ * Comment      :  
+ */
+
+package com.pgmate.firm.ksnet;
+
+import com.pgmate.lib.util.lang.CommonUtil;
+
+public class FB0600400Bean extends CommBean {
+
+	private String transactionDay 	= "";	//MMDD
+	private String bankCode			= "";	//계좌은행
+	private String account			= "";	//계좌번호
+	private String name				= "";	//계좌성명
+	private String socialNumber		= "";	//계좌의 주민번호
+	private String socialCheck      = "";	//계좌의 주민번호 체크 여부 99:일반체크 88:두음법칙체크
+	private String mAccount			= "";   //새마을 금고 이용할때 (은행과 직계약 일 경우) 모계좌번호
+	private String newBankCode		= "";	//계좌은행코드3자리 
+	private String extra			= "";	//예비(개별부) SPACE
+	private String companySpace 	= "";	//회사사용정보 SPACE
+	private String hangulSpace		= "";	//한글사용정보 SPACE
+	private String bankSpace		= "";	//접속은행예비 SPACE
+	
+	
+	public FB0600400Bean(){	
+	}
+	
+	public FB0600400Bean(String transaction){
+		this(transaction.getBytes());
+	}
+	
+	public FB0600400Bean(byte[] transaction){
+		super.rootTransaction = transaction;
+		transactionDay 	= CommonUtil.toString(transaction,0,4).trim();		//MMDD
+		bankCode		= CommonUtil.toString(transaction,4,2).trim();		//계좌은행
+		account			= CommonUtil.toString(transaction,6,16).trim();		//계좌번호
+		name			= CommonUtil.toString(transaction,22,22).trim();	//계좌성명
+		socialNumber	= CommonUtil.toString(transaction,44,13).trim();	//계좌의 주민번호
+		socialCheck		= CommonUtil.toString(transaction,57,2).trim();		//계좌의 주민번호 체크 여부 99:일반체크 88:두음법칙체크
+		mAccount		= CommonUtil.toString(transaction,59,20).trim();	//새마을 금고 이용할때 (은행과 직계약 일 경우) 모계좌번호
+		newBankCode		= CommonUtil.toString(transaction,79,3).trim();		//은행코드 3자리
+		extra			= CommonUtil.toString(transaction,82,93).trim();	//예비(개별부) SPACE
+		companySpace 	= CommonUtil.toString(transaction,175,20).trim();	//회사사용정보 SPACE
+		hangulSpace		= CommonUtil.toString(transaction,195,1).trim();	//한글사용정보 SPACE
+		bankSpace		= CommonUtil.toString(transaction,196,4).trim();	//접속은행예비 SPACE
+	}
+	
+	public String getTransaction(){
+		StringBuffer transaction = new StringBuffer();
+		transaction.append(CommonUtil.zerofill(transactionDay,4));
+		transaction.append(CommonUtil.byteFiller(bankCode,2));
+		transaction.append(CommonUtil.byteFiller(account,16));
+		transaction.append(CommonUtil.byteFiller(name,22));
+		transaction.append(CommonUtil.zerofill(socialNumber,13));
+		transaction.append(CommonUtil.zerofill(socialCheck,2));
+		transaction.append(CommonUtil.byteFiller(mAccount,20));
+		transaction.append(CommonUtil.byteFiller(newBankCode,3));
+		transaction.append(CommonUtil.byteFiller(extra,93));
+		transaction.append(CommonUtil.byteFiller(companySpace,20));
+		transaction.append(CommonUtil.byteFiller(hangulSpace,1));
+		transaction.append(CommonUtil.zerofill(bankSpace,4));
+		
+		return transaction.toString();
+	}
+
+	public String getTransactionDay() {
+		return transactionDay;
+	}
+
+	public void setTransactionDay(String transactionDay) {
+		this.transactionDay = transactionDay;
+	}
+
+	public String getBankCode() {
+		return bankCode;
+	}
+
+	public void setBankCode(String bankCode) {
+		this.bankCode = bankCode;
+	}
+
+	public String getAccount() {
+		return account;
+	}
+
+	public void setAccount(String account) {
+		this.account = account;
+	}
+
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
+	}
+
+	public String getSocialNumber() {
+		return socialNumber;
+	}
+
+	public void setSocialNumber(String socialNumber) {
+		this.socialNumber = socialNumber;
+	}
+
+	public String getSocialCheck() {
+		return socialCheck;
+	}
+
+	public void setSocialCheck(String socialCheck) {
+		this.socialCheck = socialCheck;
+	}
+
+	public String getMAccount() {
+		return mAccount;
+	}
+
+	public void setMAccount(String account) {
+		mAccount = account;
+	}
+
+	public String getExtra() {
+		return extra;
+	}
+
+	public void setExtra(String extra) {
+		this.extra = extra;
+	}
+
+	public String getCompanySpace() {
+		return companySpace;
+	}
+
+	public void setCompanySpace(String companySpace) {
+		this.companySpace = companySpace;
+	}
+
+	public String getHangulSpace() {
+		return hangulSpace;
+	}
+
+	public void setHangulSpace(String hangulSpace) {
+		this.hangulSpace = hangulSpace;
+	}
+
+	public String getBankSpace() {
+		return bankSpace;
+	}
+
+	public void setBankSpace(String bankSpace) {
+		this.bankSpace = bankSpace;
+	}
+
+	public String getNewBankCode() {
+		return newBankCode;
+	}
+
+	public void setNewBankCode(String newBankCode) {
+		this.newBankCode = newBankCode;
+	}
+	
+	
+	
+	
+	
+	
+	
+	
+	
+}
