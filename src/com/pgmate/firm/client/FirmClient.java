@@ -19,8 +19,8 @@ import com.pgmate.lib.util.gson.GsonUtil;
 public class FirmClient {
 
 	private static Logger logger = LoggerFactory.getLogger( com.pgmate.firm.client.FirmClient.class );
-	private static String host 	= "203.245.13.63";
-	private static int port 	= 10028;
+	private static String host 	= "127.0.0.1";
+	private static int port 	= 10006;
 	private static int timeout  = 40000;
 	
 

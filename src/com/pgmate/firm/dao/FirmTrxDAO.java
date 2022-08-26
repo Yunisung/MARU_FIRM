@@ -375,7 +375,7 @@ public class FirmTrxDAO {
 			}
 
 			if("".equals(sender)) {
-				sender = "(주)케이원피에스";
+				sender = "(주)부국위너스";
 			}
 			
 			pstmt.setString(1,bankCd);
