@@ -1,5 +1,8 @@
 package com.pgmate.firm.server;
 
+import com.google.gson.Gson;
+import com.pgmate.firm.hyphen.BalanceBean;
+import com.pgmate.firm.hyphen.HyphenBean;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -45,16 +48,23 @@ public class InterProcess implements java.io.Serializable{
 			if(firmBean.msgType.startsWith("0800")){
 				firmBean = proc0800(firmBean);
 			}else if(firmBean.msgType.startsWith("0600300")){
-				firmBean = proc0600300(firmBean);
+				//잔액조회
+//				firmBean = proc0600300(firmBean);
+				firmBean = procBalance(firmBean);
 			}else if(firmBean.msgType.startsWith("0600400")){
+				//성명조회
 				firmBean = proc0600400(firmBean);
 			}else if(firmBean.msgType.startsWith("0700100")){
+				//집계
 				firmBean = proc0700100(firmBean);
 			}else if(firmBean.msgType.startsWith("0100100")){
+				//이체
 				firmBean = proc0100100(firmBean);
 			}else if(firmBean.msgType.startsWith("0600101")){
+				//처리결과조회
 				firmBean = proc0600101(firmBean);
 			}else if(firmBean.msgType.startsWith("0900400")){
+				//가상계좌 출금정보 등록
 				firmBean = proc0900400(firmBean);
 			}
 		}
@@ -103,6 +113,53 @@ public class InterProcess implements java.io.Serializable{
 		
 		logger.info("===================================================");
 		
+		return firmBean;
+	}
+
+	/*
+	잔액조회 하이픈으로 만들기
+	 */
+	public FirmBean procBalance(FirmBean firmBean) {
+		logger.info("=================== 잔액조회 ===================");
+
+		try {
+			FirmMasterDAO masterDAO = new FirmMasterDAO();
+			BankBean configBean = firm.bank.get(firmBean.bankCd);
+
+			BalanceBean balanceBean = new BalanceBean();
+			balanceBean.setCompCode(configBean.compCd);
+			balanceBean.setBankCode(configBean.bankCd);
+			balanceBean.setAccountNo(configBean.account);
+
+			HyphenBean hyphenBean = new HyphenBean();
+			hyphenBean.setKscode(configBean.kscode);
+			hyphenBean.setEkey(configBean.ekey);
+			hyphenBean.setMsalt(configBean.msalt);
+			hyphenBean.setReqdata(balanceBean);
+			hyphenBean.setSendurl("rfb/retail/inquiry/balance");
+
+			String jsonParams = new Gson().toJson(hyphenBean);
+
+			long idx = masterDAO.setMasterbyHyphen(firmBean.msgType.substring(0,4), firmBean.msgType.substring(4), firmBean.bankCd, hyphenBean.getSendurl(), jsonParams);
+			firmBean = processCheck(idx,firmBean,masterDAO);
+			if(firmBean.resultCd.equals("0000")){
+				String resJson = firmBean.data.getString("resData");
+				balanceBean = (BalanceBean) GsonUtil.fromJson(resJson, BalanceBean.class);
+				logger.info("잔액조회 성공");
+				String amount = balanceBean.getSign()+balanceBean.getTotalBalance();
+				firmBean.data.put("amount", CommonUtil.parseLong(amount.trim()));
+				masterDAO.insertBalance(configBean.bankCd, configBean.account, amount.trim());
+			}
+		}catch (Exception e) {
+			firmBean.resultCd ="XXXX";
+			firmBean.resultMsg ="잔액조회 오류";
+
+			e.printStackTrace();
+			logger.error("잔액조회 Error : [{}]", e.getMessage());
+		}
+
+		logger.info("===================================================");
+
 		return firmBean;
 	}
 	

@@ -7,6 +7,8 @@
     "jdbcUrl": "jdbc:mariadb://127.0.0.1:3306/CP_MARU",
     "userName": "bkwinners",
     "passWord": "2021bk07&*(db2",
+//    "userName": "root",
+//    "passWord": "1234",
     "maxConnection": 10,
     "minConnection": 5,
     "partitionCount": 1
