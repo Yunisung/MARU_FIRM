@@ -64,7 +64,7 @@ public class FirmMain{
 	}
 
 	/**
-	 * PYS: í•˜ì´í”ˆì— ë§ê²Œ ìƒˆë¡œ ìƒì„±
+	 * PYS: ÇÏÀÌÇÂ¿¡ ¸Â°Ô »õ·Î »ı¼º
 	 */
 	public void firmMaster() {
 		FirmMasterDAO firmMasterDAO = new FirmMasterDAO(firm.bank);
