@@ -54,7 +54,7 @@ public class SocketThread {
 
 	private void serviceThread() {
 		running = true;
-		while(running) {
+		while(running) { 
 			try {
 				Socket socket = serverSocket.accept();
 				startServerThread(socket);
