@@ -8,6 +8,7 @@ import java.util.List;
 
 import com.pgmate.firm.conf.BankBean;
 import com.pgmate.firm.hyphen.BalanceBean;
+import com.pgmate.firm.hyphen.HyphenBaseBean;
 import com.pgmate.firm.hyphen.HyphenBean;
 import com.pgmate.firm.inter.FirmBean;
 import com.pgmate.firm.ksnet.FBHeaderBean;
@@ -231,11 +232,13 @@ public class FirmMasterDAO {
 				BankBean configBean = map.get(rset.getString("bankCd"));
 
 				if(configBean != null) {
-					BalanceBean balanceBean = new BalanceBean();
-					balanceBean.setCompCode(configBean.compCd);
-					balanceBean.setBankCode(configBean.bankCd);
-					balanceBean.setSeqNo(rset.getString("seqNo"));
-					balanceBean.setAccountNo(configBean.account);
+
+					HyphenBaseBean baseBean = null;
+					if(rset.getString("sendUrl").equals("rfb/retail/inquiry/balance")) {
+						baseBean = new BalanceBean(rset.getString("seqNo"), configBean.account);
+						baseBean.setCompCode(configBean.compCd);
+						baseBean.setBankCode(configBean.bankCd);
+					}
 
 					HyphenBean hyphenBean = new HyphenBean();
 					hyphenBean.setIndex(rset.getLong("idx"));
@@ -243,7 +246,7 @@ public class FirmMasterDAO {
 					hyphenBean.setEkey(configBean.ekey);
 					hyphenBean.setMsalt(configBean.msalt);
 					hyphenBean.setSendurl(rset.getString("sendUrl"));
-					hyphenBean.setReqdata(balanceBean);
+					hyphenBean.setReqdata(baseBean);
 
 					list.add(hyphenBean);
 				} else {
