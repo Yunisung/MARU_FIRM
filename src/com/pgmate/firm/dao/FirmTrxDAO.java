@@ -6,6 +6,10 @@ import java.sql.ResultSet;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.pgmate.firm.hyphen.DepositBean;
+import com.pgmate.firm.hyphen.HyphenBean;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -36,7 +40,64 @@ public class FirmTrxDAO {
 	public FirmTrxDAO(SharedMap<String,BankBean> map) {
 		this.map = map;
 	}
-	
+
+	public List<HyphenBean> selectbyHyphen(){
+		String query = " SELECT idx,bankCd,seqNo,amount,recvBank,recvAccount,checkDigit,recvHolder,recordInfo,procType,procId	FROM PG_FIRM_TRX WHERE sendDate = DATE_FORMAT(now(), '%Y%m%d') 	AND procGb='R' AND procType != 'BT' ORDER BY idx ASC LIMIT 10";
+
+		DBManager db 	= null;
+		PreparedStatement pstmt	= null;
+		Connection conn			= null;
+		ResultSet rset			= null;
+
+		List<HyphenBean> list = new ArrayList<HyphenBean>();
+
+
+		try{
+			db 		= DBFactory.getInstance();
+			conn	= db.getConnection();
+			pstmt	= conn.prepareStatement(query);
+			rset 	= pstmt.executeQuery();
+
+			while(rset.next()){
+
+				BankBean configBean = map.get(CommonUtil.nToB(rset.getString("bankCd")));
+
+				if(configBean != null) {
+
+					DepositBean depositBean = new DepositBean();
+					depositBean.setCompCode(configBean.compCd);
+					depositBean.setBankCode(configBean.bankCd);
+
+					depositBean.setSeqNo(CommonUtil.nToB(rset.getString("seqNo")));
+					depositBean.setOutAccount(configBean.account);
+					depositBean.setAmount(rset.getLong("amount"));
+					depositBean.setInBankCode(rset.getString(("recvBank")));
+					depositBean.setInAccount(rset.getString("recvAccount"));
+					depositBean.setInPrintContent(rset.getString("recvHolder"));
+
+					HyphenBean hyphenBean = new HyphenBean();
+					hyphenBean.setIndex(rset.getLong("idx"));
+					hyphenBean.setKscode(configBean.kscode);
+					hyphenBean.setEkey(configBean.ekey);
+					hyphenBean.setMsalt(configBean.msalt);
+					hyphenBean.setSendurl("rfb/retail/deposit");
+					hyphenBean.setReqdata(depositBean);
+
+
+					list.add(hyphenBean);
+				} else {
+					logger.info("해당은행코드에 해당하는 config값이 없습니다. : [{}]", rset.getString("bankCd"));
+				}
+			}
+		}catch(Exception e){
+			e.printStackTrace();
+			logger.error("DB Error : {} , {} , [{}]",Thread.currentThread().getStackTrace()[1].getMethodName(),e.getMessage(),query);
+		}finally{
+			db.close(conn,pstmt,rset);
+		}
+		return list;
+	}
+
 	public List<FBHeaderBean> select(){
 		String query = " SELECT idx,bankCd,seqNo,amount,recvBank,recvAccount,checkDigit,recvHolder,recordInfo,procType,procId	FROM PG_FIRM_TRX WHERE sendDate = DATE_FORMAT(now(), '%Y%m%d') 	AND procGb='R' AND procType != 'BT' ORDER BY idx ASC LIMIT 10";
 		
@@ -168,7 +229,61 @@ public class FirmTrxDAO {
 			return false;
 		}
 	}
-	
+
+	public boolean updatebyHyphen(HyphenBean hyphenBean) {
+		String query = "UPDATE PG_FIRM_TRX SET procGb =?, recvDate=DATE_FORMAT(now(), '%Y%m%d'), recvTime=DATE_FORMAT(now(), '%H%i%s'), balance=?, fee=?,transferTime=?,resultCd=?, resultMsg=?, modDt=now() WHERE idx =?";
+
+		DBManager db 	= null;
+		PreparedStatement pstmt	= null;
+		Connection conn			= null;
+		int result		=0;
+		try{
+			db 		= DBFactory.getInstance();
+			conn	= db.getConnection();
+			pstmt	= conn.prepareStatement(query);
+
+			if(hyphenBean.getReplyCode().equals("0000")) {
+				pstmt.setString(1, "Y");
+			} else if(hyphenBean.getReplyCode().equals("XXXX")) {
+				pstmt.setString(1, "X");
+			} else {
+				pstmt.setString(1,"N");
+			}
+
+
+//			pstmt.setString(2,headerBean.getTransactionTime().substring(0,8));
+//			pstmt.setString(3,headerBean.getTransactionTime().substring(8,14));
+			JSONParser jsonParser = new JSONParser();
+			JSONObject resJson = (JSONObject) jsonParser.parse(hyphenBean.getResData());
+
+			String balance = resJson.get("sign").toString() + resJson.get("balance").toString();
+			String fee = resJson.get("svcCharge").toString();
+			String transferTime = resJson.get("tradeTime").toString();
+
+			pstmt.setLong(2,CommonUtil.parseLong(CommonUtil.parseLong(balance.trim())));
+			pstmt.setLong(3,CommonUtil.parseLong(CommonUtil.parseLong(fee.trim())));
+			pstmt.setString(4,transferTime);
+			pstmt.setString(5, hyphenBean.getReplyCode());
+			pstmt.setString(6,hyphenBean.getSuccessYn());
+			pstmt.setLong(7,hyphenBean.getIndex());
+
+			result = pstmt.executeUpdate();
+
+			conn.commit();
+
+		}catch(Exception e){
+			logger.info("DB Error : {} , {} , [{}]",Thread.currentThread().getStackTrace()[1].getMethodName(),e.getMessage(),query);
+		}finally{
+			db.close(pstmt);
+			db.close(conn);
+		}
+		if(result > 0){
+			return true;
+		}else{
+			return false;
+		}
+	}
+
 	public boolean update(FBHeaderBean headerBean){
 		FB0100100Bean fb0100100Bean = new FB0100100Bean(headerBean.getTransactionIndex());
 		String query = "UPDATE PG_FIRM_TRX SET procGb =?, recvDate=?, recvTime=?, balance=?, fee=?,transferTime=?,resultCd=?, resultMsg=?, modDt=now() WHERE idx =?";

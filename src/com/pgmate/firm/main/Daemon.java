@@ -36,8 +36,10 @@ public class Daemon extends Thread{
 						//logger.info("firm daemon running");
 						FirmMain main = new FirmMain(firm);
 						//main.transMaster();
+						//main.wireTransfer();
 						main.firmMaster();
-						main.wireTransfer();
+						main.firmTrx();
+
 					}
 				
 					Thread.sleep(firm.daemon.interval);

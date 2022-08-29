@@ -2,6 +2,7 @@ package com.pgmate.firm.server;
 
 import com.google.gson.Gson;
 import com.pgmate.firm.hyphen.BalanceBean;
+import com.pgmate.firm.hyphen.DepositBean;
 import com.pgmate.firm.hyphen.HyphenBean;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -59,7 +60,8 @@ public class InterProcess implements java.io.Serializable{
 				firmBean = proc0700100(firmBean);
 			}else if(firmBean.msgType.startsWith("0100100")){
 				//이체
-				firmBean = proc0100100(firmBean);
+//				firmBean = proc0100100(firmBean);
+				firmBean = procDeposit(firmBean);
 			}else if(firmBean.msgType.startsWith("0600101")){
 				//처리결과조회
 				firmBean = proc0600101(firmBean);
@@ -273,7 +275,50 @@ public class InterProcess implements java.io.Serializable{
 		}
 		return firmBean;
 	}
-	
+
+	/**
+	 * 송금 하이픈으로 만들기
+	 * @param firmBean
+	 * @return
+	 */
+	public FirmBean procDeposit(FirmBean firmBean){
+		// 이체가능시간 외 데이터 등록 막기
+		Firm firm = FirmLoader.getConfig();
+		long currentTime = CommonUtil.parseLong(CommonUtil.getCurrentDate("HHmmss"));
+
+		if(firm.daemon.startTime > currentTime || currentTime > firm.daemon.stopTime){
+			firmBean.resultCd ="XXXX";
+			firmBean.resultMsg ="이체 가능 시간 아님";
+			return firmBean;
+		}
+
+		FirmTrxDAO trxDAO = new FirmTrxDAO();
+
+		//String sign = 	WooriSign.getSign(firmBean.data.getString("recvAccount"), CommonUtil.getAmountFormat(firmBean.data.getString("amount")), firmBean.data.getString("recvBankCd"), firm.bank.get(firmBean.bankCd).account);
+
+		logger.info("account : {}",firm.bank.get(firmBean.bankCd).account);
+		logger.info("recvBankCd : {}",firmBean.data.getString("recvBankCd"));
+		logger.info("recvAccount : {}",firmBean.data.getString("recvAccount"));
+		logger.info("sender : {}",firmBean.data.getString("sender"));
+		logger.info("amount : {}",CommonUtil.getAmountFormat(firmBean.data.getString("amount")));
+		logger.info("procType : {}",firmBean.data.getString("procType"));
+
+		long idx = trxDAO.insertTrx(firmBean.bankCd, firmBean.data.getLong("amount"), firmBean.data.getString("recvBankCd"), firmBean.data.getString("recvAccount"), firmBean.data.getString("sender"), firmBean.data.getString("recordInfo"), firmBean.data.getString("procType"));
+		if(idx == 0){
+			firmBean.resultCd ="XXXX";
+			firmBean.resultMsg ="이체데이터 등록실패";
+		}else{
+			firmBean = processCheck(idx,firmBean,trxDAO);
+
+			if(firmBean.resultCd.equals("0000")){
+				logger.info("이체 성공");
+				String amount = firmBean.data.getString("balance");
+				new FirmMasterDAO().insertBalance(firm.bank.get(firmBean.bankCd).bankCd, firm.bank.get(firmBean.bankCd).account, amount.trim());
+			}
+
+		}
+		return firmBean;
+	}
 
 	/*
 	 * 처리결과 조회
