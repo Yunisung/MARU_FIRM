@@ -9,9 +9,12 @@
     },
     "099": {
       "trCd": "",
-      "compCd": "FCS04150",
+      "compCd": "BGWINNER",
       "bankCd": "099",
-      "account": ""
+      "account": "",
+      "ekey": "E3F93E5201969E953066C7911F6AC8BB",
+      "kscode": "6596",
+      "msalt": "MA01"
     },
     "039": {
       "trCd": "",
@@ -24,7 +27,7 @@
     }
   },
   "server": {
-    "serverIp": "10.100.200.10",
+    "serverIp": "127.0.0.1",
     "serverPort": 10006,
     "ksnetIp": "121.138.30.10",
     "ksnetPort": 19237,
