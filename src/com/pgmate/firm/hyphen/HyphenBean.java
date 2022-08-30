@@ -47,4 +47,5 @@ public class HyphenBean {
 
     public String getSuccessYn() {return successYn;}
     public void setSuccessYn(String data) {successYn = data;}
+    
 }

@@ -6,17 +6,24 @@ import java.sql.ResultSet;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import com.pgmate.firm.conf.BankBean;
 import com.pgmate.firm.hyphen.BalanceBean;
+import com.pgmate.firm.hyphen.HolderBean;
 import com.pgmate.firm.hyphen.HyphenBaseBean;
 import com.pgmate.firm.hyphen.HyphenBean;
 import com.pgmate.firm.inter.FirmBean;
 import com.pgmate.firm.ksnet.FBHeaderBean;
 import com.pgmate.lib.util.db.DBFactory;
 import com.pgmate.lib.util.db.DBManager;
+import com.pgmate.lib.util.gson.GsonUtil;
 import com.pgmate.lib.util.lang.CommonUtil;
 import com.pgmate.lib.util.map.SharedMap;
 
+import org.json.simple.*;
+import org.json.simple.parser.JSONParser;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -208,7 +215,7 @@ public class FirmMasterDAO {
 	}
 
 	/**
-	 * PYS : ÇÏÀÌÇÂ¿ë PG_FIRM_MASTER¼¼ÆÃ
+	 * PYS : ï¿½ï¿½ï¿½ï¿½ï¿½Â¿ï¿½ PG_FIRM_MASTERï¿½ï¿½ï¿½ï¿½
 	 * @return
 	 */
 	public List<HyphenBean> selectbyHyphen() {
@@ -232,25 +239,35 @@ public class FirmMasterDAO {
 				BankBean configBean = map.get(rset.getString("bankCd"));
 
 				if(configBean != null) {
-
-					HyphenBaseBean baseBean = null;
-					if(rset.getString("sendUrl").equals("rfb/retail/inquiry/balance")) {
-						baseBean = new BalanceBean(rset.getString("seqNo"), configBean.account);
-						baseBean.setCompCode(configBean.compCd);
-						baseBean.setBankCode(configBean.bankCd);
-					}
-
 					HyphenBean hyphenBean = new HyphenBean();
 					hyphenBean.setIndex(rset.getLong("idx"));
 					hyphenBean.setKscode(configBean.kscode);
 					hyphenBean.setEkey(configBean.ekey);
 					hyphenBean.setMsalt(configBean.msalt);
 					hyphenBean.setSendurl(rset.getString("sendUrl"));
-					hyphenBean.setReqdata(baseBean);
-
+					
+                    HyphenBaseBean baseBean = null;
+                    if(rset.getString("sendUrl").equals("rfb/retail/inquiry/balance")) {
+                        baseBean = new BalanceBean(rset.getString("seqNo"), configBean.account);
+                        baseBean.setCompCode(configBean.compCd);
+                        baseBean.setBankCode(configBean.bankCd);
+                        
+                        hyphenBean.setReqdata(baseBean);
+                    } else if(rset.getString("sendUrl").equals("rfb/retail/account/accountname")) {
+                    	String reqJson = rset.getString("reqData");
+                    	
+                    	JSONParser parser = new JSONParser();
+                    	JSONObject jsonobj = (JSONObject) parser.parse(reqJson);
+                    	String reqData = jsonobj.get("reqdata").toString();
+                    	reqData = reqData.substring(1, reqData.length()-1);
+                    	HolderBean holderBean = (HolderBean) GsonUtil.fromJson(reqData, HolderBean.class);
+                    	holderBean.setSeqNo(rset.getString("seqNo"));
+                    	
+                    	hyphenBean.setReqdata(holderBean);
+                    }
 					list.add(hyphenBean);
 				} else {
-					logger.info("ÇØ´çÀºÇàÄÚµå¿¡ ÇØ´çÇÏ´Â config°ªÀÌ ¾ø½À´Ï´Ù. : [{}]", rset.getString("bankCd"));
+					logger.info("ï¿½Ø´ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Úµå¿¡ ï¿½Ø´ï¿½ï¿½Ï´ï¿½ configï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ï´ï¿½. : [{}]", rset.getString("bankCd"));
 				}
 			}
 		}catch(Exception e){
@@ -534,7 +551,7 @@ public class FirmMasterDAO {
 			pstmt.setString(idx++, bankCd);
 			pstmt.setString(idx++, account);
 			pstmt.setString(idx++, accntHolder);
-			pstmt.setString(idx++, "È®ÀÎ");
+			pstmt.setString(idx++, "È®ï¿½ï¿½");
 			pstmt.setString(idx++, CommonUtil.getCurrentDate("yyyyMMdd"));
 			
 			result = pstmt.executeUpdate();
@@ -556,7 +573,7 @@ public class FirmMasterDAO {
 	
 	public String selectAccnt(String bankCd,String accntNo){
 		
-		String query = " SELECT accntHolder FROM PG_FIRM_ACCNT WHERE bankCd = ? AND account = ? AND accntYn='È®ÀÎ' and regDay > DATE_FORMAT(NOW()- INTERVAL 3 MONTH,'%Y%m%d')";
+		String query = " SELECT accntHolder FROM PG_FIRM_ACCNT WHERE bankCd = ? AND account = ? AND accntYn='È®ï¿½ï¿½' and regDay > DATE_FORMAT(NOW()- INTERVAL 3 MONTH,'%Y%m%d')";
 		
 		DBManager db 	= null;
 		PreparedStatement pstmt	= null;
