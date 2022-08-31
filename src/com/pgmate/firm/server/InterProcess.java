@@ -55,7 +55,8 @@ public class InterProcess implements java.io.Serializable{
 				firmBean = procBalance(firmBean);
 			}else if(firmBean.msgType.startsWith("0600400")){
 				//성명조회
-				firmBean = proc0600400(firmBean);
+				//firmBean = proc0600400(firmBean);
+				firmBean = procHolder(firmBean);
 			}else if(firmBean.msgType.startsWith("0700100")){
 				//집계
 				firmBean = proc0700100(firmBean);
@@ -209,7 +210,57 @@ public class InterProcess implements java.io.Serializable{
 		
 		return firmBean;
 	}
-	
+
+	/*
+	성명조회 하이픈 버전
+	 */
+	public FirmBean procHolder(FirmBean firmBean) {
+		logger.info("======================== Holder ========================");
+
+		try {
+			FirmMasterDAO masterDAO = new FirmMasterDAO();
+			BankBean configBean = firm.bank.get(firmBean.bankCd);
+
+			HolderBean holderBean = new HolderBean();
+			holderBean.setCompCode(configBean.compCd);
+			holderBean.setBankCode(configBean.bankCd);
+			holderBean.setAccountBankCode(firmBean.data.getString("bankCd"));
+			holderBean.setAccountNo(firmBean.data.getString("account"));
+			holderBean.setAgencyYn(firmBean.data.getString("agencyYn"));
+			holderBean.setCompAccountNo(firmBean.data.getString("compAccountNo"));
+			holderBean.setSocialId(firmBean.data.getString("socialId"));
+			holderBean.setAmount(firmBean.data.getString("amount"));
+
+			HyphenBean hyphenBean = new HyphenBean();
+			hyphenBean.setKscode(configBean.kscode);
+			hyphenBean.setEkey(configBean.ekey);
+			hyphenBean.setMsalt(configBean.msalt);
+			hyphenBean.setReqdata(holderBean);
+			hyphenBean.setSendurl("rfb/retail/account/accountname");
+
+			String jsonParams = new Gson().toJson(hyphenBean);
+
+			long idx = masterDAO.setMasterbyHyphen(firmBean.msgType.substring(0,4), firmBean.msgType.substring(4), firmBean.bankCd, hyphenBean.getSendurl(), jsonParams);
+			firmBean = processCheck(idx,firmBean,masterDAO);
+			if(firmBean.resultCd.equals("0000")){
+				String resJson = firmBean.data.getString("resData");
+				holderBean = (HolderBean) GsonUtil.fromJson(resJson, HolderBean.class);
+				String name = holderBean.getAccountName();
+				firmBean.data.put("accountName", CommonUtil.parseLong(name.trim()));
+				masterDAO.insertAccnt(configBean.bankCd, configBean.account, name.trim());
+			}
+		}catch (Exception e) {
+			firmBean.resultCd ="XXXX";
+			firmBean.resultMsg ="성명조회 오류";
+
+			e.printStackTrace();
+			logger.error("성명조회 Error : [{}]", e.getMessage());
+		}
+
+		logger.info("===================================================");
+
+		return firmBean;
+	}
 	
 	/*
 	 * 집계
