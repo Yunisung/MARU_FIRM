@@ -55,8 +55,7 @@ public class InterProcess implements java.io.Serializable{
 				firmBean = procBalance(firmBean);
 			}else if(firmBean.msgType.startsWith("0600400")){
 				//������ȸ
-				//firmBean = proc0600400(firmBean);
-				firmBean = procHolder(firmBean);
+				firmBean = proc0600400(firmBean);
 			}else if(firmBean.msgType.startsWith("0700100")){
 				//����
 				firmBean = proc0700100(firmBean);
@@ -168,53 +167,6 @@ public class InterProcess implements java.io.Serializable{
 		return firmBean;
 	}
 	
-	public FirmBean procHolder(FirmBean firmBean) {
-		logger.info("======================== Holder ========================");
-		
-		try {
-			FirmMasterDAO masterDAO = new FirmMasterDAO();
-			BankBean configBean = firm.bank.get(firmBean.bankCd);
-			
-			HolderBean holderBean = new HolderBean();
-			holderBean.setCompCode(configBean.compCd);
-			holderBean.setBankCode(configBean.bankCd);
-			holderBean.setAccountBankCode(firmBean.data.getString("bankCd"));
-			holderBean.setAccountNo(firmBean.data.getString("account"));
-			holderBean.setAgencyYn(firmBean.data.getString("agencyYn"));
-			holderBean.setCompAccountNo(firmBean.data.getString("compAccountNo"));
-			holderBean.setSocialId(firmBean.data.getString("socialId"));
-			holderBean.setAmount(firmBean.data.getString("amount"));
-			
-			HyphenBean hyphenBean = new HyphenBean();
-			hyphenBean.setKscode(configBean.kscode);
-			hyphenBean.setEkey(configBean.ekey);
-			hyphenBean.setMsalt(configBean.msalt);
-			hyphenBean.setReqdata(holderBean);
-			hyphenBean.setSendurl("rfb/retail/account/accountname");
-			
-			String jsonParams = new Gson().toJson(hyphenBean);
-			
-			long idx = masterDAO.setMasterbyHyphen(firmBean.msgType.substring(0,4), firmBean.msgType.substring(4), firmBean.bankCd, hyphenBean.getSendurl(), jsonParams);
-			firmBean = processCheck(idx,firmBean,masterDAO);
-			if(firmBean.resultCd.equals("0000")){
-				String resJson = firmBean.data.getString("resData");
-				holderBean = (HolderBean) GsonUtil.fromJson(resJson, HolderBean.class);
-				String name = holderBean.getAccountName();
-				firmBean.data.put("accountName", CommonUtil.parseLong(name.trim()));
-				masterDAO.insertAccnt(configBean.bankCd, configBean.account, name.trim());
-			}
-		}catch (Exception e) {
-			firmBean.resultCd ="XXXX";
-			firmBean.resultMsg ="�ܾ���ȸ ����";
-
-			e.printStackTrace();
-			logger.error("�ܾ���ȸ Error : [{}]", e.getMessage());
-		}
-
-		logger.info("===================================================");
-
-		return firmBean;
-	}
 	
 	/*
 	 * ������ȸ �����ڵ带 099 �� ����ϸ� KSNET �׿ܴ� �� ���� 
@@ -525,27 +477,27 @@ public class InterProcess implements java.io.Serializable{
 		
 		//������°� ���������϶��� ����
 		if("088".equals(firmBean.bankCd)) {
-			logger.info("���� 	  	: {}",firmBean.data.getString("customerName"));
+			logger.info("������ 	  	: {}",firmBean.data.getString("customerName"));
 			logger.info("�߹�ŷ ��ü�ڵ�	: {}",firmBean.data.getString("firmCompanyCd"));
 			logger.info("�޴�����ȣ 	: {}",firmBean.data.getString("phoneNo"));
-			logger.info("�Ǹ��ȣ 		: {}",firmBean.data.getString("identity"));
+			logger.info("�Ǹ���ȣ 		: {}",firmBean.data.getString("identity"));
 		}
 		
 		//������°� ���������϶��� ����
 		if("011".equals(firmBean.bankCd) ||  "012".equals(firmBean.bankCd)) {
-			logger.info("���� 	  	: {}",firmBean.data.getString("customerName"));
+			logger.info("������ 	  	: {}",firmBean.data.getString("customerName"));
 			logger.info("������� 		: {}",firmBean.data.getString("regType"));
-			logger.info("�Ǹ��ȣ 		: {}",firmBean.data.getString("identity"));
+			logger.info("�Ǹ���ȣ 		: {}",firmBean.data.getString("identity"));
 		}
 		
 		//������°� �ϳ������϶��� ����
 		if("081".equals(firmBean.bankCd)) {
-			logger.info("���� 	  	: {}",firmBean.data.getString("customerName"));
+			logger.info("������ 	  	: {}",firmBean.data.getString("customerName"));
 		}
 		
 		//������°� ���������϶��� ����
 		if("004".equals(firmBean.bankCd)) {
-			logger.info("���� 	  	: {}",firmBean.data.getString("customerName"));
+			logger.info("������ 	  	: {}",firmBean.data.getString("customerName"));
 		}
 				
 		logger.info("=========================================================");
