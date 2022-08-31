@@ -48,9 +48,10 @@ public class HyphenComm {
             URLConnection conn = url.openConnection();
             conn.setDoOutput(true);
             conn.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
+
             DataOutputStream dos = new DataOutputStream(conn.getOutputStream());
             dos.writeBytes(postData);
-            BufferedReader bf = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+            BufferedReader bf = new BufferedReader(new InputStreamReader(conn.getInputStream(), "UTF-8"));
             String line;
 
             while ((line = bf.readLine()) != null) {
