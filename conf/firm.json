@@ -35,7 +35,7 @@
     "serverAuthKey": "12345678abcdefgh12345678"
   },
   "daemon": {
-    "interval": 3000,
+    "interval": 1000,
     "log": false,
     "stopTime": 230000,
     "startTime": 60000

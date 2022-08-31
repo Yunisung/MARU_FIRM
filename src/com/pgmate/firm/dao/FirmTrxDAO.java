@@ -8,6 +8,7 @@ import java.util.List;
 
 import com.pgmate.firm.hyphen.DepositBean;
 import com.pgmate.firm.hyphen.HyphenBean;
+import com.pgmate.firm.hyphen.TransferBean;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.slf4j.Logger;
@@ -339,7 +340,56 @@ public class FirmTrxDAO {
 		}
 	}
 	
-	
+	public boolean updateResultCheckbyHyphen(HyphenBean hyphenBean, String resCode, String resMsg) {
+		TransferBean transferBean = (TransferBean) hyphenBean.getReqData(0);
+		logger.debug("TRANSFER CHECK RESULT [{}][{}] ",transferBean.getOriSeqNo(), hyphenBean.getReplyCode());
+
+		String query = "UPDATE PG_FIRM_TRX SET procGb =?, fee=?,transferTime=?, resultCd=?, resultMsg=?, MODDT=now() WHERE seqNo =?";
+
+		DBManager db = null;
+		PreparedStatement pstmt	= null;
+		Connection conn	= null;
+		int result = 0;
+
+		try{
+			db 		= DBFactory.getInstance();
+			conn	= db.getConnection();
+			pstmt	= conn.prepareStatement(query);
+
+			if(transferBean.getResultCode().equals("0000")){
+				if(hyphenBean.getReplyCode().equals("0000")){
+					pstmt.setString(1,"Y");
+				}else{
+					pstmt.setString(1,"N");
+				}
+			}else{
+				pstmt.setString(1,"X");
+			}
+
+			pstmt.setLong(2,CommonUtil.parseLong(transferBean.getSvcCharge()));
+			pstmt.setString(3,transferBean.getTradeTime());
+			pstmt.setString(4,resCode);
+			pstmt.setString(5,resMsg);
+			pstmt.setString(6,transferBean.getOriSeqNo());
+
+			result = pstmt.executeUpdate();
+
+			conn.commit();
+
+		}catch(Exception e){
+			logger.info("DB Error : {} , {} , [{}]",Thread.currentThread().getStackTrace()[1].getMethodName(),e.getMessage(),query);
+		}finally{
+			db.close(pstmt);
+			db.close(conn);
+		}
+		if(result > 0){
+			return true;
+		}else{
+			return false;
+		}
+	}
+
+
 	public boolean updateResultCheck(FBHeaderBean headerBean, String resCode, String resMsg){
 		FB0600101Bean fb06001001bean = new FB0600101Bean(headerBean.getTransactionIndex());
 		logger.debug("TRANSFER CHECK RESULT [{}][{}] ",fb06001001bean.getRootSpecNumber(),fb06001001bean.getResultCd());
