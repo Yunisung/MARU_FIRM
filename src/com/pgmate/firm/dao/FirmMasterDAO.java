@@ -235,11 +235,6 @@ public class FirmMasterDAO {
 				if(configBean != null) {
 
 					HyphenBaseBean baseBean = null;
-					if(rset.getString("sendUrl").equals("rfb/retail/inquiry/balance")) {
-						baseBean = new BalanceBean(rset.getString("seqNo"), configBean.account);
-						baseBean.setCompCode(configBean.compCd);
-						baseBean.setBankCode(configBean.bankCd);
-					}
 
 					HyphenBean hyphenBean = new HyphenBean();
 					hyphenBean.setIndex(rset.getLong("idx"));
@@ -247,6 +242,27 @@ public class FirmMasterDAO {
 					hyphenBean.setEkey(configBean.ekey);
 					hyphenBean.setMsalt(configBean.msalt);
 					hyphenBean.setSendurl(rset.getString("sendUrl"));
+
+					if(rset.getString("sendUrl").equals("rfb/retail/inquiry/balance")) {
+						baseBean = new BalanceBean(rset.getString("seqNo"), configBean.account);
+						baseBean.setCompCode(configBean.compCd);
+						baseBean.setBankCode(configBean.bankCd);
+
+						hyphenBean.setReqdata(baseBean);
+					} else if(rset.getString("sendUrl").equals("rfb/retail/account/accountname")) {
+						String reqJson = rset.getString("reqData");
+
+						JSONParser parser = new JSONParser();
+						JSONObject jsonobj = (JSONObject) parser.parse(reqJson);
+						String reqData = jsonobj.get("reqdata").toString();
+						reqData = reqData.substring(1, reqData.length()-1);
+						HolderBean holderBean = (HolderBean) GsonUtil.fromJson(reqData, HolderBean.class);
+						holderBean.setSeqNo(rset.getString("seqNo"));
+
+						hyphenBean.setReqdata(holderBean);
+					}
+
+
 					hyphenBean.setReqdata(baseBean);
 
 					list.add(hyphenBean);
