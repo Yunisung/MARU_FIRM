@@ -10,6 +10,7 @@ import com.pgmate.firm.conf.BankBean;
 import com.pgmate.firm.hyphen.BalanceBean;
 import com.pgmate.firm.hyphen.HyphenBaseBean;
 import com.pgmate.firm.hyphen.HyphenBean;
+import com.pgmate.firm.hyphen.TransferBean;
 import com.pgmate.firm.inter.FirmBean;
 import com.pgmate.firm.ksnet.FBHeaderBean;
 import com.pgmate.lib.util.db.DBFactory;

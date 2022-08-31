@@ -1,9 +1,10 @@
 package com.pgmate.firm.server;
 
 import com.google.gson.Gson;
-import com.pgmate.firm.hyphen.BalanceBean;
-import com.pgmate.firm.hyphen.DepositBean;
-import com.pgmate.firm.hyphen.HyphenBean;
+import com.pgmate.firm.hyphen.*;
+import com.pgmate.firm.util.HyphenComm;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -64,7 +65,8 @@ public class InterProcess implements java.io.Serializable{
 				firmBean = procDeposit(firmBean);
 			}else if(firmBean.msgType.startsWith("0600101")){
 				//처리결과조회
-				firmBean = proc0600101(firmBean);
+				//firmBean = proc0600101(firmBean);
+				firmBean = procTransfer(firmBean);
 			}else if(firmBean.msgType.startsWith("0900400")){
 				//가상계좌 출금정보 등록
 				firmBean = proc0900400(firmBean);
@@ -319,6 +321,81 @@ public class InterProcess implements java.io.Serializable{
 		}
 		return firmBean;
 	}
+
+
+	/**
+	 * PYS : 이체결과조회 (하이픈)
+	 * @param firmBean
+	 * @return
+	 */
+	public FirmBean procTransfer(FirmBean firmBean){
+		logger.info("=================== 펌 처리결과 조회 ===================");
+
+		FirmTrxDAO firmTrxDAO = new FirmTrxDAO();
+		BankBean configBean = firm.bank.get(firmBean.bankCd);
+
+		logger.info("idx 	  : {}",firmBean.idx);
+		logger.info("bankCd   : {}",firmBean.bankCd);
+		logger.info("orgSeqNo : {}",firmBean.data.getString("orgSeqNo"));
+
+		TransferBean transferBean = new TransferBean();
+		transferBean.setCompCode(configBean.compCd);
+		transferBean.setBankCode(configBean.bankCd);
+		transferBean.setOriSeqNo(firmBean.data.getString("orgSeqNo"));
+		transferBean.setSeqNo(firmTrxDAO.getBankSeq());
+
+		HyphenBean hyphenBean = new HyphenBean();
+		hyphenBean.setKscode(configBean.kscode);
+		hyphenBean.setEkey(configBean.ekey);
+		hyphenBean.setMsalt(configBean.msalt);
+		hyphenBean.setSendurl("rfb/retail/inquiry/transfer");
+		hyphenBean.setReqdata(transferBean);
+
+		HyphenComm hyphenComm = new HyphenComm(firm.server);
+		String resData = hyphenComm.connect(hyphenBean);
+
+		JSONObject apiRes = new JSONObject();
+		JSONParser jsonParser = new JSONParser();
+		try {
+			apiRes = (JSONObject) jsonParser.parse(resData);
+			hyphenBean.setSuccessYn(apiRes.get("successYn").toString());
+			hyphenBean.setReplyCode(apiRes.get("replyCode").toString());
+
+			transferBean.setOutAccountNo(apiRes.get("outAccountNo").toString());
+			transferBean.setInAccountNo(apiRes.get("inAccountNo").toString());
+			transferBean.setAmount(apiRes.get("amount").toString());
+			transferBean.setSvcCharge(apiRes.get("svcCharge").toString());
+			transferBean.setTradeTime(apiRes.get("tradeTime").toString());
+			transferBean.setResultCode(apiRes.get("resultCode").toString());
+			transferBean.setProcBankCode(apiRes.get("procBankCode").toString());
+			transferBean.setPayerNo(apiRes.get("payerNo").toString());
+		} catch (Exception e) {
+			hyphenBean.setSuccessYn("N");
+			hyphenBean.setReplyCode("XXXX");
+		}
+
+		hyphenBean.setResdata(resData);
+
+		String resCode = "";
+		String resMsg = "";
+		if(!transferBean.getResultCode().equals("") && !transferBean.getResultCode().equals("0000")) {
+			resCode = transferBean.getResultCode();
+			resMsg = FirmDAO.getCodeDesc(configBean.bankCd, resCode);
+		} else {
+			resCode = hyphenBean.getReplyCode();
+			resMsg = FirmDAO.getCodeDesc("ERR", resCode);
+		}
+
+		logger.info("TRX RESULT CHECK [{}],[{}]",resCode,resMsg);
+		logger.info("TRANSFER CHECK UPDATE : {} ",firmTrxDAO.updateResultCheckbyHyphen(hyphenBean, resCode, resMsg));
+		logger.info("===================================================");
+
+		firmBean.resultCd = resCode;
+		firmBean.resultMsg = resMsg;
+
+		return firmBean;
+	}
+
 
 	/*
 	 * 처리결과 조회
