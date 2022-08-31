@@ -51,7 +51,7 @@ public class HyphenComm {
 
             DataOutputStream dos = new DataOutputStream(conn.getOutputStream());
             dos.writeBytes(postData);
-            BufferedReader bf = new BufferedReader(new InputStreamReader(conn.getInputStream(), "UTF-8"));
+            BufferedReader bf = new BufferedReader(new InputStreamReader(conn.getInputStream(), "EUC-KR"));
             String line;
 
             while ((line = bf.readLine()) != null) {
