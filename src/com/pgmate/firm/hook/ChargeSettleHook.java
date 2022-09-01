@@ -31,23 +31,23 @@ public class ChargeSettleHook extends Thread {
 	private SharedMap<String,Object> sharedMap = null;
 	private String retry = "";
 	static {
-	    disableSslVerification();
+		disableSslVerification();
 	}
-	
-	
+
+
 	public ChargeSettleHook(String hookAddr,SharedMap<String,Object> sharedMap,VactDAO dao,String retry) {
 		this.hookAddr = hookAddr;
 		this.sharedMap 	= sharedMap;
-		this.dao = new VactDAO();	
+		this.dao = new VactDAO();
 		this.retry = retry;
 	}
-	
-	
+
+
 	public void run(){
-		SharedMap<String,Object> ntsMap = new SharedMap<String,Object>();	
-		
+		SharedMap<String,Object> ntsMap = new SharedMap<String,Object>();
+
 		ntsMap.put("hookAddr", hookAddr);
-		
+
 		logger.info("ChargeSettleHook   : {}",ntsMap.getString("hookAddr"));
 		ntsMap.put("trxId"		, sharedMap.getString("trxId"));
 		ntsMap.put("trackId"	, sharedMap.getString("trackId"));
@@ -56,12 +56,12 @@ public class ChargeSettleHook extends Thread {
 		ntsMap.put("status"		, sharedMap.getString("status"));
 		ntsMap.put("trxDay"		, sharedMap.getString("trxDay"));
 		ntsMap.put("trxTime"	, sharedMap.getString("trxTime"));
-		
+
 		ntsMap.put("payLoad"	, sharedMap.getString("payLoad"));
 		ntsMap.put("regDay"		, CommonUtil.getCurrentDate("yyyyMMdd"));
 		ntsMap.put("regTime"	, CommonUtil.getCurrentDate("HHmmss"));
-		
-		
+
+
 		long time = System.currentTimeMillis();
 
 		URL url = null;
@@ -83,7 +83,7 @@ public class ChargeSettleHook extends Thread {
 			os.close();
 			StringBuilder sb = new StringBuilder();
 			BufferedReader in = null;
-			
+
 			in = new BufferedReader(new InputStreamReader(conn.getInputStream()));
 			String recv = "";
 			while ((recv = in.readLine()) != null) {
@@ -93,19 +93,19 @@ public class ChargeSettleHook extends Thread {
 			ntsMap.put("resData", CommonUtil.cut(sb.toString(),100));
 			ntsMap.put("sentDate", CommonUtil.getCurrentTimestamp());
 			ntsMap.put("code", conn.getResponseCode());
-			
+
 			if(ntsMap.getInt("code") == 200) {
 				if(ntsMap.getString("resData").indexOf("OK") > -1) {
-					ntsMap.put("status"		, "Àü¼Û¿Ï·á");
+					ntsMap.put("status"		, "ì „ì†¡ì™„ë£Œ");
 				}else {
-					ntsMap.put("status"		, "Àü¼Û½ÇÆÐ");
+					ntsMap.put("status"		, "ì „ì†¡ì‹¤íŒ¨");
 				}
 			}else {
-				ntsMap.put("status"		, "Àü¼Û½ÇÆÐ");
+				ntsMap.put("status"		, "ì „ì†¡ì‹¤íŒ¨");
 			}
 		}catch (Exception e) {
 			logger.info("ChargeSettle Noti URL REQUEST ERROR =["+e.getMessage()+"]");
-			ntsMap.put("status","Àü¼Û½ÇÆÐ");
+			ntsMap.put("status","ì „ì†¡ì‹¤íŒ¨");
 			ntsMap.put("sentDate", CommonUtil.getCurrentTimestamp());
 		}finally {
 			conn.disconnect();
@@ -115,35 +115,35 @@ public class ChargeSettleHook extends Thread {
 		}
 
 	}
-	
-	
+
+
 	private static void disableSslVerification() {
 		try
 		{
 			// Create a trust manager that does not validate certificate chains
 			TrustManager[] trustAllCerts = new TrustManager[] {new X509TrustManager() {
 				public java.security.cert.X509Certificate[] getAcceptedIssuers() {
-				return null;
+					return null;
 				}
 				public void checkClientTrusted(X509Certificate[] certs, String authType) {
 				}
 				public void checkServerTrusted(X509Certificate[] certs, String authType) {
 				}
-				}
+			}
 			};
-		
+
 			// Install the all-trusting trust manager
 			SSLContext sc = SSLContext.getInstance("SSL");
 			sc.init(null, trustAllCerts, new java.security.SecureRandom());
 			HttpsURLConnection.setDefaultSSLSocketFactory(sc.getSocketFactory());
-			
+
 			// Create all-trusting host name verifier
 			HostnameVerifier allHostsValid = new HostnameVerifier() {
-			    public boolean verify(String hostname, SSLSession session) {
-			        return true;
-			    }
+				public boolean verify(String hostname, SSLSession session) {
+					return true;
+				}
 			};
-			
+
 			// Install the all-trusting host verifier
 			HttpsURLConnection.setDefaultHostnameVerifier(allHostsValid);
 		} catch (NoSuchAlgorithmException e) {
@@ -152,9 +152,9 @@ public class ChargeSettleHook extends Thread {
 			e.printStackTrace();
 		}
 	}
-	
-	
-	
+
+
+
 
 
 }
