@@ -25,7 +25,7 @@
     }
   },
   "server": {
-    "serverIp": "10.100.200.10",
+    "serverIp": "pgwas3",
     "serverPort": 10006,
     "ksnetIp": "121.138.30.10",
     "ksnetPort": 19237,
