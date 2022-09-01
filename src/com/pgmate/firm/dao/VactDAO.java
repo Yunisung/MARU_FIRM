@@ -201,7 +201,7 @@ public class VactDAO{
 			pstmt	= conn.prepareStatement(query);
 			pstmt.setString(1,account);
 			if(!trxType.equals("40")){
-				pstmt.setString(2,"ë°œí–‰");
+				pstmt.setString(2,"¹ßÇà");
 			}else{
 
 			}
@@ -295,7 +295,7 @@ public class VactDAO{
 	}
 
 	/**
-	 * ê°€ìƒê³„ì¢Œ ì…ê¸ˆì·¨ì†Œì— ëŒ€í•œ ì›ê±°ë˜ê±´ ì •ë³´ ì¡°íšŒ
+	 * °¡»ó°èÁÂ ÀÔ±İÃë¼Ò¿¡ ´ëÇÑ ¿ø°Å·¡°Ç Á¤º¸ Á¶È¸
 	 * @param trxDay
 	 * @param account
 	 * @param bankCd
@@ -358,7 +358,7 @@ public class VactDAO{
 	}
 
 	/**
-	 * PG_MCHT_MNG_VACTí…Œì´ë¸” ê°€ë§¹ì  ê°€ìƒê³„ì¢Œ ê´€ë¦¬ì •ë³´ ì¡°íšŒ
+	 * PG_MCHT_MNG_VACTÅ×ÀÌºí °¡¸ÍÁ¡ °¡»ó°èÁÂ °ü¸®Á¤º¸ Á¶È¸
 	 * @param mchtId
 	 * @return
 	 */
@@ -462,7 +462,7 @@ public class VactDAO{
 	}
 
 	public boolean vactDtlSetExpired(String issueId,String vactId){
-		String query = "UPDATE PG_VACT_DTL set status ='ì‚¬ìš©ë§Œë£Œ' , reason= ? ,expireDate = now() WHERE issueId = ?";
+		String query = "UPDATE PG_VACT_DTL set status ='»ç¿ë¸¸·á' , reason= ? ,expireDate = now() WHERE issueId = ?";
 
 		DBManager db 			= null;
 		PreparedStatement pstmt	= null;
@@ -493,7 +493,7 @@ public class VactDAO{
 	}
 
 	public boolean vactDtlSetIssue(String issueId,String vactId){
-		String query = "UPDATE PG_VACT_DTL set status ='ë°œí–‰' , reason= ? ,expireDate = null WHERE issueId = ?";
+		String query = "UPDATE PG_VACT_DTL set status ='¹ßÇà' , reason= ? ,expireDate = null WHERE issueId = ?";
 
 		DBManager db 			= null;
 		PreparedStatement pstmt	= null;
@@ -587,13 +587,13 @@ public class VactDAO{
 	}
 
 	/**
-	 * íƒ€í–‰ì´ì²´ ë¶ˆëŠ¥ ê´€ë ¨ ì‹¤ì‹œê°„ ì¶œê¸ˆ ê²°ê³¼ ì—…ë°ì´íŠ¸
-	 * @param trxId : ê±°ë˜ë²ˆí˜¸
+	 * Å¸ÇàÀÌÃ¼ ºÒ´É °ü·Ã ½Ç½Ã°£ Ãâ±İ °á°ú ¾÷µ¥ÀÌÆ®
+	 * @param trxId : °Å·¡¹øÈ£
 	 * @return
 	 */
 	public boolean updateRealTimePayOutRes(String trxId, String errCd){
 		String query = "UPDATE PG_REALTIME_PAYOUT "
-				+ "    SET resultCd=?, resultMsg=(SELECT concat('íƒ€í–‰ë¶ˆëŠ¥:',message) from PG_FIRM_CODE where bankcd='ERR' and code=?), sendCheck='N', sendCnt='3'"
+				+ "    SET resultCd=?, resultMsg=(SELECT concat('Å¸ÇàºÒ´É:',message) from PG_FIRM_CODE where bankcd='ERR' and code=?), sendCheck='N', sendCnt='3'"
 				+ "	 WHERE trxid = ?";
 
 		DBManager db 			= null;
@@ -619,22 +619,22 @@ public class VactDAO{
 			db.close(conn);
 		}
 		if(result > 0){
-			logger.info("íƒ€í–‰ì´ì²´ ë¶ˆëŠ¥ ê´€ë ¨ ì‹¤ì‹œê°„ ì¶œê¸ˆ ê²°ê³¼ UPDATE ì„±ê³µ IDX=["+trxId+"]",this);
+			logger.info("Å¸ÇàÀÌÃ¼ ºÒ´É °ü·Ã ½Ç½Ã°£ Ãâ±İ °á°ú UPDATE ¼º°ø IDX=["+trxId+"]",this);
 			return true;
 		}else{
-			logger.info("íƒ€í–‰ì´ì²´ ë¶ˆëŠ¥ ê´€ë ¨ ì‹¤ì‹œê°„ ì¶œê¸ˆ ê²°ê³¼ UPDATE ì‹¤íŒ¨ IDX=["+trxId+"]",this);
+			logger.info("Å¸ÇàÀÌÃ¼ ºÒ´É °ü·Ã ½Ç½Ã°£ Ãâ±İ °á°ú UPDATE ½ÇÆĞ IDX=["+trxId+"]",this);
 			return false;
 		}
 	}
 
 	/**
-	 * íƒ€í–‰ì´ì²´ ë¶ˆëŠ¥ ê´€ë ¨ ì‹¤ì‹œê°„ ì¶œê¸ˆ ë§¤ì… ìƒíƒœ ì •ì‚°ë³´ë¥˜ë¡œ ì—…ë°ì´íŠ¸
-	 * @param trxId : ê±°ë˜ë²ˆí˜¸
+	 * Å¸ÇàÀÌÃ¼ ºÒ´É °ü·Ã ½Ç½Ã°£ Ãâ±İ ¸ÅÀÔ »óÅÂ Á¤»êº¸·ù·Î ¾÷µ¥ÀÌÆ®
+	 * @param trxId : °Å·¡¹øÈ£
 	 * @return
 	 */
 	public boolean updatePayOutCancelCapUpdate(String trxId){
 		String query = "UPDATE PG_TRX_CAP_DTL "
-				+ "    SET stlStatus = 'ì •ì‚°ë³´ë¥˜'"
+				+ "    SET stlStatus = 'Á¤»êº¸·ù'"
 				+ "	 WHERE capId = "
 				+ "		(SELECT b.capId "
 				+ "		   FROM PG_TRX_CAP a inner join PG_TRX_CAP_DTL b on a.capId = b.capId"
@@ -662,16 +662,16 @@ public class VactDAO{
 			db.close(conn);
 		}
 		if(result > 0){
-			logger.info("íƒ€í–‰ì´ì²´ ë¶ˆëŠ¥ ê´€ë ¨ ì‹¤ì‹œê°„ ì¶œê¸ˆ ë§¤ì…ë°ì´í„° UPDATE ì„±ê³µ IDX=["+trxId+"]",this);
+			logger.info("Å¸ÇàÀÌÃ¼ ºÒ´É °ü·Ã ½Ç½Ã°£ Ãâ±İ ¸ÅÀÔµ¥ÀÌÅÍ UPDATE ¼º°ø IDX=["+trxId+"]",this);
 			return true;
 		}else{
-			logger.info("íƒ€í–‰ì´ì²´ ë¶ˆëŠ¥ ê´€ë ¨ ì‹¤ì‹œê°„ ì¶œê¸ˆ ë§¤ì…ë°ì´í„° UPDATE ì‹¤íŒ¨ IDX=["+trxId+"]",this);
+			logger.info("Å¸ÇàÀÌÃ¼ ºÒ´É °ü·Ã ½Ç½Ã°£ Ãâ±İ ¸ÅÀÔµ¥ÀÌÅÍ UPDATE ½ÇÆĞ IDX=["+trxId+"]",this);
 			return false;
 		}
 	}
 
 	/**
-	 * ê°€ìƒê³„ì¢Œ ì¶©ì „ ì¶œê¸ˆëŒ€ìƒê±°ë˜ì—ì„œ ì¶œê¸ˆí•˜ì§€ ì•Šì€ ë°ì´í„°ì¤‘ì— ì „ì†¡ì‹œë„ê°€ ë‚¨ì€ ê±°ë˜ê±´ë“¤ ì¡°íšŒ
+	 * °¡»ó°èÁÂ ÃæÀü Ãâ±İ´ë»ó°Å·¡¿¡¼­ Ãâ±İÇÏÁö ¾ÊÀº µ¥ÀÌÅÍÁß¿¡ Àü¼Û½Ãµµ°¡ ³²Àº °Å·¡°Çµé Á¶È¸
 	 * @return
 	 */
 	public ResultSet getVaPay(String trxId){
@@ -707,13 +707,13 @@ public class VactDAO{
 	}
 
 	/**
-	 * ê°€ìƒê³„ì¢Œ ì¶©ì „ ì¶œê¸ˆ ê²°ê³¼ ì—…ë°ì´íŠ¸
-	 * @param trxId : ê±°ë˜ë²ˆí˜¸
+	 * °¡»ó°èÁÂ ÃæÀü Ãâ±İ °á°ú ¾÷µ¥ÀÌÆ®
+	 * @param trxId : °Å·¡¹øÈ£
 	 * @return
 	 */
 	public boolean updateVaPayOutRes(String trxId, String errCd){
 		String query = "UPDATE VA_TRX_FIRM "
-				+ "    SET resultCd=?, resultMsg=(SELECT concat('íƒ€í–‰ë¶ˆëŠ¥:',message) from PG_FIRM_CODE where bankcd='ERR' and code=?), retry='3', status='ì‹¤íŒ¨'"
+				+ "    SET resultCd=?, resultMsg=(SELECT concat('Å¸ÇàºÒ´É:',message) from PG_FIRM_CODE where bankcd='ERR' and code=?), retry='3', status='½ÇÆĞ'"
 				+ "	 WHERE trxid = ?";
 
 		DBManager db 			= null;
@@ -739,16 +739,16 @@ public class VactDAO{
 			db.close(conn);
 		}
 		if(result > 0){
-			logger.info("íƒ€í–‰ì´ì²´ ë¶ˆëŠ¥ê´€ë ¨ ê°€ìƒê³„ì¢Œ ëŒ€í–‰ì„œë¹„ìŠ¤ ì¶œê¸ˆ ê²°ê³¼ UPDATE ì„±ê³µ IDX=["+trxId+"]",this);
+			logger.info("Å¸ÇàÀÌÃ¼ ºÒ´É°ü·Ã °¡»ó°èÁÂ ´ëÇà¼­ºñ½º Ãâ±İ °á°ú UPDATE ¼º°ø IDX=["+trxId+"]",this);
 			return true;
 		}else{
-			logger.info("íƒ€í–‰ì´ì²´ ë¶ˆëŠ¥ê´€ë ¨ ê°€ìƒê³„ì¢Œ ëŒ€í–‰ì„œë¹„ìŠ¤ ì¶œê¸ˆ ê²°ê³¼ UPDATE ì‹¤íŒ¨ IDX=["+trxId+"]",this);
+			logger.info("Å¸ÇàÀÌÃ¼ ºÒ´É°ü·Ã °¡»ó°èÁÂ ´ëÇà¼­ºñ½º Ãâ±İ °á°ú UPDATE ½ÇÆĞ IDX=["+trxId+"]",this);
 			return false;
 		}
 	}
 
 	/**
-	 * VA_PTN ë°ì´í„° ì¡°íšŒ
+	 * VA_PTN µ¥ÀÌÅÍ Á¶È¸
 	 * @param ptnId
 	 * @return
 	 */
@@ -785,7 +785,7 @@ public class VactDAO{
 	}
 
 	/**
-	 * VA_TRX_ERRì— ìµœì¢… ì‹¤íŒ¨ ê±´ ì¶”ê°€
+	 * VA_TRX_ERR¿¡ ÃÖÁ¾ ½ÇÆĞ °Ç Ãß°¡
 	 * @param trxMap
 	 * @return
 	 */
@@ -848,7 +848,7 @@ public class VactDAO{
 	}
 
 	/**
-	 * PG_CHARGE_SETTLE_ERRì— ìµœì¢… ì‹¤íŒ¨ ê±´ ì¶”ê°€
+	 * PG_CHARGE_SETTLE_ERR¿¡ ÃÖÁ¾ ½ÇÆĞ °Ç Ãß°¡
 	 * @param trxMap
 	 * @return
 	 */
@@ -908,7 +908,7 @@ public class VactDAO{
 	}
 
 	/**
-	 * ì·¨ì†Œê±´ì˜ ì‹¤ì¶œê¸ˆì•¡ ì¡°íšŒ
+	 * Ãë¼Ò°ÇÀÇ ½ÇÃâ±İ¾× Á¶È¸
 	 * @param trxId
 	 * @return
 	 */
@@ -945,7 +945,7 @@ public class VactDAO{
 	}
 
 	/**
-	 * ì¶œê¸ˆ ì‹¤íŒ¨í•œ ê±°ë˜ ê±´ì˜ ì¶œê¸ˆì˜ˆì •ì•¡ë§Œí¼ ì´í›„ê±°ë˜ê±´ë“¤ ì”ì•¡ ì¶”ê°€
+	 * Ãâ±İ ½ÇÆĞÇÑ °Å·¡ °ÇÀÇ Ãâ±İ¿¹Á¤¾×¸¸Å­ ÀÌÈÄ°Å·¡°Çµé ÀÜ¾× Ãß°¡
 	 * @param trxId
 	 * @param id
 	 * @param stlAmount
@@ -989,16 +989,16 @@ public class VactDAO{
 			db.close(conn);
 		}
 		if(result > 0){
-			logger.info("íƒ€í–‰ì´ì²´ ë¶ˆëŠ¥ê´€ë ¨ ê°€ìƒê³„ì¢Œ ëŒ€í–‰ì„œë¹„ìŠ¤ ì”ì•¡ì›ë³µ UPDATE ì„±ê³µ IDX=["+trxId+"]",this);
+			logger.info("Å¸ÇàÀÌÃ¼ ºÒ´É°ü·Ã °¡»ó°èÁÂ ´ëÇà¼­ºñ½º ÀÜ¾×¿øº¹ UPDATE ¼º°ø IDX=["+trxId+"]",this);
 			return true;
 		}else{
-			logger.info("íƒ€í–‰ì´ì²´ ë¶ˆëŠ¥ê´€ë ¨ ê°€ìƒê³„ì¢Œ ëŒ€í–‰ì„œë¹„ìŠ¤ ì”ì•¡ì›ë³µ UPDATE ì‹¤íŒ¨ IDX=["+trxId+"]",this);
+			logger.info("Å¸ÇàÀÌÃ¼ ºÒ´É°ü·Ã °¡»ó°èÁÂ ´ëÇà¼­ºñ½º ÀÜ¾×¿øº¹ UPDATE ½ÇÆĞ IDX=["+trxId+"]",this);
 			return false;
 		}
 	}
 
 	/**
-	 * ì¶œê¸ˆ ì‹¤íŒ¨í•œ ê±°ë˜ê±´ VA_TRXí…Œì´ë¸” ë°ì´í„° ì‚­ì œ
+	 * Ãâ±İ ½ÇÆĞÇÑ °Å·¡°Ç VA_TRXÅ×ÀÌºí µ¥ÀÌÅÍ »èÁ¦
 	 * @param trxId
 	 */
 	public boolean deleteVaTrx(String trxId){
@@ -1031,7 +1031,7 @@ public class VactDAO{
 	}
 
 	/**
-	 * í•´ë‹¹ ê³„ì¢Œê°€ ê°€ìƒê³„ì¢Œ ëŒ€í–‰ì„œë¹„ìŠ¤ ê³„ì¢Œì¸ì§€ ì¡°íšŒí•œë‹¤.
+	 * ÇØ´ç °èÁÂ°¡ °¡»ó°èÁÂ ´ëÇà¼­ºñ½º °èÁÂÀÎÁö Á¶È¸ÇÑ´Ù.
 	 * @param account
 	 * @return
 	 */
@@ -1066,13 +1066,13 @@ public class VactDAO{
 	}
 
 	/**
-	 * ì¶©ì „ì •ì‚° ì¶œê¸ˆ ê²°ê³¼ ì—…ë°ì´íŠ¸
-	 * @param trxId : ê±°ë˜ë²ˆí˜¸
+	 * ÃæÀüÁ¤»ê Ãâ±İ °á°ú ¾÷µ¥ÀÌÆ®
+	 * @param trxId : °Å·¡¹øÈ£
 	 * @return
 	 */
 	public boolean updateChargeSettleRes(String trxId, String errCd){
 		String query = "UPDATE PG_CHARGE_SETTLE_FIRM "
-				+ "    SET resultCd=?, resultMsg=(SELECT concat('íƒ€í–‰ë¶ˆëŠ¥:',message) from PG_FIRM_CODE where bankcd='ERR' and code=?), retry='3', status='ì‹¤íŒ¨'"
+				+ "    SET resultCd=?, resultMsg=(SELECT concat('Å¸ÇàºÒ´É:',message) from PG_FIRM_CODE where bankcd='ERR' and code=?), retry='3', status='½ÇÆĞ'"
 				+ "	 WHERE trxid = ?";
 
 		DBManager db 	= null;
@@ -1098,16 +1098,16 @@ public class VactDAO{
 			db.close(conn);
 		}
 		if(result > 0){
-			logger.info("íƒ€í–‰ì´ì²´ ë¶ˆëŠ¥ê´€ë ¨ ì¶©ì „ì •ì‚° ì„œë¹„ìŠ¤ ì¶œê¸ˆ ê²°ê³¼ UPDATE ì„±ê³µ IDX=["+trxId+"]",this);
+			logger.info("Å¸ÇàÀÌÃ¼ ºÒ´É°ü·Ã ÃæÀüÁ¤»ê ¼­ºñ½º Ãâ±İ °á°ú UPDATE ¼º°ø IDX=["+trxId+"]",this);
 			return true;
 		}else{
-			logger.info("íƒ€í–‰ì´ì²´ ë¶ˆëŠ¥ê´€ë ¨ ì¶©ì „ì •ì‚° ì„œë¹„ìŠ¤ ì¶œê¸ˆ ê²°ê³¼ UPDATE ì‹¤íŒ¨ IDX=["+trxId+"]",this);
+			logger.info("Å¸ÇàÀÌÃ¼ ºÒ´É°ü·Ã ÃæÀüÁ¤»ê ¼­ºñ½º Ãâ±İ °á°ú UPDATE ½ÇÆĞ IDX=["+trxId+"]",this);
 			return false;
 		}
 	}
 
 	/**
-	 * ì¶©ì „ì •ì‚° ì›ê±°ë˜ ë°ì´í„°
+	 * ÃæÀüÁ¤»ê ¿ø°Å·¡ µ¥ÀÌÅÍ
 	 * @return
 	 */
 	public ResultSet getChargeSettle(String trxId){
@@ -1143,7 +1143,7 @@ public class VactDAO{
 	}
 
 	/**
-	 * ì¶©ì „ì •ì‚° ë§ì·¨ì†Œ ì›ê±°ë˜ ë°ì´í„°
+	 * ÃæÀüÁ¤»ê ¸ÁÃë¼Ò ¿ø°Å·¡ µ¥ÀÌÅÍ
 	 * @return
 	 */
 	public ResultSet getCancelChargeSettle(String trxId){
@@ -1179,7 +1179,7 @@ public class VactDAO{
 	}
 
 	/**
-	 * ì¶©ì „ì •ì‚° ì¶œê¸ˆ ì‹¤íŒ¨í•œ ê±°ë˜ ê±´ì˜ ì¶œê¸ˆì˜ˆì •ì•¡ë§Œí¼ ì´í›„ê±°ë˜ê±´ë“¤ ì”ì•¡ ì¶”ê°€
+	 * ÃæÀüÁ¤»ê Ãâ±İ ½ÇÆĞÇÑ °Å·¡ °ÇÀÇ Ãâ±İ¿¹Á¤¾×¸¸Å­ ÀÌÈÄ°Å·¡°Çµé ÀÜ¾× Ãß°¡
 	 * @param trxId
 	 * @param mchtId
 	 * @param netAmount
@@ -1223,16 +1223,16 @@ public class VactDAO{
 			db.close(conn);
 		}
 		if(result > 0){
-			logger.info("íƒ€í–‰ì´ì²´ ë¶ˆëŠ¥ê´€ë ¨ ì¶©ì „ì •ì‚° ì„œë¹„ìŠ¤ ì”ì•¡ì›ë³µ UPDATE ì„±ê³µ IDX=["+trxId+"]",this);
+			logger.info("Å¸ÇàÀÌÃ¼ ºÒ´É°ü·Ã ÃæÀüÁ¤»ê ¼­ºñ½º ÀÜ¾×¿øº¹ UPDATE ¼º°ø IDX=["+trxId+"]",this);
 			return true;
 		}else{
-			logger.info("íƒ€í–‰ì´ì²´ ë¶ˆëŠ¥ê´€ë ¨ ì¶©ì „ì •ì‚° ì„œë¹„ìŠ¤ ì”ì•¡ì›ë³µ UPDATE ì‹¤íŒ¨ IDX=["+trxId+"]",this);
+			logger.info("Å¸ÇàÀÌÃ¼ ºÒ´É°ü·Ã ÃæÀüÁ¤»ê ¼­ºñ½º ÀÜ¾×¿øº¹ UPDATE ½ÇÆĞ IDX=["+trxId+"]",this);
 			return false;
 		}
 	}
 
 	/**
-	 * VA_TRX_ERRì— ìµœì¢… ì‹¤íŒ¨ ê±´ ì¶”ê°€
+	 * VA_TRX_ERR¿¡ ÃÖÁ¾ ½ÇÆĞ °Ç Ãß°¡
 	 * @param trxMap
 	 * @return
 	 */
@@ -1295,7 +1295,7 @@ public class VactDAO{
 	}
 
 	/**
-	 * ì¶œê¸ˆ ì‹¤íŒ¨í•œ ê±°ë˜ê±´ PG_CHARGE_SETTLE í…Œì´ë¸” ë°ì´í„° ì‚­ì œ
+	 * Ãâ±İ ½ÇÆĞÇÑ °Å·¡°Ç PG_CHARGE_SETTLE Å×ÀÌºí µ¥ÀÌÅÍ »èÁ¦
 	 * @param trxId
 	 */
 	public boolean deleteChargeSettle(String trxId){
@@ -1328,7 +1328,7 @@ public class VactDAO{
 	}
 
 	/**
-	 * ì¶©ì „ì •ì‚° hookAddr ì¡°íšŒ
+	 * ÃæÀüÁ¤»ê hookAddr Á¶È¸
 	 * @param trxId
 	 * @return
 	 */
@@ -1407,7 +1407,7 @@ public class VactDAO{
 	}
 
 	/**
-	 * ê°€ìƒê³„ì¢Œ ëŒ€í–‰ì„œë¹„ìŠ¤ ì‚¬ìš©ì ì•„ì´ë”” ì¡°íšŒ
+	 * °¡»ó°èÁÂ ´ëÇà¼­ºñ½º »ç¿ëÀÚ ¾ÆÀÌµğ Á¶È¸
 	 * @param trxId
 	 * @return
 	 */
@@ -1444,7 +1444,7 @@ public class VactDAO{
 	}
 
 	/**
-	 * ê°€ìƒê³„ì¢Œ ëŒ€í–‰ì„œë¹„ìŠ¤ì˜ ì…ê¸ˆ ìµœì†Œ,ìµœëŒ€ê¸ˆì•¡ ì¡°íšŒ
+	 * °¡»ó°èÁÂ ´ëÇà¼­ºñ½ºÀÇ ÀÔ±İ ÃÖ¼Ò,ÃÖ´ë±İ¾× Á¶È¸
 	 * @param id
 	 * @return
 	 */
@@ -1482,15 +1482,15 @@ public class VactDAO{
 	}
 
 	/**
-	 * ê°€ìƒê³„ì¢Œ ëŒ€í–‰ì„œë¹„ìŠ¤ 3ë¶„ì´ë‚´ ì…ê¸ˆ ê±°ë˜ê±´ ì¡°íšŒ
-	 * @param trxDay : ì–´ì €ê¼ ê±°ë˜ì¼ì
-	 * @param id : ê³„ì •ì•„ì´ë””
+	 * °¡»ó°èÁÂ ´ëÇà¼­ºñ½º 3ºĞÀÌ³» ÀÔ±İ °Å·¡°Ç Á¶È¸
+	 * @param trxDay : ¾îÀú²¾ °Å·¡ÀÏÀÚ
+	 * @param id : °èÁ¤¾ÆÀÌµğ
 	 * @return
 	 */
 	public int getDuplicateTrans(String trxDay, String id){
 		String query = "SELECT COUNT(1) AS cnt"
 				+"	  FROM VA_TRX "
-				+"	 WHERE trxDay >= ? AND trxType = 'ì…ê¸ˆ' AND id = ? AND  regDate > DATE_ADD(NOW(), INTERVAL -3 MINUTE)";
+				+"	 WHERE trxDay >= ? AND trxType = 'ÀÔ±İ' AND id = ? AND  regDate > DATE_ADD(NOW(), INTERVAL -3 MINUTE)";
 
 		DBManager db 			= null;
 		PreparedStatement pstmt	= null;
@@ -1521,7 +1521,7 @@ public class VactDAO{
 	}
 
 	/**
-	 * í•´ë‹¹ ê°€ìƒê³„ì¢Œ ê°€ë§¹ì ì˜ ì •ì‚°êµ¬ë¶„ ì¡°íšŒ
+	 * ÇØ´ç °¡»ó°èÁÂ °¡¸ÍÁ¡ÀÇ Á¤»ê±¸ºĞ Á¶È¸
 	 * @param mchtId
 	 * @return
 	 */
@@ -1531,7 +1531,7 @@ public class VactDAO{
 	}
 
 	/**
-	 * ì‹¤ì‹œê°„ ì •ì‚° ìŠ¹ì¸ê±°ë˜ ì›ì¥ (PG_TRX_REALTIME_PAY) í…Œì´ë¸” ì €ì¥
+	 * ½Ç½Ã°£ Á¤»ê ½ÂÀÎ°Å·¡ ¿øÀå (PG_TRX_REALTIME_PAY) Å×ÀÌºí ÀúÀå
 	 * @param sharedMap
 	 * @param response
 	 */
@@ -1557,7 +1557,7 @@ public class VactDAO{
 			pstmt.setLong(5,trxPayMap.getLong("amount"));
 			pstmt.setString(6,"");
 
-			if("ì…ê¸ˆ".equals(trxPayMap.getString("trxType"))) {
+			if("ÀÔ±İ".equals(trxPayMap.getString("trxType"))) {
 				pstmt.setString(7,"0");
 			}else {
 				pstmt.setString(7,"1");
@@ -1590,7 +1590,7 @@ public class VactDAO{
 	}
 
 	/**
-	 * ì…ê¸ˆì·¨ì†Œ ì‹œ í•´ë‹¹ ì·¨ì†Œì˜ ì›ê±°ë˜ê±´ì´ ì‹¤ì‹œê°„ ì •ì‚° ê±°ë˜ê±´ ì¸ì§€ í™•ì¸
+	 * ÀÔ±İÃë¼Ò ½Ã ÇØ´ç Ãë¼ÒÀÇ ¿ø°Å·¡°ÇÀÌ ½Ç½Ã°£ Á¤»ê °Å·¡°Ç ÀÎÁö È®ÀÎ
 	 * @param vactId
 	 * @return
 	 */
@@ -1644,9 +1644,9 @@ public class VactDAO{
 	}
 
 	/**
-	 * ì‹¤ì‹œê°„ ì •ì‚° ìŠ¹ì¸ê±°ë˜ ì›ì¥ (PG_TRX_REALTIME_PAY) í…Œì´ë¸” ì „ì†¡ì—¬ë¶€ì™€ ì „ì†¡ì¼ì‹œ ì—…ë°ì´íŠ¸
-	 * ì›ì¥ ì¶œê¸ˆì „ì— ì·¨ì†Œê°€ ë“¤ì–´ì™”ì„ ì‹œ ì¶œê¸ˆì´ ì•ˆë˜ë„ë¡ ì—…ë°ì´íŠ¸
-	 * @param trxId : ê±°ë˜ë²ˆí˜¸
+	 * ½Ç½Ã°£ Á¤»ê ½ÂÀÎ°Å·¡ ¿øÀå (PG_TRX_REALTIME_PAY) Å×ÀÌºí Àü¼Û¿©ºÎ¿Í Àü¼ÛÀÏ½Ã ¾÷µ¥ÀÌÆ®
+	 * ¿øÀå Ãâ±İÀü¿¡ Ãë¼Ò°¡ µé¾î¿ÔÀ» ½Ã Ãâ±İÀÌ ¾ÈµÇµµ·Ï ¾÷µ¥ÀÌÆ®
+	 * @param trxId : °Å·¡¹øÈ£
 	 * @return
 	 */
 	public int updateRealtimeSendCheck(String trxId){
@@ -1679,7 +1679,7 @@ public class VactDAO{
 	}
 
 	/**
-	 * ì‹¤ì‹œê°„ ì •ì‚° ìŠ¹ì¸ê±°ë˜ ì›ì¥ (PG_REALTIME_PAYOUT) í…Œì´ë¸” ì €ì¥
+	 * ½Ç½Ã°£ Á¤»ê ½ÂÀÎ°Å·¡ ¿øÀå (PG_REALTIME_PAYOUT) Å×ÀÌºí ÀúÀå
 	 * @param sharedMap
 	 * @param response
 	 */
@@ -1741,7 +1741,7 @@ public class VactDAO{
 	}
 
 	/**
-	 * ë°ì´í„° ì•”í˜¸í™”
+	 * µ¥ÀÌÅÍ ¾ÏÈ£È­
 	 */
 	public String getAESEnc(String value){
 		String query 			= "SELECT FN_AES_ENC(?) pw";
@@ -1774,7 +1774,7 @@ public class VactDAO{
 	}
 
 	/**
-	 * ê°€ë§¹ì  TAX ì •ë³´ì¡°íšŒ
+	 * °¡¸ÍÁ¡ TAX Á¤º¸Á¶È¸
 	 * @param mchtId
 	 * @return
 	 */
@@ -1814,7 +1814,7 @@ public class VactDAO{
 	}
 
 	/**
-	 * ê°€ìƒê³„ì¢Œ ëŒ€í–‰ì„œë¹„ìŠ¤ íŒŒíŠ¸ë„ˆ ì¼í•œë„ê¸ˆì•¡ ì¡°íšŒ
+	 * °¡»ó°èÁÂ ´ëÇà¼­ºñ½º ÆÄÆ®³Ê ÀÏÇÑµµ±İ¾× Á¶È¸
 	 * @param accont
 	 * @return
 	 */
@@ -1855,7 +1855,7 @@ public class VactDAO{
 	}
 
 	/**
-	 * ê°€ìƒê³„ì¢Œ ëŒ€í–‰ì„œë¹„ìŠ¤ ê³„ì • ì¼ì…ê¸ˆ í•©ê³„ê¸ˆì•¡ ì¡°íšŒ
+	 * °¡»ó°èÁÂ ´ëÇà¼­ºñ½º °èÁ¤ ÀÏÀÔ±İ ÇÕ°è±İ¾× Á¶È¸
 	 * @param ptnId
 	 * @return
 	 */
@@ -1864,7 +1864,7 @@ public class VactDAO{
 
 		String query = "SELECT IFNULL(SUM(amount) , 0) AS amount"
 				+ "  FROM VA_TRX  "
-				+ " WHERE ptnId = ? AND trxType = 'ì…ê¸ˆ' AND trxDay = date_format(NOW(),'%Y%m%d')";
+				+ " WHERE ptnId = ? AND trxType = 'ÀÔ±İ' AND trxDay = date_format(NOW(),'%Y%m%d')";
 
 		DBManager db 			= null;
 		PreparedStatement pstmt	= null;
@@ -1893,7 +1893,7 @@ public class VactDAO{
 	}
 
 	/**
-	 * ê°€ë§¹ì  ì¶©ì „ì •ì‚° ê±°ë˜ë‚´ì—­ (PG_CHARGE_SETTLE) í…Œì´ë¸” ì €ì¥
+	 * °¡¸ÍÁ¡ ÃæÀüÁ¤»ê °Å·¡³»¿ª (PG_CHARGE_SETTLE) Å×ÀÌºí ÀúÀå
 	 * @param sharedMap
 	 * @param response
 	 */
@@ -1921,20 +1921,20 @@ public class VactDAO{
 			pstmt.setString(1	, trxPayMap.getString("vactId"));
 			pstmt.setString(2	, trxPayMap.getString("mchtId"));
 
-			if("ì…ê¸ˆ".equals(trxPayMap.getString("trxType"))) {
-				type = "ì…ê¸ˆ";
+			if("ÀÔ±İ".equals(trxPayMap.getString("trxType"))) {
+				type = "ÀÔ±İ";
 				netAmount = trxPayMap.getLong("amount") - trxPayMap.getLong("stlFee") - trxPayMap.getLong("stlFeeVat");
 				balance = getMchtBalance(trxPayMap.getString("mchtId")) + netAmount;
 				refId = trxPayMap.getString("vactId");
-			}else if("ì·¨ì†Œ".equals(trxPayMap.getString("trxType"))) {
-				type = "ì¶œê¸ˆ";
+			}else if("Ãë¼Ò".equals(trxPayMap.getString("trxType"))) {
+				type = "Ãâ±İ";
 				netAmount = trxPayMap.getLong("amount") - trxPayMap.getLong("stlFee") - trxPayMap.getLong("stlFeeVat");
 				balance = getMchtBalance(trxPayMap.getString("mchtId")) - netAmount;
 				refId = trxPayMap.getString("rootVactId");
 			}
 
 			pstmt.setString(3	, type);
-			pstmt.setString(4	, "ê°€ìƒê³„ì¢Œì •ì‚°");
+			pstmt.setString(4	, "°¡»ó°èÁÂÁ¤»ê");
 			pstmt.setString(5	, curDate.substring(0, 8));
 			pstmt.setString(6	, curDate.substring(8));
 			pstmt.setLong(7  	, trxPayMap.getLong("amount"));
@@ -1950,7 +1950,7 @@ public class VactDAO{
 			pstmt.setString(17	, "");
 			pstmt.setString(18	, "");
 			pstmt.setString(19	, "");
-			pstmt.setString(20	, "ê°€ìƒê³„ì¢Œ ì‹¤ì‹œê°„ì¶©ì „ ì •ì‚°ê¸ˆ ì§€ê¸ˆ");
+			pstmt.setString(20	, "°¡»ó°èÁÂ ½Ç½Ã°£ÃæÀü Á¤»ê±İ Áö±İ");
 			pstmt.setString(21	, trxPayMap.getString("mchtId"));
 			pstmt.setString(22	, curDate.substring(0, 8));
 
@@ -1971,7 +1971,7 @@ public class VactDAO{
 	}
 
 	/**
-	 * ì¶©ì „ì •ì‚° ì”ì•¡ì¡°íšŒ
+	 * ÃæÀüÁ¤»ê ÀÜ¾×Á¶È¸
 	 * @param mchtId
 	 * @return
 	 */
@@ -2008,7 +2008,7 @@ public class VactDAO{
 	}
 
 	/**
-	 * í•´ë‹¹ì¼ìê°€ íœ´ì¼ì¸ì§€ ì²´í¬
+	 * ÇØ´çÀÏÀÚ°¡ ÈŞÀÏÀÎÁö Ã¼Å©
 	 * @param today
 	 * @return
 	 */
@@ -2043,7 +2043,7 @@ public class VactDAO{
 	}
 
 	/**
-	 * ê°€ìƒê³„ì¢Œ 1ì¼í•œë„, 1íšŒí•œë„ ë°ì´í„° ì¡°íšŒ
+	 * °¡»ó°èÁÂ 1ÀÏÇÑµµ, 1È¸ÇÑµµ µ¥ÀÌÅÍ Á¶È¸
 	 * @param accont
 	 * @return
 	 */
@@ -2084,7 +2084,7 @@ public class VactDAO{
 	}
 
 	/**
-	 * ê°€ìƒê³„ì¢Œ 1ì¼í•©ê³„ ì¡°íšŒ
+	 * °¡»ó°èÁÂ 1ÀÏÇÕ°è Á¶È¸
 	 * @param trxDay
 	 * @return
 	 */
@@ -2093,7 +2093,7 @@ public class VactDAO{
 
 		String query = "SELECT SUM(amount) as sumAmt"
 				+ "  FROM PG_VACT_TRX "
-				+ " WHERE trxDay = ? and trxType = 'ì…ê¸ˆ' AND mchtId = ?";
+				+ " WHERE trxDay = ? and trxType = 'ÀÔ±İ' AND mchtId = ?";
 
 		DBManager db 			= null;
 		PreparedStatement pstmt	= null;
@@ -2123,7 +2123,7 @@ public class VactDAO{
 	}
 
 	/**
-	 * PG_MCHT, PG_MCHT_MNG_VACTí…Œì´ë¸”ì˜ ìƒíƒœì²´í¬
+	 * PG_MCHT, PG_MCHT_MNG_VACTÅ×ÀÌºíÀÇ »óÅÂÃ¼Å©
 	 * @param mchtId
 	 * @return
 	 */

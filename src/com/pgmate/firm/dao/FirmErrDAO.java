@@ -68,10 +68,10 @@ public class FirmErrDAO {
 				FirmTrxDAO money = new FirmTrxDAO();
 
 				//boolean success = money.deletetWallet(trnId);
-				//logger.debug("íƒ€í–‰ì´ì²´ ê±°ë˜ ì‚­ì œ ì²˜ë¦¬ :trnid : {} , {}",trnId,success);
+				//logger.debug("Å¸ÇàÀÌÃ¼ °Å·¡ »èÁ¦ Ã³¸® :trnid : {} , {}",trnId,success);
 
-				//success = money.updateWalletOut(trnId, "ì§€ê¸‰ì‹¤íŒ¨", fb0400100Bean.getErrorCode(), SeqDAO.getCodeDesc(fbHeaderBean.getNewBankCode(),fb0400100Bean.getErrorCode())+"[íƒ€í–‰ë¶ˆëŠ¥]");
-				//logger.debug("íƒ€í–‰ì´ì²´ WALLETOUT UDPATE :trnid : {} , {}",trnId,success);
+				//success = money.updateWalletOut(trnId, "Áö±Ş½ÇÆĞ", fb0400100Bean.getErrorCode(), SeqDAO.getCodeDesc(fbHeaderBean.getNewBankCode(),fb0400100Bean.getErrorCode())+"[Å¸ÇàºÒ´É]");
+				//logger.debug("Å¸ÇàÀÌÃ¼ WALLETOUT UDPATE :trnid : {} , {}",trnId,success);
 			}
 
 			return true;
