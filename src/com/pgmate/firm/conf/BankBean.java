@@ -11,7 +11,7 @@ public class BankBean {
 	public String account	= "";	
 	public String newAccount	= "";	
 
-	//PYS : ÇÏÀÌÇÂ¿¡ ¸Â°Ô Ãß°¡
+	//PYS : í•˜ì´í”ˆ ë•Œë¬¸ì— ì¶”ê°€
 	public String ekey		= "";
 	public String msalt 	= "";
 	public String kscode	= "";
