@@ -87,7 +87,7 @@ public class FirmTrxDAO {
 
 					list.add(hyphenBean);
 				} else {
-					logger.info("í•´ë‹¹ì€í–‰ì½”ë“œì— í•´ë‹¹í•˜ëŠ” configê°’ì´ ì—†ìŠµë‹ˆë‹¤. : [{}]", rset.getString("bankCd"));
+					logger.info("ÇØ´çÀºÇàÄÚµå¿¡ ÇØ´çÇÏ´Â config°ªÀÌ ¾ø½À´Ï´Ù. : [{}]", rset.getString("bankCd"));
 				}
 			}
 		}catch(Exception e){
@@ -133,9 +133,9 @@ public class FirmTrxDAO {
 					headerBean.setTransactionTime(CommonUtil.getCurrentDate("yyyyMMddHHmmss"));
 					FB0100100Bean fb0100100Bean = new FB0100100Bean();
 
-					//ê°€ìƒê³„ì¢Œ ëŒ€í–‰ì„œë¹„ìŠ¤ì¼ ê²½ìš° ìƒˆë¡œìš´ ëª¨ê³„ì¢Œì—ì„œ ì¶œê¸ˆë˜ë„ë¡ ë³€ê²½(2021.05.11)
+					//°¡»ó°èÁÂ ´ëÇà¼­ºñ½ºÀÏ °æ¿ì »õ·Î¿î ¸ğ°èÁÂ¿¡¼­ Ãâ±İµÇµµ·Ï º¯°æ(2021.05.11)
 					if("VA".equals(rset.getString("procType"))){
-						//ê°€ìƒê³„ì¢Œ ëŒ€í–‰ì„œë¹„ìŠ¤ íŒì¶œê¸ˆ
+						//°¡»ó°èÁÂ ´ëÇà¼­ºñ½º ÆßÃâ±İ
 						fb0100100Bean.setMAccount(configBean.newAccount);
 					}else {
 						fb0100100Bean.setMAccount(configBean.account);
@@ -435,7 +435,7 @@ public class FirmTrxDAO {
 		if(result > 0){
 
 			if(headerBean.getProcType().startsWith("F") && headerBean.getBankResponseCode().equals("0000")){
-				logger.debug("ì´ì²´ì²˜ë¦¬ê²°ê³¼ì¡°íšŒ ë°˜ì˜ : {} ",headerBean.getProcType());
+				logger.debug("ÀÌÃ¼Ã³¸®°á°úÁ¶È¸ ¹İ¿µ : {} ",headerBean.getProcType());
 			}
 			return true;
 		}else{
@@ -444,7 +444,7 @@ public class FirmTrxDAO {
 	}
 
 	public boolean updateError(long idx, String errorCode) {
-		String query = "UPDATE PG_FIRM_TRX SET resultCd=?, procGb=?, modDt = now(),resultMsg=(SELECT concat('íƒ€í–‰ë¶ˆëŠ¥:',message) from PG_FIRM_CODE where bankcd='ERR' and code=?) WHERE idx =?";
+		String query = "UPDATE PG_FIRM_TRX SET resultCd=?, procGb=?, modDt = now(),resultMsg=(SELECT concat('Å¸ÇàºÒ´É:',message) from PG_FIRM_CODE where bankcd='ERR' and code=?) WHERE idx =?";
 
 		DBManager db 	= null;
 		PreparedStatement pstmt	= null;
@@ -471,10 +471,10 @@ public class FirmTrxDAO {
 			db.close(conn);
 		}
 		if(result > 0){
-			logger.info("log.day","íƒ€í–‰ì´ì²´ ë¶ˆëŠ¥ ì§€ê¸‰ì´ì²´ UPDATE ì„±ê³µ  IDX=["+idx+"]",this);
+			logger.info("log.day","Å¸ÇàÀÌÃ¼ ºÒ´É Áö±ŞÀÌÃ¼ UPDATE ¼º°ø  IDX=["+idx+"]",this);
 			return true;
 		}else{
-			logger.info("log.day","íƒ€í–‰ì´ì²´ ë¶ˆëŠ¥ ì§€ê¸‰ì´ì²´ UPDATE IDX=["+idx+"]",this);
+			logger.info("log.day","Å¸ÇàÀÌÃ¼ ºÒ´É Áö±ŞÀÌÃ¼ UPDATE IDX=["+idx+"]",this);
 			return false;
 		}
 	}
@@ -524,21 +524,21 @@ public class FirmTrxDAO {
 			pstmt	= conn.prepareStatement(query);
 
 			if("RS".equals(procType)) {
-				sendMemo = "ì‹¤ì‹œê°„";
+				sendMemo = "½Ç½Ã°£";
 			}else if("VA".equals(procType)) {
-				sendMemo = "ëŒ€í–‰";
+				sendMemo = "´ëÇà";
 			}else if("AS".equals(procType)) {
-				sendMemo = "ìë™";
+				sendMemo = "ÀÚµ¿";
 			}else if("CS".equals(procType)) {
-				sendMemo = "ì¶©ì „";
+				sendMemo = "ÃæÀü";
 			}else if("MT".equals(procType)) {
-				sendMemo = "ëª¨ê³„ì¢Œ";
+				sendMemo = "¸ğ°èÁÂ";
 			}else if("WT".equals(procType)) {
-				sendMemo = "ì›”ë ›";
+				sendMemo = "¿ù·¿";
 			}
 
 			if("".equals(sender)) {
-				sender = "(ì£¼)ë¶€êµ­ìœ„ë„ˆìŠ¤";
+				sender = "(ÁÖ)ºÎ±¹À§³Ê½º";
 			}
 
 			pstmt.setString(1,bankCd);
@@ -583,21 +583,21 @@ public class FirmTrxDAO {
 			pstmt	= conn.prepareStatement(query);
 
 			if("RS".equals(procType)) {
-				sendMemo = "ì‹¤ì‹œê°„";
+				sendMemo = "½Ç½Ã°£";
 			}else if("VA".equals(procType)) {
-				sendMemo = "ëŒ€í–‰";
+				sendMemo = "´ëÇà";
 			}else if("AS".equals(procType)) {
-				sendMemo = "ìë™";
+				sendMemo = "ÀÚµ¿";
 			}else if("CS".equals(procType)) {
-				sendMemo = "ì¶©ì „";
+				sendMemo = "ÃæÀü";
 			}else if("MT".equals(procType)) {
-				sendMemo = "ëª¨ê³„ì¢Œ";
+				sendMemo = "¸ğ°èÁÂ";
 			}else if("WT".equals(procType)) {
-				sendMemo = "ì›”ë ›";
+				sendMemo = "¿ù·¿";
 			}
 
 			if("".equals(sender)) {
-				sender = "(ì£¼)ë¶€êµ­ìœ„ë„ˆìŠ¤";
+				sender = "(ÁÖ)ºÎ±¹À§³Ê½º";
 			}
 
 			pstmt.setString(1,bankCd);
@@ -664,7 +664,7 @@ public class FirmTrxDAO {
 	}
 
 	/**
-	 * íŒ ì²˜ë¦¬ê²°ê³¼ í™•ì¸ ì „ë¬¸ì—ì„œ í•„ìš”í•œ ì „ë¬¸ë²ˆí˜¸ í˜¸ì¶œ
+	 * Æß Ã³¸®°á°ú È®ÀÎ Àü¹®¿¡¼­ ÇÊ¿äÇÑ Àü¹®¹øÈ£ È£Ãâ
 	 * @return
 	 */
 	public String getBankSeq(){
@@ -696,7 +696,7 @@ public class FirmTrxDAO {
 	}
 
 	/**
-	 * íŒ ì²˜ë¦¬ê²°ê³¼ í™•ì¸ ì „ë¬¸ì—ì„œ í•„ìš”í•œ ì „ë¬¸ë²ˆí˜¸ í˜¸ì¶œ
+	 * Æß Ã³¸®°á°ú È®ÀÎ Àü¹®¿¡¼­ ÇÊ¿äÇÑ Àü¹®¹øÈ£ È£Ãâ
 	 * @return
 	 */
 	public String getTranDate(String seqNo){
@@ -728,7 +728,7 @@ public class FirmTrxDAO {
 	}
 
 	/**
-	 * ì¸ë±ìŠ¤ ë²ˆí˜¸ë¥¼ í†µí•´ trxIdë¥¼ ì¡°íšŒí•œë‹¤.
+	 * ÀÎµ¦½º ¹øÈ£¸¦ ÅëÇØ trxId¸¦ Á¶È¸ÇÑ´Ù.
 	 * @param idx
 	 * @return
 	 */

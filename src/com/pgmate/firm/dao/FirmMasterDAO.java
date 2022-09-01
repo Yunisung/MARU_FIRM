@@ -209,7 +209,7 @@ public class FirmMasterDAO {
 	}
 
 	/**
-	 * PYS : í•˜ì´í”ˆìš© PG_FIRM_MASTERì„¸íŒ…
+	 * PYS : ÇÏÀÌÇÂ¿ë PG_FIRM_MASTER¼¼ÆÃ
 	 * @return
 	 */
 	public List<HyphenBean> selectbyHyphen() {
@@ -267,7 +267,7 @@ public class FirmMasterDAO {
 
 					list.add(hyphenBean);
 				} else {
-					logger.info("í•´ë‹¹ì€í–‰ì½”ë“œì— í•´ë‹¹í•˜ëŠ” configê°’ì´ ì—†ìŠµë‹ˆë‹¤. : [{}]", rset.getString("bankCd"));
+					logger.info("ÇØ´çÀºÇàÄÚµå¿¡ ÇØ´çÇÏ´Â config°ªÀÌ ¾ø½À´Ï´Ù. : [{}]", rset.getString("bankCd"));
 				}
 			}
 		}catch(Exception e){
@@ -551,7 +551,7 @@ public class FirmMasterDAO {
 			pstmt.setString(idx++, bankCd);
 			pstmt.setString(idx++, account);
 			pstmt.setString(idx++, accntHolder);
-			pstmt.setString(idx++, "í™•ì¸");
+			pstmt.setString(idx++, "È®ÀÎ");
 			pstmt.setString(idx++, CommonUtil.getCurrentDate("yyyyMMdd"));
 
 			result = pstmt.executeUpdate();
@@ -573,7 +573,7 @@ public class FirmMasterDAO {
 
 	public String selectAccnt(String bankCd,String accntNo){
 
-		String query = " SELECT accntHolder FROM PG_FIRM_ACCNT WHERE bankCd = ? AND account = ? AND accntYn='í™•ì¸' and regDay > DATE_FORMAT(NOW()- INTERVAL 3 MONTH,'%Y%m%d')";
+		String query = " SELECT accntHolder FROM PG_FIRM_ACCNT WHERE bankCd = ? AND account = ? AND accntYn='È®ÀÎ' and regDay > DATE_FORMAT(NOW()- INTERVAL 3 MONTH,'%Y%m%d')";
 
 		DBManager db 	= null;
 		PreparedStatement pstmt	= null;
