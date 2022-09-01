@@ -21,9 +21,9 @@ public class HyphenComm {
     private ServerBean conf = null;
     private SmsGw smsGw = null;
 
-    //ê°œë°œ
+    //°³¹ß
 //    private static final String defaultURL = "https://cmsapitest.ksnet.co.kr/ksnet/";
-    //ìš´ì˜
+    //¿î¿µ
     private static final String defaultURL = "https://cmsapi.ksnet.co.kr/ksnet/";
 
     public HyphenComm(ServerBean conf) { this.conf = conf;}
