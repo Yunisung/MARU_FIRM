@@ -22,9 +22,9 @@ public class HyphenComm {
     private SmsGw smsGw = null;
 
     //개발
-    private static final String defaultURL = "https://cmsapitest.ksnet.co.kr/ksnet/";
+//    private static final String defaultURL = "https://cmsapitest.ksnet.co.kr/ksnet/";
     //운영
-//    private static final String defaultURL = "https://cmsapi.ksnet.co.kr/ksnet/";
+    private static final String defaultURL = "https://cmsapi.ksnet.co.kr/ksnet/";
 
     public HyphenComm(ServerBean conf) { this.conf = conf;}
 
