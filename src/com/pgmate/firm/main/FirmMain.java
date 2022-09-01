@@ -67,7 +67,7 @@ public class FirmMain{
 	}
 
 	/**
-	 * PYS : ÇÏÀÌÇÂ¿¡ ¸Â°Ô »õ·Î »ı¼º
+	 * PYS : í•˜ì´í”ˆì— ë§ê²Œ ìƒˆë¡œ ìƒì„±
 	 */
 	public void firmTrx() {
 		FirmTrxDAO firmTrxDAO = new FirmTrxDAO(firm.bank);
@@ -100,7 +100,7 @@ public class FirmMain{
 	}
 
 	/**
-	 * PYS: ÇÏÀÌÇÂ¿¡ ¸Â°Ô »õ·Î »ı¼º
+	 * PYS: í•˜ì´í”ˆì— ë§ê²Œ ìƒˆë¡œ ìƒì„±
 	 */
 	public void firmMaster() {
 		FirmMasterDAO firmMasterDAO = new FirmMasterDAO(firm.bank);

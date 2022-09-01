@@ -38,7 +38,7 @@ public class Daemon extends Thread{
 						//main.transMaster();
 						//main.wireTransfer();
 						main.firmMaster();
-						main.firmTrx();
+						//main.firmTrx();
 
 					}
 				

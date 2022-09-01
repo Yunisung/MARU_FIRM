@@ -33,11 +33,11 @@ import com.pgmate.lib.util.map.SharedMap;
 public class FirmTrxDAO {
 	private final static Logger logger = (Logger) LoggerFactory.getLogger(com.pgmate.firm.dao.FirmTrxDAO.class);
 	private SharedMap<String,BankBean> map = null;
-	
-	
+
+
 	public FirmTrxDAO(){
 	}
-	
+
 	public FirmTrxDAO(SharedMap<String,BankBean> map) {
 		this.map = map;
 	}
@@ -87,7 +87,7 @@ public class FirmTrxDAO {
 
 					list.add(hyphenBean);
 				} else {
-					logger.info("ÇØ´çÀºÇàÄÚµå¿¡ ÇØ´çÇÏ´Â config°ªÀÌ ¾ø½À´Ï´Ù. : [{}]", rset.getString("bankCd"));
+					logger.info("í•´ë‹¹ì€í–‰ì½”ë“œì— í•´ë‹¹í•˜ëŠ” configê°’ì´ ì—†ìŠµë‹ˆë‹¤. : [{}]", rset.getString("bankCd"));
 				}
 			}
 		}catch(Exception e){
@@ -101,28 +101,28 @@ public class FirmTrxDAO {
 
 	public List<FBHeaderBean> select(){
 		String query = " SELECT idx,bankCd,seqNo,amount,recvBank,recvAccount,checkDigit,recvHolder,recordInfo,procType,procId	FROM PG_FIRM_TRX WHERE sendDate = DATE_FORMAT(now(), '%Y%m%d') 	AND procGb='R' AND procType != 'BT' ORDER BY idx ASC LIMIT 10";
-		
+
 		DBManager db 	= null;
 		PreparedStatement pstmt	= null;
 		Connection conn			= null;
 		ResultSet rset			= null;
-		
+
 		List<FBHeaderBean> list = new ArrayList<FBHeaderBean>();
-		
-		
+
+
 		try{
 			db 		= DBFactory.getInstance();
 			conn	= db.getConnection();
 			pstmt	= conn.prepareStatement(query);
 			rset 	= pstmt.executeQuery();
-			
+
 			while(rset.next()){
-				
+
 				FBHeaderBean headerBean = new FBHeaderBean();
 				headerBean.setIndex(rset.getLong("idx"));
 				headerBean.setNewBankCode(CommonUtil.nToB(rset.getString("bankCd")));
 				BankBean configBean = map.get(headerBean.getNewBankCode());
-				
+
 				if(configBean != null) {
 					headerBean.setIdentificationCode(configBean.trCd);
 					headerBean.setCompanyCode(configBean.compCd);
@@ -132,15 +132,15 @@ public class FirmTrxDAO {
 					headerBean.setSpecNumber(CommonUtil.nToB(rset.getString("seqNo")));
 					headerBean.setTransactionTime(CommonUtil.getCurrentDate("yyyyMMddHHmmss"));
 					FB0100100Bean fb0100100Bean = new FB0100100Bean();
-					
-					//°¡»ó°èÁÂ ´ëÇà¼­ºñ½ºÀÏ °æ¿ì »õ·Î¿î ¸ğ°èÁÂ¿¡¼­ Ãâ±İµÇµµ·Ï º¯°æ(2021.05.11)
+
+					//ê°€ìƒê³„ì¢Œ ëŒ€í–‰ì„œë¹„ìŠ¤ì¼ ê²½ìš° ìƒˆë¡œìš´ ëª¨ê³„ì¢Œì—ì„œ ì¶œê¸ˆë˜ë„ë¡ ë³€ê²½(2021.05.11)
 					if("VA".equals(rset.getString("procType"))){
-						//°¡»ó°èÁÂ ´ëÇà¼­ºñ½º ÆßÃâ±İ
+						//ê°€ìƒê³„ì¢Œ ëŒ€í–‰ì„œë¹„ìŠ¤ íŒì¶œê¸ˆ
 						fb0100100Bean.setMAccount(configBean.newAccount);
 					}else {
 						fb0100100Bean.setMAccount(configBean.account);
 					}
-					
+
 					fb0100100Bean.setMAccountPassword("");
 					fb0100100Bean.setAmount(CommonUtil.toString(rset.getLong("amount")));
 					fb0100100Bean.setReceiveNewBankCode(CommonUtil.nToB(rset.getString("recvBank")));
@@ -148,18 +148,18 @@ public class FirmTrxDAO {
 					fb0100100Bean.setSign(CommonUtil.nToB(rset.getString("checkDigit")));
 					fb0100100Bean.setSenderName(CommonUtil.nToB(FirmUtil.changeCharset(rset.getString("recvHolder"),"MS949")));
 					fb0100100Bean.setReceiverName(CommonUtil.nToB(rset.getString("recordInfo")));
-					
+
 					headerBean.setProcType(CommonUtil.nToB(rset.getString("procType")));
 					headerBean.setProcId(CommonUtil.nToB(rset.getString("procId")));
-				
+
 					if(headerBean.getNewBankCode().equals("020") && CommonUtil.isNullOrSpace(fb0100100Bean.getSign())){
 						String sign = 	WooriSign.getSign(fb0100100Bean.getReceiveAccount(), CommonUtil.getAmountFormat(fb0100100Bean.getAmount()), fb0100100Bean.getReceiveNewBankCode(), fb0100100Bean.getMAccount());
 						fb0100100Bean.setSign(sign);
 					}
-					
+
 					headerBean.setTransactionIndex(fb0100100Bean.getTransaction());
 					list.add(headerBean);
-				}			
+				}
 			}
 		}catch(Exception e){
 			e.printStackTrace();
@@ -169,25 +169,25 @@ public class FirmTrxDAO {
 		}
 		return list;
 	}
-	
+
 	public long selectFirmIdx(String rootSpecNumber){
-		
+
 		String query = " SELECT idx FROM PG_FIRM_TRX WHERE seqNo = ?";
-		
+
 		DBManager db 	= null;
 		PreparedStatement pstmt	= null;
 		Connection conn			= null;
 		ResultSet rset			= null;
-		
+
 		long idx = 0;
-		
+
 		try{
 			db 		= DBFactory.getInstance();
 			conn	= db.getConnection();
 			pstmt	= conn.prepareStatement(query);
 			pstmt.setString(1, rootSpecNumber);
 			rset 	= pstmt.executeQuery();
-			
+
 			while(rset.next()){
 				idx = rset.getLong("idx");
 			}
@@ -198,11 +198,11 @@ public class FirmTrxDAO {
 		}
 		return idx;
 	}
-	
+
 	public boolean updateStatus(long idx,String status){
-		
+
 		String query = "UPDATE PG_FIRM_TRX SET procGb =? WHERE idx =?";
-		
+
 		DBManager db 	= null;
 		PreparedStatement pstmt	= null;
 		Connection conn			= null;
@@ -214,9 +214,9 @@ public class FirmTrxDAO {
 			pstmt.setString(1,status);
 			pstmt.setLong(2,idx);
 			result = pstmt.executeUpdate();
-			
+
 			conn.commit();
-			
+
 		}catch(Exception e){
 			logger.info("DB Error : {} , {} , [{}]",Thread.currentThread().getStackTrace()[1].getMethodName(),e.getMessage(),query);
 			logger.info("UPDATE PG_FIRM_TRX SET procGb ={} WHERE idx ={}",status,idx);
@@ -288,7 +288,7 @@ public class FirmTrxDAO {
 	public boolean update(FBHeaderBean headerBean){
 		FB0100100Bean fb0100100Bean = new FB0100100Bean(headerBean.getTransactionIndex());
 		String query = "UPDATE PG_FIRM_TRX SET procGb =?, recvDate=?, recvTime=?, balance=?, fee=?,transferTime=?,resultCd=?, resultMsg=?, modDt=now() WHERE idx =?";
-		
+
 		DBManager db 	= null;
 		PreparedStatement pstmt	= null;
 		Connection conn			= null;
@@ -304,7 +304,7 @@ public class FirmTrxDAO {
 			}else{
 				pstmt.setString(1,"N");
 			}
-			
+
 			pstmt.setString(2,headerBean.getTransactionTime().substring(0,8));
 			pstmt.setString(3,headerBean.getTransactionTime().substring(8,14));
 			pstmt.setLong(4,CommonUtil.parseLong(fb0100100Bean.getRemainAmountSign()+fb0100100Bean.getRemainAmount()));
@@ -313,11 +313,11 @@ public class FirmTrxDAO {
 			pstmt.setString(7,headerBean.getBankResponseCode());
 			pstmt.setString(8,headerBean.getMessage());
 			pstmt.setLong(9,headerBean.getIndex());
-			
+
 			result = pstmt.executeUpdate();
-			
+
 			conn.commit();
-			
+
 		}catch(Exception e){
 			logger.info("DB Error : {} , {} , [{}]",Thread.currentThread().getStackTrace()[1].getMethodName(),e.getMessage(),query);
 		}finally{
@@ -325,21 +325,21 @@ public class FirmTrxDAO {
 			db.close(conn);
 		}
 		if(result > 0){
-			
+
 			if(headerBean.getBankResponseCode().equals("0000")){
 				new FirmMasterDAO().insertBalance(headerBean.getNewBankCode(),fb0100100Bean.getMAccount(), fb0100100Bean.getRemainAmountSign()+fb0100100Bean.getRemainAmount());
 			}
-			
+
 			if(headerBean.getProcType().startsWith("F")){
 				//wallet(headerBean.getPrimaryKey(),headerBean.getBankResponseCode(),headerBean.getForeignKey());
 			}
-			
+
 			return true;
 		}else{
 			return false;
 		}
 	}
-	
+
 	public boolean updateResultCheckbyHyphen(HyphenBean hyphenBean, String resCode, String resMsg) {
 		TransferBean transferBean = (TransferBean) hyphenBean.getReqData(0);
 		logger.debug("TRANSFER CHECK RESULT [{}][{}] ",transferBean.getOriSeqNo(), hyphenBean.getReplyCode());
@@ -393,19 +393,19 @@ public class FirmTrxDAO {
 	public boolean updateResultCheck(FBHeaderBean headerBean, String resCode, String resMsg){
 		FB0600101Bean fb06001001bean = new FB0600101Bean(headerBean.getTransactionIndex());
 		logger.debug("TRANSFER CHECK RESULT [{}][{}] ",fb06001001bean.getRootSpecNumber(),fb06001001bean.getResultCd());
-		
+
 		String query = "UPDATE PG_FIRM_TRX SET procGb =?, fee=?,transferTime=?, resultCd=?, resultMsg=?, MODDT=now() WHERE seqNo =?";
-		
+
 		DBManager db = null;
 		PreparedStatement pstmt	= null;
 		Connection conn	= null;
 		int result = 0;
-		
+
 		try{
 			db 		= DBFactory.getInstance();
 			conn	= db.getConnection();
 			pstmt	= conn.prepareStatement(query);
-			
+
 			if(headerBean.getBankResponseCode().equals("0000")){
 				if(fb06001001bean.getResultCd().equals("0000")){
 					pstmt.setString(1,"Y");
@@ -415,17 +415,17 @@ public class FirmTrxDAO {
 			}else{
 				pstmt.setString(1,"X");
 			}
-			
+
 			pstmt.setLong(2,CommonUtil.parseLong(fb06001001bean.getCommission()));
 			pstmt.setString(3,fb06001001bean.getTransferTime());
 			pstmt.setString(4,resCode);
 			pstmt.setString(5,resMsg);
 			pstmt.setString(6,fb06001001bean.getRootSpecNumber());
-			
+
 			result = pstmt.executeUpdate();
-			
+
 			conn.commit();
-			
+
 		}catch(Exception e){
 			logger.info("DB Error : {} , {} , [{}]",Thread.currentThread().getStackTrace()[1].getMethodName(),e.getMessage(),query);
 		}finally{
@@ -433,18 +433,18 @@ public class FirmTrxDAO {
 			db.close(conn);
 		}
 		if(result > 0){
-			
+
 			if(headerBean.getProcType().startsWith("F") && headerBean.getBankResponseCode().equals("0000")){
-				logger.debug("ÀÌÃ¼Ã³¸®°á°úÁ¶È¸ ¹İ¿µ : {} ",headerBean.getProcType());
+				logger.debug("ì´ì²´ì²˜ë¦¬ê²°ê³¼ì¡°íšŒ ë°˜ì˜ : {} ",headerBean.getProcType());
 			}
 			return true;
 		}else{
 			return false;
 		}
 	}
-	
+
 	public boolean updateError(long idx, String errorCode) {
-		String query = "UPDATE PG_FIRM_TRX SET resultCd=?, procGb=?, modDt = now(),resultMsg=(SELECT concat('Å¸ÇàºÒ´É:',message) from PG_FIRM_CODE where bankcd='ERR' and code=?) WHERE idx =?";
+		String query = "UPDATE PG_FIRM_TRX SET resultCd=?, procGb=?, modDt = now(),resultMsg=(SELECT concat('íƒ€í–‰ë¶ˆëŠ¥:',message) from PG_FIRM_CODE where bankcd='ERR' and code=?) WHERE idx =?";
 
 		DBManager db 	= null;
 		PreparedStatement pstmt	= null;
@@ -461,7 +461,7 @@ public class FirmTrxDAO {
 			pstmt.setLong(4,idx);
 
 			result = pstmt.executeUpdate();
-			
+
 			conn.commit();
 		}catch(Exception e){
 			logger.error("UPDATE RESULT ERROR : {}",CommonUtil.getExceptionMessage(e));
@@ -471,24 +471,24 @@ public class FirmTrxDAO {
 			db.close(conn);
 		}
 		if(result > 0){
-			logger.info("log.day","Å¸ÇàÀÌÃ¼ ºÒ´É Áö±ŞÀÌÃ¼ UPDATE ¼º°ø  IDX=["+idx+"]",this);
+			logger.info("log.day","íƒ€í–‰ì´ì²´ ë¶ˆëŠ¥ ì§€ê¸‰ì´ì²´ UPDATE ì„±ê³µ  IDX=["+idx+"]",this);
 			return true;
 		}else{
-			logger.info("log.day","Å¸ÇàÀÌÃ¼ ºÒ´É Áö±ŞÀÌÃ¼ UPDATE IDX=["+idx+"]",this);
+			logger.info("log.day","íƒ€í–‰ì´ì²´ ë¶ˆëŠ¥ ì§€ê¸‰ì´ì²´ UPDATE IDX=["+idx+"]",this);
 			return false;
 		}
 	}
-	
-	public String getBankName(String bankCd){                             
-		
+
+	public String getBankName(String bankCd){
+
 		String query = " SELECT codeName FROM PG_CODE WHERE `alias` ='BANK' AND code = ? ";
-		
+
 		DBManager db 	= null;
 		PreparedStatement pstmt	= null;
 		Connection conn			= null;
 		ResultSet rset			= null;
 		String result	= "";
-		
+
 		try{
 			db 		= DBFactory.getInstance();
 			conn	= db.getConnection();
@@ -507,51 +507,50 @@ public class FirmTrxDAO {
 
 		return result;
 	}
-	
-	
-	
-	public long insertTrx(String bankCd,long amount,String recvBankCd,String recvAccount,String sender,String recordInfo,String procType){
-		String query = "INSERT INTO PG_FIRM_TRX  (bankCd,sendDate,sendTime,seqNo,amount,recvBank,recvAccount,recordInfo,recvHolder,procType,filler ) values (?,DATE_FORMAT(now(),'%Y%m%d') , DATE_FORMAT(now(),'%H%i%s'),FN_BANKSEQ(),?,?,?,?,?,?,?)";
-		
+
+	public long insertTrx(String bankCd,long amount,String recvBankCd,String recvAccount,String sender,String recordInfo,String procType, String seqNo){
+		String query = "INSERT INTO PG_FIRM_TRX  (bankCd,sendDate,sendTime,seqNo,amount,recvBank,recvAccount,recordInfo,recvHolder,procType,filler ) values (?,DATE_FORMAT(now(),'%Y%m%d') , DATE_FORMAT(now(),'%H%i%s'),?,?,?,?,?,?,?,?)";
+
 		DBManager db 			= null;
 		PreparedStatement pstmt	= null;
 		Connection conn			= null;
 		ResultSet rset 			= null;
 		long result				= 0;
 		String sendMemo			= "";
-		
+
 		try{
 			db 		= DBFactory.getInstance();
 			conn	= db.getConnection();
 			pstmt	= conn.prepareStatement(query);
-			
+
 			if("RS".equals(procType)) {
-				sendMemo = "½Ç½Ã°£";
+				sendMemo = "ì‹¤ì‹œê°„";
 			}else if("VA".equals(procType)) {
-				sendMemo = "´ëÇà";
+				sendMemo = "ëŒ€í–‰";
 			}else if("AS".equals(procType)) {
-				sendMemo = "ÀÚµ¿";
+				sendMemo = "ìë™";
 			}else if("CS".equals(procType)) {
-				sendMemo = "ÃæÀü";
+				sendMemo = "ì¶©ì „";
 			}else if("MT".equals(procType)) {
-				sendMemo = "¸ğ°èÁÂ";
+				sendMemo = "ëª¨ê³„ì¢Œ";
 			}else if("WT".equals(procType)) {
-				sendMemo = "¿ù·¿";
+				sendMemo = "ì›”ë ›";
 			}
 
 			if("".equals(sender)) {
-				sender = "(ÁÖ)ºÎ±¹À§³Ê½º";
+				sender = "(ì£¼)ë¶€êµ­ìœ„ë„ˆìŠ¤";
 			}
-			
+
 			pstmt.setString(1,bankCd);
-			pstmt.setLong(2,amount);
-			pstmt.setString(3,recvBankCd);
-			pstmt.setString(4,recvAccount);
-			pstmt.setString(5,sendMemo);
-			pstmt.setString(6,sender);
-			pstmt.setString(7,procType);
-			pstmt.setString(8,recordInfo);
-			
+			pstmt.setString(2, seqNo);
+			pstmt.setLong(3,amount);
+			pstmt.setString(4,recvBankCd);
+			pstmt.setString(5,recvAccount);
+			pstmt.setString(6,sendMemo);
+			pstmt.setString(7,sender);
+			pstmt.setString(8,procType);
+			pstmt.setString(9,recordInfo);
+
 			result = pstmt.executeUpdate();
 			rset		= pstmt.executeQuery("SELECT LAST_INSERT_ID() ");
 			while(rset.next()){
@@ -567,24 +566,82 @@ public class FirmTrxDAO {
 		}
 		return result;
 	}
-	
-	
+
+	public long insertTrx(String bankCd,long amount,String recvBankCd,String recvAccount,String sender,String recordInfo,String procType){
+		String query = "INSERT INTO PG_FIRM_TRX  (bankCd,sendDate,sendTime,seqNo,amount,recvBank,recvAccount,recordInfo,recvHolder,procType,filler ) values (?,DATE_FORMAT(now(),'%Y%m%d') , DATE_FORMAT(now(),'%H%i%s'),FN_BANKSEQ(),?,?,?,?,?,?,?)";
+
+		DBManager db 			= null;
+		PreparedStatement pstmt	= null;
+		Connection conn			= null;
+		ResultSet rset 			= null;
+		long result				= 0;
+		String sendMemo			= "";
+
+		try{
+			db 		= DBFactory.getInstance();
+			conn	= db.getConnection();
+			pstmt	= conn.prepareStatement(query);
+
+			if("RS".equals(procType)) {
+				sendMemo = "ì‹¤ì‹œê°„";
+			}else if("VA".equals(procType)) {
+				sendMemo = "ëŒ€í–‰";
+			}else if("AS".equals(procType)) {
+				sendMemo = "ìë™";
+			}else if("CS".equals(procType)) {
+				sendMemo = "ì¶©ì „";
+			}else if("MT".equals(procType)) {
+				sendMemo = "ëª¨ê³„ì¢Œ";
+			}else if("WT".equals(procType)) {
+				sendMemo = "ì›”ë ›";
+			}
+
+			if("".equals(sender)) {
+				sender = "(ì£¼)ë¶€êµ­ìœ„ë„ˆìŠ¤";
+			}
+
+			pstmt.setString(1,bankCd);
+			pstmt.setLong(2,amount);
+			pstmt.setString(3,recvBankCd);
+			pstmt.setString(4,recvAccount);
+			pstmt.setString(5,sendMemo);
+			pstmt.setString(6,sender);
+			pstmt.setString(7,procType);
+			pstmt.setString(8,recordInfo);
+
+			result = pstmt.executeUpdate();
+			rset		= pstmt.executeQuery("SELECT LAST_INSERT_ID() ");
+			while(rset.next()){
+				result = rset.getLong(1);
+			}
+			conn.commit();
+		}catch(Exception e){
+			e.printStackTrace();
+			logger.error("insertTrx Error : {} , {} , [{}]",Thread.currentThread().getStackTrace()[1].getMethodName(),e.getMessage(),query);
+		}finally{
+			db.close(pstmt);
+			db.close(conn);
+		}
+		return result;
+	}
+
+
 	public FirmBean checkResult(long idx,FirmBean firmBean){
 		String query = " SELECT resultCd,resultMsg,recvHolder,balance,fee,transferTime FROM PG_FIRM_TRX WHERE idx =?  AND procGb in ('N','Y') ";
-		
+
 		DBManager db 	= null;
 		PreparedStatement pstmt	= null;
 		Connection conn			= null;
 		ResultSet rset			= null;
-		
-		
+
+
 		try{
 			db 		= DBFactory.getInstance();
 			conn	= db.getConnection();
 			pstmt	= conn.prepareStatement(query);
 			pstmt.setLong(1, idx);
 			rset 	= pstmt.executeQuery();
-			
+
 			while(rset.next()){
 				firmBean.resultCd = rset.getString("resultCd");
 				firmBean.resultMsg = rset.getString("resultMsg");
@@ -596,34 +653,34 @@ public class FirmTrxDAO {
 				firmBean.data.put("balance", rset.getString("balance"));
 				firmBean.data.put("fee", rset.getLong("fee"));
 				firmBean.data.put("transferTime", rset.getString("transferTime"));
-				
+
 			}
 		}catch(Exception e){
 			logger.info("DB Error : {} , {} , [{}]",Thread.currentThread().getStackTrace()[1].getMethodName(),e.getMessage(),query);
-		}finally{ 
+		}finally{
 			db.close(conn,pstmt,rset);
 		}
 		return firmBean;
 	}
-	
+
 	/**
-	 * Æß Ã³¸®°á°ú È®ÀÎ Àü¹®¿¡¼­ ÇÊ¿äÇÑ Àü¹®¹øÈ£ È£Ãâ
+	 * íŒ ì²˜ë¦¬ê²°ê³¼ í™•ì¸ ì „ë¬¸ì—ì„œ í•„ìš”í•œ ì „ë¬¸ë²ˆí˜¸ í˜¸ì¶œ
 	 * @return
 	 */
-	public String getBankSeq(){                             
+	public String getBankSeq(){
 		String query = "SELECT FN_BANKSEQ() as seq";
-		
+
 		DBManager db 	= null;
 		PreparedStatement pstmt	= null;
 		Connection conn			= null;
 		ResultSet rset			= null;
 		String result	= "";
-		
+
 		try{
 			db 		= DBFactory.getInstance();
 			conn	= db.getConnection();
 			pstmt	= conn.prepareStatement(query);
-			
+
 			rset 	= pstmt.executeQuery();
 
 			while(rset.next()){
@@ -637,20 +694,20 @@ public class FirmTrxDAO {
 
 		return result;
 	}
-	
+
 	/**
-	 * Æß Ã³¸®°á°ú È®ÀÎ Àü¹®¿¡¼­ ÇÊ¿äÇÑ Àü¹®¹øÈ£ È£Ãâ
+	 * íŒ ì²˜ë¦¬ê²°ê³¼ í™•ì¸ ì „ë¬¸ì—ì„œ í•„ìš”í•œ ì „ë¬¸ë²ˆí˜¸ í˜¸ì¶œ
 	 * @return
 	 */
-	public String getTranDate(String seqNo){                             
+	public String getTranDate(String seqNo){
 		String query = "SELECT sendDate from PG_FIRM_TRX where seqNo = ?";
-		
+
 		DBManager db 	= null;
 		PreparedStatement pstmt	= null;
 		Connection conn			= null;
 		ResultSet rset			= null;
 		String result	= "";
-		
+
 		try{
 			db 		= DBFactory.getInstance();
 			conn	= db.getConnection();
@@ -669,29 +726,29 @@ public class FirmTrxDAO {
 
 		return result;
 	}
-	
+
 	/**
-	 * ÀÎµ¦½º ¹øÈ£¸¦ ÅëÇØ trxId¸¦ Á¶È¸ÇÑ´Ù.
+	 * ì¸ë±ìŠ¤ ë²ˆí˜¸ë¥¼ í†µí•´ trxIdë¥¼ ì¡°íšŒí•œë‹¤.
 	 * @param idx
 	 * @return
 	 */
 	public String selectTrxId(long idx){
 		String query = "SELECT recordInfo FROM PG_FIRM_TRX WHERE idx = ?";
-		
+
 		DBManager db 	= null;
 		PreparedStatement pstmt	= null;
 		Connection conn			= null;
 		ResultSet rset			= null;
-		
+
 		String recordInfo = "";
-		
+
 		try{
 			db 		= DBFactory.getInstance();
 			conn	= db.getConnection();
 			pstmt	= conn.prepareStatement(query);
 			pstmt.setLong (1, idx);
 			rset 	= pstmt.executeQuery();
-			
+
 			while(rset.next()){
 				recordInfo = rset.getString("recordInfo");
 			}

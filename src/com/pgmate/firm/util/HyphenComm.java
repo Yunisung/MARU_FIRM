@@ -21,10 +21,10 @@ public class HyphenComm {
     private ServerBean conf = null;
     private SmsGw smsGw = null;
 
-    //∞≥πﬂ
-//    private static final String defaultURL = "https://cmsapitest.ksnet.co.kr/ksnet/";
-    //øÓøµ
-    private static final String defaultURL = "https://cmsapi.ksnet.co.kr/ksnet/";
+    //Í∞úÎ∞ú
+    private static final String defaultURL = "https://cmsapitest.ksnet.co.kr/ksnet/";
+    //Ïö¥ÏòÅ
+//    private static final String defaultURL = "https://cmsapi.ksnet.co.kr/ksnet/";
 
     public HyphenComm(ServerBean conf) { this.conf = conf;}
 
@@ -51,7 +51,7 @@ public class HyphenComm {
 
             DataOutputStream dos = new DataOutputStream(conn.getOutputStream());
             dos.writeBytes(postData);
-            BufferedReader bf = new BufferedReader(new InputStreamReader(conn.getInputStream(), "EUC-KR"));
+            BufferedReader bf = new BufferedReader(new InputStreamReader(conn.getInputStream()));
             String line;
 
             while ((line = bf.readLine()) != null) {

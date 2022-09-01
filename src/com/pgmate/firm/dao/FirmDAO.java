@@ -49,7 +49,7 @@ public class FirmDAO{
 
 	public static String getCodeDesc(String bankCd, String code){
 		if(code.equals("XXXX")){
-			return "Ελ½ΕΐεΎΦ";
+			return "ν†µμ‹ μ¥μ• ";
 		}
 		String query = " SELECT message FROM PG_FIRM_CODE WHERE bankCd = ? AND `code` = ?";
 		

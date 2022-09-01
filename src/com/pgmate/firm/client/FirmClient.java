@@ -22,94 +22,94 @@ public class FirmClient {
 	private static String host 	= "127.0.0.1";
 	private static int port 	= 10006;
 	private static int timeout  = 40000;
-	
+
 
 	public FirmClient() {
 	}
-	
-	
-	
+
+
+
 	public void testCall(String bankCd){
-		logger.info("Å×½ºÆ®ÄÝ");
+		logger.info("í…ŒìŠ¤íŠ¸ì½œ");
 		FirmBean firmBean = new FirmBean();
 		firmBean.bankCd 	= bankCd;
 		firmBean.msgType 	= "0800800";
 		firmBean.userId		= "SYSTEM";
-	
+
 		firmBean = comm(firmBean);
-		logger.info("ÀÀ´ä:{},{}",firmBean.resultCd,firmBean.resultMsg);
+		logger.info("ì‘ë‹µ:{},{}",firmBean.resultCd,firmBean.resultMsg);
 		logger.info("idx:{},{}",firmBean.idx,firmBean.data.get("resData"));
 	}
-	
+
 	public void open(String bankCd){
-		logger.info("¾÷¹«°³½Ã");
+		logger.info("ì—…ë¬´ê°œì‹œ");
 		FirmBean firmBean = new FirmBean();
 		firmBean.bankCd 	= bankCd;
 		firmBean.msgType 	= "0800100";
 		firmBean.userId		= "SYSTEM";
-	
+
 		firmBean = comm(firmBean);
-		logger.info("ÀÀ´ä:{},{}",firmBean.resultCd,firmBean.resultMsg);
+		logger.info("ì‘ë‹µ:{},{}",firmBean.resultCd,firmBean.resultMsg);
 		logger.info("idx:{},{}",firmBean.idx,firmBean.data.get("resData"));
 	}
-	
+
 	public void close(String bankCd){
-		logger.info("¾÷¹«Á¾·á");
+		logger.info("ì—…ë¬´ì¢…ë£Œ");
 		FirmBean firmBean = new FirmBean();
 		firmBean.bankCd 	= bankCd;
 		firmBean.msgType 	= "0800300";
 		firmBean.userId		= "SYSTEM";
-	
+
 		firmBean = comm(firmBean);
-		logger.info("ÀÀ´ä:{},{}",firmBean.resultCd,firmBean.resultMsg);
+		logger.info("ì‘ë‹µ:{},{}",firmBean.resultCd,firmBean.resultMsg);
 		logger.info("idx:{},{}",firmBean.idx,firmBean.data.get("resData"));
 	}
-	
-	
+
+
 	public void balance(String bankCd){
-		logger.info("¸ð°èÁÂÀÜ¾×Á¶È¸");
+		logger.info("ëª¨ê³„ì¢Œìž”ì•¡ì¡°íšŒ");
 		FirmBean firmBean = new FirmBean();
 		firmBean.bankCd 	= bankCd;
 		firmBean.msgType 	= "0600300";
 		firmBean.userId		= "SYSTEM";
-	
+
 		firmBean = comm(firmBean);
-		logger.info("ÀÀ´ä:{},{}",firmBean.resultCd,firmBean.resultMsg);
+		logger.info("ì‘ë‹µ:{},{}",firmBean.resultCd,firmBean.resultMsg);
 		logger.info("idx:{},{}",firmBean.idx,firmBean.data.get("resData"));
 		logger.info("data : {}",GsonUtil.toJson(firmBean.data));
 	}
-	
+
 	/**
-	 * ÀÜ¾×Á¶È¸
+	 * ìž”ì•¡ì¡°íšŒ
 	 * @param bankCd
 	 * @param accntNo
 	 * @return
 	 */
 	public FirmBean balance(String bankCd, String accntNo, String compCd){
-		logger.info("ÀÜ¾×Á¶È¸");
+		logger.info("ìž”ì•¡ì¡°íšŒ");
 		FirmBean firmBean = new FirmBean();
 		firmBean.bankCd 	= bankCd;
 		firmBean.msgType 	= "0600300";
 		firmBean.userId		= "SYSTEM";
-		
+
 		firmBean.data.put("mAccnt",accntNo);
 		firmBean.data.put("compCd",compCd);
-		
+
 		firmBean = comm(firmBean);
-		logger.info("ÀÀ´ä:{},{}",firmBean.resultCd,firmBean.resultMsg);
+		logger.info("ì‘ë‹µ:{},{}",firmBean.resultCd,firmBean.resultMsg);
 		logger.info("idx:{},{}",firmBean.idx,firmBean.data.get("resData"));
 		logger.info("name : {}",firmBean.data.getString("name"));
 		return firmBean;
 	}
-	
+
 	/**
-	 * ÀºÇàÅëÇÑ ¿¹±ÝÁÖÁ¶È¸
+	 * ì€í–‰í†µí•œ ì˜ˆê¸ˆì£¼ì¡°íšŒ
 	 * @param bankCd
 	 * @param userBankCd
 	 * @param userAccount
 	 */
 	public void holderFCS(String userBankCd,String userAccount){
-		logger.info("¿¹±ÝÁÖÁ¶È¸");
+		logger.info("ì˜ˆê¸ˆì£¼ì¡°íšŒ");
 		FirmBean firmBean = new FirmBean();
 		firmBean.bankCd 	= "099";
 		firmBean.msgType 	= "0600400";
@@ -117,16 +117,16 @@ public class FirmClient {
 		firmBean.data.put("bankCd", userBankCd);
 		firmBean.data.put("account", userAccount);
 		firmBean = comm(firmBean);
-		logger.info("ÀÀ´ä:{},{}",firmBean.resultCd,firmBean.resultMsg);
+		logger.info("ì‘ë‹µ:{},{}",firmBean.resultCd,firmBean.resultMsg);
 		logger.info("idx:{},{}",firmBean.idx,firmBean.data.get("resData"));
 		logger.info("name : {}",firmBean.data.getString("name"));
 	}
-	
 
-	
+
+
 	/**
-	 * fcsCheck : (6)	½Å¿øÈ®ÀÎ¹øÈ£ Ã¼Å© : °èÁÂ¹øÈ£+½Å¿øÈ®ÀÎ¹øÈ£ ÀÏÄ¡ ¿©ºÎ Ã¼Å©½Ã ¡®99¡¯ ¼¼ÆÃ
-	 * ¿¹±ÝÁÖ¸í+½Å¿øÈ®ÀÎ¹øÈ£ ÀÏÄ¡ ¿©ºÎ Ã¼Å©½Ã ¡®77¡¯ ¼¼ÆÃ (½Ç¸í ÀÎÁõ)
+	 * fcsCheck : (6)	ì‹ ì›í™•ì¸ë²ˆí˜¸ ì²´í¬ : ê³„ì¢Œë²ˆí˜¸+ì‹ ì›í™•ì¸ë²ˆí˜¸ ì¼ì¹˜ ì—¬ë¶€ ì²´í¬ì‹œ â€˜99â€™ ì„¸íŒ…
+	 * ì˜ˆê¸ˆì£¼ëª…+ì‹ ì›í™•ì¸ë²ˆí˜¸ ì¼ì¹˜ ì—¬ë¶€ ì²´í¬ì‹œ â€˜77â€™ ì„¸íŒ… (ì‹¤ëª… ì¸ì¦)
 	 * @param userBankCd
 	 * @param userAccount
 	 * @param holder
@@ -134,7 +134,7 @@ public class FirmClient {
 	 * @param fcsCheck
 	 */
 	public void holderFCS(String userBankCd,String userAccount,String holder,String socialNumber,String fcsCheck){
-		logger.info("¿¹±ÝÁÖÁ¶È¸");
+		logger.info("ì˜ˆê¸ˆì£¼ì¡°íšŒ");
 		FirmBean firmBean = new FirmBean();
 		firmBean.bankCd 	= "099";
 		firmBean.msgType 	= "0600400";
@@ -145,20 +145,20 @@ public class FirmClient {
 		firmBean.data.put("socialNumber", socialNumber);
 		firmBean.data.put("socialCheck", fcsCheck);
 		firmBean = comm(firmBean);
-		logger.info("ÀÀ´ä:{},{}",firmBean.resultCd,firmBean.resultMsg);
+		logger.info("ì‘ë‹µ:{},{}",firmBean.resultCd,firmBean.resultMsg);
 		logger.info("idx:{},{}",firmBean.idx,firmBean.data.get("resData"));
 		logger.info("name : {}",firmBean.data.getString("name"));
 	}
-	
-	
+
+
 	/**
-	 * FCS ¿¹±ÝÁÖÁ¶È¸
+	 * FCS ì˜ˆê¸ˆì£¼ì¡°íšŒ
 	 * @param bankCd
 	 * @param userBankCd
 	 * @param userAccount
 	 */
 	public void holder(String userBankCd,String userAccount){
-		logger.info("¿¹±ÝÁÖÁ¶È¸");
+		logger.info("ì˜ˆê¸ˆì£¼ì¡°íšŒ");
 		FirmBean firmBean = new FirmBean();
 		firmBean.bankCd 	= "020";
 		firmBean.msgType 	= "0600400";
@@ -166,31 +166,31 @@ public class FirmClient {
 		firmBean.data.put("bankCd", userBankCd);
 		firmBean.data.put("account", userAccount);
 		firmBean = comm(firmBean);
-		logger.info("ÀÀ´ä:{},{}",firmBean.resultCd,firmBean.resultMsg);
+		logger.info("ì‘ë‹µ:{},{}",firmBean.resultCd,firmBean.resultMsg);
 		logger.info("idx:{},{}",firmBean.idx,firmBean.data.get("resData"));
 		logger.info("name : {}",firmBean.data.getString("name"));
 	}
-	
-	
+
+
 	/**
-	 * Áý°è
+	 * ì§‘ê³„
 	 * @param bankCd
 	 */
 	public void statistics(String bankCd){
-		logger.info("¸ð°èÁÂÁý°è");
+		logger.info("ëª¨ê³„ì¢Œì§‘ê³„");
 		FirmBean firmBean = new FirmBean();
 		firmBean.bankCd 	= bankCd;
 		firmBean.msgType 	= "0700100";
 		firmBean.userId		= "SYSTEM";
 		firmBean = comm(firmBean);
-		logger.info("ÀÀ´ä:{},{}",firmBean.resultCd,firmBean.resultMsg);
+		logger.info("ì‘ë‹µ:{},{}",firmBean.resultCd,firmBean.resultMsg);
 		logger.info("idx:{},{}",firmBean.idx,firmBean.data.get("resData"));
 		logger.info("data : {}",GsonUtil.toJson(firmBean.data));
-		
-		
+
+
 	}
-	
-	
+
+
 	public void trasfer(String bankCd, String recvBankCd,String recvAccount,long amount){
 		FirmBean firmBean = new FirmBean();
 		firmBean.bankCd 	= bankCd;
@@ -200,20 +200,20 @@ public class FirmClient {
 		firmBean.data.put("recvBankCd",recvBankCd);
 		firmBean.data.put("recvAccount",recvAccount);
 		firmBean.data.put("recordInfo","");
-		firmBean.data.put("sender", "(ÁÖ)ÄÉÀÌ¿øÇÇ¿¡½º");
-	
+		firmBean.data.put("sender", "(ì£¼)ì¼€ì´ì›í”¼ì—ìŠ¤");
+
 		firmBean = comm(firmBean);
-		logger.info("ÀÀ´ä:{},{}",firmBean.resultCd,firmBean.resultMsg);
+		logger.info("ì‘ë‹µ:{},{}",firmBean.resultCd,firmBean.resultMsg);
 		logger.info("idx:{},{}",firmBean.idx,firmBean.data.getLong("balance"));
 		logger.info("data : {}",GsonUtil.toJson(firmBean.data));
-		
-		
+
+
 	}
-	
-	
-	
+
+
+
 	public FirmBean comm(FirmBean firmBean){
-		
+
 		Socket socket = null;
 		OutputStream output = null;
 		InputStream input = null;
@@ -223,92 +223,92 @@ public class FirmClient {
 		try{
 			socket = new Socket(host, port);
 			socket.setSoTimeout(timeout);
-			
+
 			output = socket.getOutputStream();
 			output.write(reqJson.getBytes());
 			output.flush();
-			
+
 			input = socket.getInputStream();
-		
+
 			ByteArrayOutputStream bout = new ByteArrayOutputStream();
 			int bcount = 0;
 			byte[] buf = new byte[2048];
 			int read_retry_count = 0;
 			while(true) {
 				int n = input.read(buf);
-			    if ( n > 0 ) { bcount += n; bout.write(buf,0,n); }
-			    else if (n == -1) break;
-			    else  { // n == 0
-			if (++read_retry_count >= 5)
-			  throw new IOException("inputstream-read-retry-count(5) exceed !");
-			    }
-			    if(input.available() == 0){ break; }
+				if ( n > 0 ) { bcount += n; bout.write(buf,0,n); }
+				else if (n == -1) break;
+				else  { // n == 0
+					if (++read_retry_count >= 5)
+						throw new IOException("inputstream-read-retry-count(5) exceed !");
+				}
+				if(input.available() == 0){ break; }
 			}
 			bout.flush();
 			byte[] res = bout.toByteArray();
 			bout.close();
-			
+
 			firmBean = (FirmBean)GsonUtil.fromJson(new String(res), FirmBean.class);
-			
+
 		}catch(Exception e){
 			firmBean.resultCd = "XXXX";
-			firmBean.resultMsg = "Æß¹ðÅ· ½Ã½ºÅÛ°úÀÇ Åë½ÅÀå¾Ö :"+e.getMessage();
+			firmBean.resultMsg = "íŽŒë±…í‚¹ ì‹œìŠ¤í…œê³¼ì˜ í†µì‹ ìž¥ì•  :"+e.getMessage();
 		}finally{
 			logger.info("-> FIRM : [{}]",reqJson);
 			logger.info("<- FIRM : [{}],{}",resJson,(System.currentTimeMillis()-time));
-			
+
 			try{
 				if(input != null){ input.close();}
 				if(output != null){ output.close();}
 				if(socket != null){ socket.close();}
 			}catch(Exception ex){
-				
+
 			}
 		}
-		
+
 		return firmBean;
-		
+
 	}
-	
-	
+
+
 	public static void main(String[] args){
 		FirmClient client = new FirmClient();
 		//client.open("020");
 		//client.testCall("020");
 		//client.balance("020");
 		//client.statistics("020");
-		//client.holder("020", "94000006218719"); //°¡»ó°èÁÂ
+		//client.holder("020", "94000006218719"); //ê°€ìƒê³„ì¢Œ
 		//client.trasfer("020","020", "27939792518629", 3000);
-		//client.trasfer("020","088", "100001312970", 120000);//Å¸ÇàÀÌÃ¼ºÒ´É¸í¼¼
-		//client.trasfer("020","020", "1002735519320", 100);//°¡»ó°èÁÂ°Å·¡³»¿ª
-		
-		
-		//logger.info("°èÁÂÁ¶È¸");
+		//client.trasfer("020","088", "100001312970", 120000);//íƒ€í–‰ì´ì²´ë¶ˆëŠ¥ëª…ì„¸
+		//client.trasfer("020","020", "1002735519320", 100);//ê°€ìƒê³„ì¢Œê±°ëž˜ë‚´ì—­
+
+
+		//logger.info("ê³„ì¢Œì¡°íšŒ");
 		//client.holderFCS("088", "110311129095");
 		//client.holderFCS("020", "");
-		client.balance("039","2070079982702","SDS00268"); //FCS¿ë Å×½ºÆ® °èÁÂ . 850611 , ´Þ³ª¶ó°¡ÀÚ
+		client.balance("039","2070079982702","SDS00268"); //FCSìš© í…ŒìŠ¤íŠ¸ ê³„ì¢Œ . 850611 , ë‹¬ë‚˜ë¼ê°€ìž
 		/*
-		logger.info("°èÁÂ + ½Å¿øÈ®ÀÎ¹øÈ£ ");
-		client.holderFCS("011", "24202211712","","850611","77"); //FCS¿ë Å×½ºÆ® °èÁÂ . 850611 , ´Þ³ª¶ó°¡ÀÚ
-		logger.info("°èÁÂ + ¿¹±ÝÁÖ + ½Å¿øÈ®ÀÎ¹øÈ£ ");
-		client.holderFCS("011", "24202211712","´Þ³ª¶ó°¡ÀÚ","850611","99"); //FCS¿ë Å×½ºÆ® °èÁÂ . 850611 , ´Þ³ª¶ó°¡ÀÚ
-		
-		
+		logger.info("ê³„ì¢Œ + ì‹ ì›í™•ì¸ë²ˆí˜¸ ");
+		client.holderFCS("011", "24202211712","","850611","77"); //FCSìš© í…ŒìŠ¤íŠ¸ ê³„ì¢Œ . 850611 , ë‹¬ë‚˜ë¼ê°€ìž
+		logger.info("ê³„ì¢Œ + ì˜ˆê¸ˆì£¼ + ì‹ ì›í™•ì¸ë²ˆí˜¸ ");
+		client.holderFCS("011", "24202211712","ë‹¬ë‚˜ë¼ê°€ìž","850611","99"); //FCSìš© í…ŒìŠ¤íŠ¸ ê³„ì¢Œ . 850611 , ë‹¬ë‚˜ë¼ê°€ìž
+
+
 		logger.info("----------\n");
-		
-		logger.info("°èÁÂÁ¶È¸");
-		client.holderFCS("004", "012211411610"); //FCS¿ë Å×½ºÆ® °èÁÂ .730211 , ±è·Ã¸®
-		logger.info("°èÁÂ + ½Å¿øÈ®ÀÎ¹øÈ£ ");
-		client.holderFCS("004", "012211411610","","730211","77"); //FCS¿ë Å×½ºÆ® °èÁÂ . 850611 , ´Þ³ª¶ó°¡ÀÚ
-		logger.info("°èÁÂ + ¿¹±ÝÁÖ + ½Å¿øÈ®ÀÎ¹øÈ£ ");
-		client.holderFCS("004", "012211411610","±è·Ã¸®","730211","99"); //FCS¿ë Å×½ºÆ® °èÁÂ . 850611 , ´Þ³ª¶ó°¡ÀÚ
+
+		logger.info("ê³„ì¢Œì¡°íšŒ");
+		client.holderFCS("004", "012211411610"); //FCSìš© í…ŒìŠ¤íŠ¸ ê³„ì¢Œ .730211 , ê¹€ë ¨ë¦¬
+		logger.info("ê³„ì¢Œ + ì‹ ì›í™•ì¸ë²ˆí˜¸ ");
+		client.holderFCS("004", "012211411610","","730211","77"); //FCSìš© í…ŒìŠ¤íŠ¸ ê³„ì¢Œ . 850611 , ë‹¬ë‚˜ë¼ê°€ìž
+		logger.info("ê³„ì¢Œ + ì˜ˆê¸ˆì£¼ + ì‹ ì›í™•ì¸ë²ˆí˜¸ ");
+		client.holderFCS("004", "012211411610","ê¹€ë ¨ë¦¬","730211","99"); //FCSìš© í…ŒìŠ¤íŠ¸ ê³„ì¢Œ . 850611 , ë‹¬ë‚˜ë¼ê°€ìž
 	*/
 	}
-	
-	
-	
-	
-	
-	
+
+
+
+
+
+
 
 }
