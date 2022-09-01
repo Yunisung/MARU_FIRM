@@ -56,26 +56,26 @@ public class InterProcess implements java.io.Serializable{
 			if(firmBean.msgType.startsWith("0800")){
 				firmBean = proc0800(firmBean);
 			}else if(firmBean.msgType.startsWith("0600300")){
-				//ì”ì•¡ì¡°íšŒ
+				//ÀÜ¾×Á¶È¸
 //				firmBean = proc0600300(firmBean);
 				firmBean = procBalance(firmBean);
 			}else if(firmBean.msgType.startsWith("0600400")){
-				//ì„±ëª…ì¡°íšŒ
+				//¼º¸íÁ¶È¸
 				//firmBean = proc0600400(firmBean);
 				firmBean = procHolder(firmBean);
 			}else if(firmBean.msgType.startsWith("0700100")){
-				//ì§‘ê³„
+				//Áı°è
 				firmBean = proc0700100(firmBean);
 			}else if(firmBean.msgType.startsWith("0100100")){
-				//ì´ì²´
+				//ÀÌÃ¼
 //				firmBean = proc0100100(firmBean);
 				firmBean = procDeposit(firmBean);
 			}else if(firmBean.msgType.startsWith("0600101")){
-				//ì²˜ë¦¬ê²°ê³¼ì¡°íšŒ
+				//Ã³¸®°á°úÁ¶È¸
 				//firmBean = proc0600101(firmBean);
 				firmBean = procTransfer(firmBean);
 			}else if(firmBean.msgType.startsWith("0900400")){
-				//ê°€ìƒê³„ì¢Œ ì¶œê¸ˆì •ë³´ ë“±ë¡
+				//°¡»ó°èÁÂ Ãâ±İÁ¤º¸ µî·Ï
 				firmBean = proc0900400(firmBean);
 			}
 		}
@@ -96,10 +96,10 @@ public class InterProcess implements java.io.Serializable{
 
 
 	/*
-	 * ì”ì•¡ì¡°íšŒ
+	 * ÀÜ¾×Á¶È¸
 	 */
 	public FirmBean proc0600300(FirmBean firmBean){
-		logger.info("=================== ì”ì•¡ì¡°íšŒ ===================");
+		logger.info("=================== ÀÜ¾×Á¶È¸ ===================");
 
 		try {
 			FirmMasterDAO masterDAO = new FirmMasterDAO();
@@ -116,10 +116,10 @@ public class InterProcess implements java.io.Serializable{
 			}
 		}catch (Exception e) {
 			firmBean.resultCd ="XXXX";
-			firmBean.resultMsg ="ì”ì•¡ì¡°íšŒ ì˜¤ë¥˜";
+			firmBean.resultMsg ="ÀÜ¾×Á¶È¸ ¿À·ù";
 
 			e.printStackTrace();
-			logger.error("ì”ì•¡ì¡°íšŒ Error : [{}]", e.getMessage());
+			logger.error("ÀÜ¾×Á¶È¸ Error : [{}]", e.getMessage());
 		}
 
 		logger.info("===================================================");
@@ -128,10 +128,10 @@ public class InterProcess implements java.io.Serializable{
 	}
 
 	/*
-	ì”ì•¡ì¡°íšŒ í•˜ì´í”ˆìœ¼ë¡œ ë§Œë“¤ê¸°
+	ÀÜ¾×Á¶È¸ ÇÏÀÌÇÂÀ¸·Î ¸¸µé±â
 	 */
 	public FirmBean procBalance(FirmBean firmBean) {
-		logger.info("=================== ì”ì•¡ì¡°íšŒ ===================");
+		logger.info("=================== ÀÜ¾×Á¶È¸ ===================");
 
 		try {
 			FirmMasterDAO masterDAO = new FirmMasterDAO();
@@ -157,17 +157,17 @@ public class InterProcess implements java.io.Serializable{
 				String resJson = firmBean.data.getString("resData");
 				balanceBean = (BalanceBean) GsonUtil.fromJson(resJson, BalanceBean.class);
 				String amount = balanceBean.getSign()+balanceBean.getTotalBalance();
-				logger.info("ì”ì•¡ì¡°íšŒ ì„±ê³µ");
-				logger.info("[{}] ì˜ ì”ì•¡ : [{}]", firmBean.bankCd, amount);
+				logger.info("ÀÜ¾×Á¶È¸ ¼º°ø");
+				logger.info("[{}] ÀÇ ÀÜ¾× : [{}]", firmBean.bankCd, amount);
 				firmBean.data.put("amount", CommonUtil.parseLong(amount.trim()));
 				masterDAO.insertBalance(configBean.bankCd, configBean.account, amount.trim());
 			}
 		}catch (Exception e) {
 			firmBean.resultCd ="XXXX";
-			firmBean.resultMsg ="ì”ì•¡ì¡°íšŒ ì˜¤ë¥˜";
+			firmBean.resultMsg ="ÀÜ¾×Á¶È¸ ¿À·ù";
 
 			e.printStackTrace();
-			logger.error("ì”ì•¡ì¡°íšŒ Error : [{}]", e.getMessage());
+			logger.error("ÀÜ¾×Á¶È¸ Error : [{}]", e.getMessage());
 		}
 
 		logger.info("===================================================");
@@ -177,7 +177,7 @@ public class InterProcess implements java.io.Serializable{
 
 
 	/*
-	 * ì„±ëª…ì¡°íšŒ ì€í–‰ì½”ë“œë¥¼ 099 ë¥¼ ì‚¬ìš©í•˜ë©´ KSNET ê·¸ì™¸ëŠ” ê° ì€í–‰
+	 * ¼º¸íÁ¶È¸ ÀºÇàÄÚµå¸¦ 099 ¸¦ »ç¿ëÇÏ¸é KSNET ±×¿Ü´Â °¢ ÀºÇà
 	 * data.bankCd, data.account , data.socialNumber, data.socialCheck
 	 */
 	public FirmBean proc0600400(FirmBean firmBean){
@@ -200,7 +200,7 @@ public class InterProcess implements java.io.Serializable{
 			if(!CommonUtil.isNullOrSpace(holder)) {
 				firmBean.data.put("name", holder);
 				firmBean.resultCd ="0000";
-				firmBean.resultMsg = "ì •ìƒì¡°íšŒ";
+				firmBean.resultMsg = "Á¤»óÁ¶È¸";
 
 				return firmBean;
 			}
@@ -219,7 +219,7 @@ public class InterProcess implements java.io.Serializable{
 	}
 
 	/*
-	 * ì„±ëª…ì¡°íšŒ
+	 * ¼º¸íÁ¶È¸
 	 */
 	public FirmBean procHolder(FirmBean firmBean) {
 		logger.info("======================== Holder ========================");
@@ -259,10 +259,10 @@ public class InterProcess implements java.io.Serializable{
 		}catch (Exception e) {
 
 			firmBean.resultCd ="XXXX";
-			firmBean.resultMsg ="ì„±ëª…ì¡°íšŒ ì˜¤ë¥˜";
+			firmBean.resultMsg ="¼º¸íÁ¶È¸ ¿À·ù";
 
 			e.printStackTrace();
-			logger.error("ì„±ëª…ëª…ì¡°íšŒError : [{}]", e.getMessage());
+			logger.error("¼º¸í¸íÁ¶È¸Error : [{}]", e.getMessage());
 		}
 
 		logger.info("===================================================");
@@ -271,7 +271,7 @@ public class InterProcess implements java.io.Serializable{
 	}
 
 	/*
-	 * ì§‘ê³„
+	 * Áı°è
 	 */
 	public FirmBean proc0700100(FirmBean firmBean){
 		FirmMasterDAO masterDAO = new FirmMasterDAO();
@@ -306,13 +306,13 @@ public class InterProcess implements java.io.Serializable{
 
 
 	public FirmBean proc0100100(FirmBean firmBean){
-		// ì´ì²´ê°€ëŠ¥ì‹œê°„ ì™¸ ë°ì´í„° ë“±ë¡ ë§‰ê¸°
+		// ÀÌÃ¼°¡´É½Ã°£ ¿Ü µ¥ÀÌÅÍ µî·Ï ¸·±â
 		Firm firm = FirmLoader.getConfig();
 		long currentTime = CommonUtil.parseLong(CommonUtil.getCurrentDate("HHmmss"));
 
 		if(firm.daemon.startTime > currentTime || currentTime > firm.daemon.stopTime){
 			firmBean.resultCd ="XXXX";
-			firmBean.resultMsg ="ì´ì²´ ê°€ëŠ¥ ì‹œê°„ ì•„ë‹˜";
+			firmBean.resultMsg ="ÀÌÃ¼ °¡´É ½Ã°£ ¾Æ´Ô";
 			return firmBean;
 		}
 
@@ -330,7 +330,7 @@ public class InterProcess implements java.io.Serializable{
 		long idx = trxDAO.insertTrx(firmBean.bankCd, firmBean.data.getLong("amount"), firmBean.data.getString("recvBankCd"), firmBean.data.getString("recvAccount"), firmBean.data.getString("sender"), firmBean.data.getString("recordInfo"), firmBean.data.getString("procType"));
 		if(idx == 0){
 			firmBean.resultCd ="XXXX";
-			firmBean.resultMsg ="ì´ì²´ë°ì´í„° ë“±ë¡ì‹¤íŒ¨";
+			firmBean.resultMsg ="ÀÌÃ¼µ¥ÀÌÅÍ µî·Ï½ÇÆĞ";
 		}else{
 			firmBean = processCheck(idx,firmBean,trxDAO);
 		}
@@ -338,12 +338,12 @@ public class InterProcess implements java.io.Serializable{
 	}
 
 	/**
-	 * ì†¡ê¸ˆ í•˜ì´í”ˆìœ¼ë¡œ ë§Œë“¤ê¸°
+	 * ¼Û±İ ÇÏÀÌÇÂÀ¸·Î ¸¸µé±â
 	 * @param firmBean
 	 * @return
 	 */
 	public FirmBean procDeposit(FirmBean firmBean){
-		// ì´ì²´ê°€ëŠ¥ì‹œê°„ ì™¸ ë°ì´í„° ë“±ë¡ ë§‰ê¸°
+		// ÀÌÃ¼°¡´É½Ã°£ ¿Ü µ¥ÀÌÅÍ µî·Ï ¸·±â
 		Firm firm = FirmLoader.getConfig();
 		BankBean bankBean = firm.bank.get(firmBean.bankCd);
 
@@ -351,7 +351,7 @@ public class InterProcess implements java.io.Serializable{
 
 		if(firm.daemon.startTime > currentTime || currentTime > firm.daemon.stopTime){
 			firmBean.resultCd ="XXXX";
-			firmBean.resultMsg ="ì´ì²´ ê°€ëŠ¥ ì‹œê°„ ì•„ë‹˜";
+			firmBean.resultMsg ="ÀÌÃ¼ °¡´É ½Ã°£ ¾Æ´Ô";
 			return firmBean;
 		}
 
@@ -361,8 +361,8 @@ public class InterProcess implements java.io.Serializable{
 
 		String sender = firmBean.data.getString("sender");
 		if("".equals(sender)) {
-			sender = CommonUtil.nToB(FirmUtil.changeCharset("ë¶€êµ­ìœ„ë„ˆìŠ¤","UTF-8"));
-//			sender = "(ì£¼)ë¶€êµ­ìœ„ë„ˆìŠ¤";
+			sender = CommonUtil.nToB(FirmUtil.changeCharset("ºÎ±¹À§³Ê½º","UTF-8"));
+//			sender = "(ÁÖ)ºÎ±¹À§³Ê½º";
 		}
 
 		logger.info("account : {}",bankBean.account);
@@ -377,14 +377,14 @@ public class InterProcess implements java.io.Serializable{
 		long idx = trxDAO.insertTrx(firmBean.bankCd, firmBean.data.getLong("amount"), firmBean.data.getString("recvBankCd"), firmBean.data.getString("recvAccount"), sender, firmBean.data.getString("recordInfo"), firmBean.data.getString("procType"), seqNo);
 		if(idx == 0){
 			firmBean.resultCd ="XXXX";
-			firmBean.resultMsg ="ì´ì²´ë°ì´í„° ë“±ë¡ì‹¤íŒ¨";
+			firmBean.resultMsg ="ÀÌÃ¼µ¥ÀÌÅÍ µî·Ï½ÇÆĞ";
 		}else{
-			//ë°ëª¬ ì•ˆì“°ê³  ì§ì ‘ í†µì‹ í•˜ê¸°
+			//µ¥¸ó ¾È¾²°í Á÷Á¢ Åë½ÅÇÏ±â
 
-			//ìƒíƒœê°’ Ië¡œ update
+			//»óÅÂ°ª I·Î update
 			logger.info("TRX STATUS UPDATE : {}",trxDAO.updateStatus(idx, "I"));
 
-			//í†µì‹ í•˜ê¸° ìœ„í•´ í´ë˜ìŠ¤í™”
+			//Åë½ÅÇÏ±â À§ÇØ Å¬·¡½ºÈ­
 			DepositBean depositBean = new DepositBean();
 			depositBean.setCompCode(bankBean.compCd);
 			depositBean.setBankCode(bankBean.bankCd);
@@ -404,10 +404,10 @@ public class InterProcess implements java.io.Serializable{
 			hyphenBean.setSendurl("rfb/retail/deposit");
 			hyphenBean.setReqdata(depositBean);
 
-			//í†µì‹ 
+			//Åë½Å
 			String resData = hyphenComm.connect(hyphenBean);
 
-			//í†µì‹ ê²°ê³¼ í´ë˜ìŠ¤í™”
+			//Åë½Å°á°ú Å¬·¡½ºÈ­
 			JSONObject apiRes = new JSONObject();
 			JSONParser jsonParser = new JSONParser();
 			try {
@@ -433,10 +433,10 @@ public class InterProcess implements java.io.Serializable{
 			hyphenBean.setResdata(resData);
 			logger.info("TRX RESULT {},[{}]",hyphenBean.getSuccessYn(),hyphenBean.getReplyCode());
 
-			//í†µì‹ ê²°ê³¼ update
+			//Åë½Å°á°ú update
 			logger.info("TRX RESULT UPDATE : {}",trxDAO.updatebyHyphen(hyphenBean));
 
-			//firmbean ì±„ìš°ê¸°
+			//firmbean Ã¤¿ì±â
 			firmBean.resultCd = hyphenBean.getReplyCode();
 			firmBean.resultMsg = hyphenBean.getSuccessYn();
 			firmBean.idx = idx;
@@ -450,7 +450,7 @@ public class InterProcess implements java.io.Serializable{
 
 			if(firmBean.resultCd.equals("0000")){
 				String amount = firmBean.data.getString("balance");
-				logger.info("[{}]ì› ì´ì²´ì™„ë£Œ ", amount);
+				logger.info("[{}]¿ø ÀÌÃ¼¿Ï·á ", amount);
 				new FirmMasterDAO().insertBalance(firm.bank.get(firmBean.bankCd).bankCd, firm.bank.get(firmBean.bankCd).account, amount.trim());
 			}
 
@@ -460,12 +460,12 @@ public class InterProcess implements java.io.Serializable{
 
 
 	/**
-	 * PYS : ì´ì²´ê²°ê³¼ì¡°íšŒ (í•˜ì´í”ˆ)
+	 * PYS : ÀÌÃ¼°á°úÁ¶È¸ (ÇÏÀÌÇÂ)
 	 * @param firmBean
 	 * @return
 	 */
 	public FirmBean procTransfer(FirmBean firmBean){
-		logger.info("=================== íŒ ì²˜ë¦¬ê²°ê³¼ ì¡°íšŒ ===================");
+		logger.info("=================== Æß Ã³¸®°á°ú Á¶È¸ ===================");
 
 		FirmTrxDAO firmTrxDAO = new FirmTrxDAO();
 		BankBean configBean = firm.bank.get(firmBean.bankCd);
@@ -534,14 +534,14 @@ public class InterProcess implements java.io.Serializable{
 
 
 	/*
-	 * ì²˜ë¦¬ê²°ê³¼ ì¡°íšŒ
+	 * Ã³¸®°á°ú Á¶È¸
 	 */
 	public FirmBean proc0600101(FirmBean firmBean){
 		FirmTrxDAO firmTrxDAO = new FirmTrxDAO();
 		FBHeaderBean headerBean = new FBHeaderBean();
 		String resMsg = "";
 
-		logger.info("=================== íŒ ì²˜ë¦¬ê²°ê³¼ ì¡°íšŒ ===================");
+		logger.info("=================== Æß Ã³¸®°á°ú Á¶È¸ ===================");
 		logger.info("idx 	  : {}",firmBean.idx);
 		logger.info("bankCd   : {}",firmBean.bankCd);
 		logger.info("orgSeqNo : {}",firmBean.data.getString("orgSeqNo"));
@@ -563,9 +563,9 @@ public class InterProcess implements java.io.Serializable{
 		fb0600101Bean.setRootSpecNumber(firmBean.data.getString("orgSeqNo")) ;
 		headerBean.setTransactionIndex(fb0600101Bean.getTransaction());
 
-		logger.info("ì‹ë³„ì½”ë“œ 	: {}",configBean.trCd);
-		logger.info("ì—…ì²´ì½”ë“œ : {}",configBean.compCd);
-		logger.info("ì „ë¬¸ì¼ë ¨ë²ˆí˜¸ : {}",firmBean.data.getString("orgSeqNo"));
+		logger.info("½Äº°ÄÚµå 	: {}",configBean.trCd);
+		logger.info("¾÷Ã¼ÄÚµå : {}",configBean.compCd);
+		logger.info("Àü¹®ÀÏ·Ã¹øÈ£ : {}",firmBean.data.getString("orgSeqNo"));
 
 		KsnetComm comm	= new KsnetComm(firm.server);
 		FBHeaderBean resHeader = comm.ksnet(headerBean);
@@ -595,45 +595,45 @@ public class InterProcess implements java.io.Serializable{
 	}
 
 	/*
-	 * ê°€ìƒê³„ì¢Œ ì¶œê¸ˆì •ë³´ ë“±ë¡
+	 * °¡»ó°èÁÂ Ãâ±İÁ¤º¸ µî·Ï
 	 */
 	public FirmBean proc0900400(FirmBean firmBean){
 		FirmTrxDAO firmTrxDAO = new FirmTrxDAO();
 		FBHeaderBean headerBean = new FBHeaderBean();
 		String resMsg = "";
 
-		logger.info("=================== ê°€ìƒê³„ì¢Œ ì¶œê¸ˆì •ë³´ ë“±ë¡ ===================");
+		logger.info("=================== °¡»ó°èÁÂ Ãâ±İÁ¤º¸ µî·Ï ===================");
 		logger.info("idx 	  	: {}",firmBean.idx);
-		logger.info("ì€í–‰ì½”ë“œ    	: {}",firmBean.bankCd);
-		logger.info("ì—…ì²´ì½”ë“œ    	: {}",firmBean.data.getString("companyCd"));
-		logger.info("ê±°ë˜êµ¬ë¶„ 	  	: {}",firmBean.data.getString("trxType"));
-		logger.info("ê°€ìƒê³„ì¢Œë²ˆí˜¸ 	: {}",firmBean.data.getString("virtualAccount"));
-		logger.info("ì¶œê¸ˆì€í–‰ì½”ë“œ 	: {}",firmBean.data.getString("withdrawBankCd"));
-		logger.info("ì¶œê¸ˆê³„ì¢Œë²ˆí˜¸ 	: {}",firmBean.data.getString("withdrawAccount"));
+		logger.info("ÀºÇàÄÚµå    	: {}",firmBean.bankCd);
+		logger.info("¾÷Ã¼ÄÚµå    	: {}",firmBean.data.getString("companyCd"));
+		logger.info("°Å·¡±¸ºĞ 	  	: {}",firmBean.data.getString("trxType"));
+		logger.info("°¡»ó°èÁÂ¹øÈ£ 	: {}",firmBean.data.getString("virtualAccount"));
+		logger.info("Ãâ±İÀºÇàÄÚµå 	: {}",firmBean.data.getString("withdrawBankCd"));
+		logger.info("Ãâ±İ°èÁÂ¹øÈ£ 	: {}",firmBean.data.getString("withdrawAccount"));
 
-		//ê°€ìƒê³„ì¢Œê°€ ì‹ í•œì€í–‰ì¼ë•Œë§Œ ì„¸íŒ…
+		//°¡»ó°èÁÂ°¡ ½ÅÇÑÀºÇàÀÏ¶§¸¸ ¼¼ÆÃ
 		if("088".equals(firmBean.bankCd)) {
-			logger.info("ê³ ê°ëª… 	  	: {}",firmBean.data.getString("customerName"));
-			logger.info("íŒë±…í‚¹ ì—…ì²´ì½”ë“œ	: {}",firmBean.data.getString("firmCompanyCd"));
-			logger.info("íœ´ëŒ€í°ë²ˆí˜¸ 	: {}",firmBean.data.getString("phoneNo"));
-			logger.info("ì‹¤ëª…ë²ˆí˜¸ 		: {}",firmBean.data.getString("identity"));
+			logger.info("°í°´¸í 	  	: {}",firmBean.data.getString("customerName"));
+			logger.info("Æß¹ğÅ· ¾÷Ã¼ÄÚµå	: {}",firmBean.data.getString("firmCompanyCd"));
+			logger.info("ÈŞ´ëÆù¹øÈ£ 	: {}",firmBean.data.getString("phoneNo"));
+			logger.info("½Ç¸í¹øÈ£ 		: {}",firmBean.data.getString("identity"));
 		}
 
-		//ê°€ìƒê³„ì¢Œê°€ ë†í˜‘ì€í–‰ì¼ë•Œë§Œ ì„¸íŒ…
+		//°¡»ó°èÁÂ°¡ ³óÇùÀºÇàÀÏ¶§¸¸ ¼¼ÆÃ
 		if("011".equals(firmBean.bankCd) ||  "012".equals(firmBean.bankCd)) {
-			logger.info("ê³ ê°ëª… 	  	: {}",firmBean.data.getString("customerName"));
-			logger.info("ë“±ë¡ìœ í˜• 		: {}",firmBean.data.getString("regType"));
-			logger.info("ì‹¤ëª…ë²ˆí˜¸ 		: {}",firmBean.data.getString("identity"));
+			logger.info("°í°´¸í 	  	: {}",firmBean.data.getString("customerName"));
+			logger.info("µî·ÏÀ¯Çü 		: {}",firmBean.data.getString("regType"));
+			logger.info("½Ç¸í¹øÈ£ 		: {}",firmBean.data.getString("identity"));
 		}
 
-		//ê°€ìƒê³„ì¢Œê°€ í•˜ë‚˜ì€í–‰ì¼ë•Œë§Œ ì„¸íŒ…
+		//°¡»ó°èÁÂ°¡ ÇÏ³ªÀºÇàÀÏ¶§¸¸ ¼¼ÆÃ
 		if("081".equals(firmBean.bankCd)) {
-			logger.info("ê³ ê°ëª… 	  	: {}",firmBean.data.getString("customerName"));
+			logger.info("°í°´¸í 	  	: {}",firmBean.data.getString("customerName"));
 		}
 
-		//ê°€ìƒê³„ì¢Œê°€ êµ­ë¯¼ì€í–‰ì¼ë•Œë§Œ ì„¸íŒ…
+		//°¡»ó°èÁÂ°¡ ±¹¹ÎÀºÇàÀÏ¶§¸¸ ¼¼ÆÃ
 		if("004".equals(firmBean.bankCd)) {
-			logger.info("ê³ ê°ëª… 	  	: {}",firmBean.data.getString("customerName"));
+			logger.info("°í°´¸í 	  	: {}",firmBean.data.getString("customerName"));
 		}
 
 		logger.info("=========================================================");
@@ -655,7 +655,7 @@ public class InterProcess implements java.io.Serializable{
 		fb0900400Bean.setWithdrawAccount(firmBean.data.getString("withdrawAccount"));
 
 
-		//ê°€ìƒê³„ì¢Œê°€ ì‹ í•œì€í–‰ì¼ë•Œë§Œ ì„¸íŒ…
+		//°¡»ó°èÁÂ°¡ ½ÅÇÑÀºÇàÀÏ¶§¸¸ ¼¼ÆÃ
 		if("088".equals(firmBean.bankCd)) {
 			fb0900400Bean.setCustomerName(firmBean.data.getString("customerName"));
 			fb0900400Bean.setFirmCompanyCd(firmBean.data.getString("firmCompanyCd"));
@@ -663,13 +663,13 @@ public class InterProcess implements java.io.Serializable{
 			fb0900400Bean.setIdentity(firmBean.data.getString("identity"));
 		}
 
-		//ê°€ìƒê³„ì¢Œê°€ ì‹ í•œ,ë†í˜‘,í•˜ë‚˜ ì€í–‰ì¼ë•Œë§Œ ì„¸íŒ…
+		//°¡»ó°èÁÂ°¡ ½ÅÇÑ,³óÇù,ÇÏ³ª ÀºÇàÀÏ¶§¸¸ ¼¼ÆÃ
 		if("088".equals(firmBean.bankCd) || "011".equals(firmBean.bankCd) ||
 				"012".equals(firmBean.bankCd) || "081".equals(firmBean.bankCd)) {
 			fb0900400Bean.setIdentity(firmBean.data.getString("identity"));
 		}
 
-		//ê°€ìƒê³„ì¢Œê°€ ë†í˜‘ì€í–‰ì¼ë•Œë§Œ ì„¸íŒ…
+		//°¡»ó°èÁÂ°¡ ³óÇùÀºÇàÀÏ¶§¸¸ ¼¼ÆÃ
 		if("011".equals(firmBean.bankCd) || "012".equals(firmBean.bankCd)) {
 			fb0900400Bean.setRegType(firmBean.data.getString("regType"));
 		}
@@ -683,7 +683,7 @@ public class InterProcess implements java.io.Serializable{
 
 		resMsg = FirmDAO.getCodeDesc(headerBean.getNewBankCode(), resCode);
 
-		logger.info("ê°€ìƒê³„ì¢Œ ì¶œê¸ˆì •ë³´ ë“±ë¡ : [{}][{}]",resCode,resMsg);
+		logger.info("°¡»ó°èÁÂ Ãâ±İÁ¤º¸ µî·Ï : [{}][{}]",resCode,resMsg);
 		logger.info("===================================================");
 
 		firmBean.resultCd = resCode;
@@ -731,16 +731,16 @@ public class InterProcess implements java.io.Serializable{
 
 	public FirmBean valid(FirmBean firmBean){
 		if(firmBean == null){
-			return formatError(firmBean,"ë©”ì„¸ì§€ í¬ë§· ì˜¤ë¥˜");
+			return formatError(firmBean,"¸Ş¼¼Áö Æ÷¸Ë ¿À·ù");
 		}else{
 			if(firmBean.msgType.length() !=7){
-				return formatError(firmBean,"msgType ì˜¤ë¥˜ :"+firmBean.msgType);
+				return formatError(firmBean,"msgType ¿À·ù :"+firmBean.msgType);
 			}
 			if(firm.bank.get(firmBean.bankCd) == null){
-				return formatError(firmBean,"bankCd ì˜¤ë¥˜ , ì§€ì›í•˜ì§€ ì•ŠëŠ” ì€í–‰ì½”ë“œì…ë‹ˆë‹¤. "+firmBean.bankCd);
+				return formatError(firmBean,"bankCd ¿À·ù , Áö¿øÇÏÁö ¾Ê´Â ÀºÇàÄÚµåÀÔ´Ï´Ù. "+firmBean.bankCd);
 			}
 			if(firmBean.userId.equals("")){
-				return formatError(firmBean,"userId ì˜¤ë¥˜ , userId ëŠ” í•„ìˆ˜ê°’ì…ë‹ˆë‹¤. ");
+				return formatError(firmBean,"userId ¿À·ù , userId ´Â ÇÊ¼ö°ªÀÔ´Ï´Ù. ");
 			}
 			firmBean.resultCd = "";
 		}
@@ -753,7 +753,7 @@ public class InterProcess implements java.io.Serializable{
 			firmBean = new FirmBean();
 		}
 		firmBean.resultCd = "9999";
-		firmBean.resultMsg = "ë©”ì„¸ì§€ í¬ë§· ì˜¤ë¥˜";
+		firmBean.resultMsg = "¸Ş¼¼Áö Æ÷¸Ë ¿À·ù";
 		return firmBean;
 	}
 }

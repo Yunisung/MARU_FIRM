@@ -30,15 +30,15 @@ public class FirmMain{
 	private Firm firm = null;
 	private KsnetComm comm			= null;
 	private HyphenComm hyphenComm 	= null;
-	
+
 	public FirmMain(Firm firm) {
 		this.firm = firm;
 		comm = new KsnetComm(firm.server);
 		hyphenComm = new HyphenComm(firm.server);
 	}
 
-	
-	
+
+
 	public void wireTransfer(){
 		FirmTrxDAO firmTrxDAO = new FirmTrxDAO(firm.bank);
 		List<FBHeaderBean> list = firmTrxDAO.select();
@@ -51,7 +51,7 @@ public class FirmMain{
 			logger.info("TRX RESULT UPDATE : {} : {}",(i+1),firmTrxDAO.update(resHeader));
 		}
 	}
-	
+
 	public void transMaster(){
 		FirmMasterDAO firmMasterDAO = new FirmMasterDAO(firm.bank);
 		List<FBHeaderBean> list = firmMasterDAO.select();
@@ -67,7 +67,7 @@ public class FirmMain{
 	}
 
 	/**
-	 * PYS : í•˜ì´í”ˆì— ë§ê²Œ ìƒˆë¡œ ìƒì„±
+	 * PYS : ÇÏÀÌÇÂ¿¡ ¸Â°Ô »õ·Î »ı¼º
 	 */
 	public void firmTrx() {
 		FirmTrxDAO firmTrxDAO = new FirmTrxDAO(firm.bank);
@@ -100,7 +100,7 @@ public class FirmMain{
 	}
 
 	/**
-	 * PYS: í•˜ì´í”ˆì— ë§ê²Œ ìƒˆë¡œ ìƒì„±
+	 * PYS: ÇÏÀÌÇÂ¿¡ ¸Â°Ô »õ·Î »ı¼º
 	 */
 	public void firmMaster() {
 		FirmMasterDAO firmMasterDAO = new FirmMasterDAO(firm.bank);
