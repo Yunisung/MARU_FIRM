@@ -6,27 +6,27 @@ package com.pgmate.firm.hook;
  */
 public class VactHookBean {
 
-	public String vactId 	= "";		//ê°€ìƒê³„ì¢Œê±°ë˜ë²ˆí˜¸
-	public int retry		= 0;		//ê±°ë˜ì „ì†¡ì¬ì „ì†¡íšŸìˆ˜
+	public String vactId 	= "";		//°¡»ó°èÁÂ°Å·¡¹øÈ£
+	public int retry		= 0;		//°Å·¡Àü¼ÛÀçÀü¼ÛÈ½¼ö
 
-	public String mchtId	= "";		//ê°€ë§¹ì ì•„ì´ë””
-	public String issueId	= "";		//ê°€ìƒê³„ì¢Œë°œê¸‰ë²ˆí˜¸
-	public String bankCd	= "";		//ì€í–‰ì½”ë“œ
-	public String account	= "";		//ê°€ìƒê³„ì¢Œë²ˆí˜¸
-	public String sender	= "";		//ì…ê¸ˆìëª…
-	public long amount		= 0;		//ê¸ˆì•¡
-	public String trxType	= "";		//ì…ê¸ˆ:20/ì·¨ì†Œ:51êµ¬ë¶„
-	public String rootVactId= "";		//ì…ê¸ˆì·¨ì†Œì‹œ ì›ê±°ë˜ë°œê¸‰ë²ˆí˜¸
-	public String trxDay	= "";		//ì…ê¸ˆì¼ì
-	public String trxTime	= "";		//ì…ê¸ˆì‹œê°„
-	public String trackId	= "";		//ê°€ë§¹ì  ì£¼ë¬¸ë²ˆí˜¸
-	public String udf1		= "";		//ê°€ë§¹ì  ì˜ì—­1
-	public String udf2		= "";		//ê°€ë§¹ì  ì˜ì—­2
+	public String mchtId	= "";		//°¡¸ÍÁ¡¾ÆÀÌµğ
+	public String issueId	= "";		//°¡»ó°èÁÂ¹ß±Ş¹øÈ£
+	public String bankCd	= "";		//ÀºÇàÄÚµå
+	public String account	= "";		//°¡»ó°èÁÂ¹øÈ£
+	public String sender	= "";		//ÀÔ±İÀÚ¸í
+	public long amount		= 0;		//±İ¾×
+	public String trxType	= "";		//ÀÔ±İ:20/Ãë¼Ò:51±¸ºĞ
+	public String rootVactId= "";		//ÀÔ±İÃë¼Ò½Ã ¿ø°Å·¡¹ß±Ş¹øÈ£
+	public String trxDay	= "";		//ÀÔ±İÀÏÀÚ
+	public String trxTime	= "";		//ÀÔ±İ½Ã°£
+	public String trackId	= "";		//°¡¸ÍÁ¡ ÁÖ¹®¹øÈ£
+	public String udf1		= "";		//°¡¸ÍÁ¡ ¿µ¿ª1
+	public String udf2		= "";		//°¡¸ÍÁ¡ ¿µ¿ª2
 
-	public String stlDay	= "";		//ì •ì‚°ì˜ˆì •ì¼ì
-	public long stlAmount	= 0;		//ì •ì‚°ì˜ˆì •ê¸ˆì•¡
-	public long stlFee		= 0;		//ìˆ˜ìˆ˜ë£Œ
-	public long stlFeeVat	= 0;		//ìˆ˜ìˆ˜ë£Œë¶€ê°€ì„¸
+	public String stlDay	= "";		//Á¤»ê¿¹Á¤ÀÏÀÚ
+	public long stlAmount	= 0;		//Á¤»ê¿¹Á¤±İ¾×
+	public long stlFee		= 0;		//¼ö¼ö·á
+	public long stlFeeVat	= 0;		//¼ö¼ö·áºÎ°¡¼¼
 
 	public VactHookBean(){
 

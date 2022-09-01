@@ -96,16 +96,16 @@ public class ChargeSettleHook extends Thread {
 
 			if(ntsMap.getInt("code") == 200) {
 				if(ntsMap.getString("resData").indexOf("OK") > -1) {
-					ntsMap.put("status"		, "ì „ì†¡ì™„ë£Œ");
+					ntsMap.put("status"		, "Àü¼Û¿Ï·á");
 				}else {
-					ntsMap.put("status"		, "ì „ì†¡ì‹¤íŒ¨");
+					ntsMap.put("status"		, "Àü¼Û½ÇÆĞ");
 				}
 			}else {
-				ntsMap.put("status"		, "ì „ì†¡ì‹¤íŒ¨");
+				ntsMap.put("status"		, "Àü¼Û½ÇÆĞ");
 			}
 		}catch (Exception e) {
 			logger.info("ChargeSettle Noti URL REQUEST ERROR =["+e.getMessage()+"]");
-			ntsMap.put("status","ì „ì†¡ì‹¤íŒ¨");
+			ntsMap.put("status","Àü¼Û½ÇÆĞ");
 			ntsMap.put("sentDate", CommonUtil.getCurrentTimestamp());
 		}finally {
 			conn.disconnect();

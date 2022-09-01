@@ -59,9 +59,9 @@ public class VactHook extends Thread {
 		hook.account	= trxMap.getString("account");
 		hook.sender		= trxMap.getString("sender");
 		hook.amount		= trxMap.getLong("amount");
-		if(trxMap.isEquals("trxType", "鞛呹笀")){
+		if(trxMap.isEquals("trxType", "涝陛")){
 			hook.trxType= "deposit";
-		}else if(trxMap.isEquals("trxType", "旆唽")){
+		}else if(trxMap.isEquals("trxType", "秒家")){
 			hook.trxType= "depositback";
 		}
 		hook.rootVactId	= trxMap.getString("rootVactId");
@@ -99,9 +99,9 @@ public class VactHook extends Thread {
 //				hookResponse =client.connect("response="+URLEncoder.encode(payLoad,"UTF-8"));
 //				hookResponse = CommonUtil.cut(hookResponse, 100)+","+client.getHttpCode();
 //				if(hookResponse.indexOf("OK") > -1 || hookResponse.indexOf("result=0000") > -1 || client.getHttpCode() == 200){
-//					hookStatus = "鞝勳啞鞕勲";
+//					hookStatus = "傈价肯丰";
 //				}else{
-//					hookStatus = "鞝勳啞鞁ろ尐";
+//					hookStatus = "傈价角菩";
 //				}
 
 
@@ -134,9 +134,9 @@ public class VactHook extends Thread {
 				hookResponse = CommonUtil.cut(hookResponse, 100)+","+conn.getResponseCode();
 
 				if(hookResponse.indexOf("OK") > -1 || hookResponse.indexOf("result=0000") > -1 || conn.getResponseCode() == 200){
-					hookStatus = "鞝勳啞鞕勲";
+					hookStatus = "傈价肯丰";
 				}else{
-					hookStatus = "鞝勳啞鞁ろ尐";
+					hookStatus = "傈价角菩";
 				}
 			}else if(trxMap.getString("hookType").startsWith("TCP")){
 				String[] target 	= CommonUtil.split(trxMap.getString("hookAddr"),":",true);
@@ -146,17 +146,17 @@ public class VactHook extends Thread {
 				tcp.setSocketProperty(target[0], CommonUtil.parseInt(target[1]), 30000);
 				hookResponse = tcp.sendRecv(CommonUtil.zerofill(payLoad.getBytes().length,4)+payLoad);
 				if(hookResponse.indexOf("OK") > -1 || hookResponse.indexOf("result=0000") > -1 ){
-					hookStatus = "鞝勳啞鞕勲";
+					hookStatus = "傈价肯丰";
 				}else{
-					hookStatus = "鞝勳啞鞁ろ尐";
+					hookStatus = "傈价角菩";
 				}
 			}else{
-				throw new Exception("hookType 甑秳鞐嗢潓,"+trxMap.getString("hookType"));
+				throw new Exception("hookType 备盒绝澜,"+trxMap.getString("hookType"));
 			}
 
 		} catch(Exception e) {
 			logger.info("HOOK REQUEST ERROR =["+e.getMessage()+"]");
-			hookStatus = "鞝勳啞鞛レ暊";
+			hookStatus = "傈价厘局";
 			hookResponse = e.getMessage();
 		}finally{
 			logger.info("HOOK RESPONSE : [{}]",CommonUtil.cut(hookResponse,110)+"]");
