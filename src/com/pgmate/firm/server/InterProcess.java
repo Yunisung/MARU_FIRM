@@ -262,7 +262,7 @@ public class InterProcess implements java.io.Serializable{
 			firmBean.resultMsg ="성명조회 오류";
 
 			e.printStackTrace();
-			logger.error("성명명조회Error : [{}]", e.getMessage());
+			logger.error("성명조회Error : [{}]", e.getMessage());
 		}
 
 		logger.info("===================================================");
@@ -361,8 +361,8 @@ public class InterProcess implements java.io.Serializable{
 
 		String sender = firmBean.data.getString("sender");
 		if("".equals(sender)) {
-			sender = CommonUtil.nToB(FirmUtil.changeCharset("(주)부국위너스","EUC-KR"));
-//			sender = "(주)부국위너스";
+//			sender = CommonUtil.nToB(FirmUtil.changeCharset("(주)부국위너스","EUC-KR"));
+			sender = "(주)부국위너스";
 		}
 
 		logger.info("account : {}",bankBean.account);
