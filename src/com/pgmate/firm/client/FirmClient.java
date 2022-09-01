@@ -153,7 +153,6 @@ public class FirmClient {
 
 	/**
 	 * FCS 예금주조회
-	 * @param bankCd
 	 * @param userBankCd
 	 * @param userAccount
 	 */
