@@ -361,7 +361,7 @@ public class InterProcess implements java.io.Serializable{
 
 		String sender = firmBean.data.getString("sender");
 		if("".equals(sender)) {
-			sender = CommonUtil.nToB(FirmUtil.changeCharset("(주)부국위너스","MS949"));
+			sender = CommonUtil.nToB(FirmUtil.changeCharset("(주)부국위너스","EUC-KR"));
 //			sender = "(주)부국위너스";
 		}
 
