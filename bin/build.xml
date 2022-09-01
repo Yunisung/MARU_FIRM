@@ -28,7 +28,7 @@
   <echo message ="#### COMPILE COMPLETE ####"/>
 
     <target name="compile" depends="init">
-    <javac destdir="${classes.dir}" srcdir="${src.dir}" optimize="true" debug="true" deprecation="true" encoding="MS949" includeantruntime="false">
+    <javac destdir="${classes.dir}" srcdir="${src.dir}" optimize="true" debug="true" deprecation="true" encoding="UTF-8" includeantruntime="false">
       <classpath refid="project.classpath"/>
     </javac>
     <!--
