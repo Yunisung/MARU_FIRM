@@ -18,15 +18,15 @@ import com.pgmate.lib.util.map.SharedMap;
 
 public class VactDAO{
 
-private static Logger logger = LoggerFactory.getLogger( com.pgmate.firm.dao.VactDAO.class );
-	
+	private static Logger logger = LoggerFactory.getLogger( com.pgmate.firm.dao.VactDAO.class );
+
 	public VactDAO() {
 	}
-	
+
 	public synchronized static String getVactId(){
 		String returnVal = "";
 		String query 	 = "SELECT FN_NEXTVAL2('VACT') as val";
-		
+
 		DBManager db 			= null;
 		PreparedStatement pstmt = null;
 		Connection 	conn		= null;
@@ -37,7 +37,7 @@ private static Logger logger = LoggerFactory.getLogger( com.pgmate.firm.dao.Vact
 			conn		= db.getConnection();
 			pstmt		= conn.prepareStatement(query);
 			rset		= pstmt.executeQuery();
-			
+
 			while(rset.next()){
 				returnVal = "V"+rset.getString("val");
 			}
@@ -50,10 +50,10 @@ private static Logger logger = LoggerFactory.getLogger( com.pgmate.firm.dao.Vact
 		}
 		return returnVal;
 	}
-	
+
 	public boolean insertVactIO(FBHeaderBean header,FB0900100Bean fbBean, String resData,String resultCd,String resultMsg){
 		String query = "INSERT INTO PG_VACT_IO (msgCd,seqNo,recvDay,recvTime,bankCd,maccount,trxType,account,reqData,resData,sendDay,sendTime,resultCd,resultMsg,regDay	)  VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,? )";
-		
+
 		DBManager db 			= null;
 		PreparedStatement pstmt	= null;
 		Connection conn			= null;
@@ -68,7 +68,7 @@ private static Logger logger = LoggerFactory.getLogger( com.pgmate.firm.dao.Vact
 			pstmt.setString(idx++, header.getTransactionTime().substring(0,8));
 			pstmt.setString(idx++, header.getTransactionTime().substring(8,14));
 			pstmt.setString(idx++, header.getNewBankCode());
-			
+
 			if(fbBean == null){
 				pstmt.setString(idx++, "");
 				pstmt.setString(idx++, "");
@@ -85,9 +85,9 @@ private static Logger logger = LoggerFactory.getLogger( com.pgmate.firm.dao.Vact
 			pstmt.setString(idx++, resultCd);
 			pstmt.setString(idx++, resultMsg);
 			pstmt.setString(idx++, CommonUtil.getCurrentDate("yyyyMMdd"));
-			
+
 			result = pstmt.executeUpdate();
-			
+
 			conn.commit();
 		}catch(Exception e){
 			e.printStackTrace();
@@ -102,22 +102,22 @@ private static Logger logger = LoggerFactory.getLogger( com.pgmate.firm.dao.Vact
 			return false;
 		}
 	}
-	
+
 	public boolean insertVactTrx(SharedMap<String,Object> trxMap){
 		String query = "INSERT INTO PG_VACT_TRX ( vactId , issueId , mchtId , bankCd , account , seqNo , vactType , amount , sender , trxType , rootVactId , trxDay , trxTime  ,"
-					+" stlType , stlDay  , stlId, stlFee , stlFeeVat , stlDistType , stlDistDay  , stlDistId  , stlDistFee , stlDistFeeVat , stlAgencyType , stlAgencyDay  , stlAgencyId  , stlAgencyFee , stlAgencyFeeVat , stlSalesType , stlSalesDay  ,  stlSalesId  , stlSalesFee , stlSalesFeeVat , vanFee , vanDay , hookType , hookAddr ,trackId , udf1 , udf2 , regId , regDay)  VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,? )";
-		
+				+" stlType , stlDay  , stlId, stlFee , stlFeeVat , stlDistType , stlDistDay  , stlDistId  , stlDistFee , stlDistFeeVat , stlAgencyType , stlAgencyDay  , stlAgencyId  , stlAgencyFee , stlAgencyFeeVat , stlSalesType , stlSalesDay  ,  stlSalesId  , stlSalesFee , stlSalesFeeVat , vanFee , vanDay , hookType , hookAddr ,trackId , udf1 , udf2 , regId , regDay)  VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,? )";
+
 		DBManager db 			= null;
 		PreparedStatement pstmt	= null;
 		Connection conn			= null;
 		int result				= 0;
-		
+
 		try{
 			db 		= DBFactory.getInstance();
 			conn	= db.getConnection();
 			pstmt	= conn.prepareStatement(query);
 			int idx = 1;
-			
+
 			pstmt.setString(idx++, trxMap.getString("vactId"));
 			pstmt.setString(idx++, trxMap.getString("issueId"));
 			pstmt.setString(idx++, trxMap.getString("mchtId"));
@@ -159,11 +159,11 @@ private static Logger logger = LoggerFactory.getLogger( com.pgmate.firm.dao.Vact
 			pstmt.setString(idx++, trxMap.getString("udf1"));
 			pstmt.setString(idx++, trxMap.getString("udf2"));
 			pstmt.setString(idx++, "KSNET");
-			
+
 			pstmt.setString(idx++, CommonUtil.getCurrentDate("yyyyMMdd"));
-			
+
 			result = pstmt.executeUpdate();
-			
+
 			conn.commit();
 		}catch(Exception e){
 			e.printStackTrace();
@@ -176,34 +176,34 @@ private static Logger logger = LoggerFactory.getLogger( com.pgmate.firm.dao.Vact
 			return true;
 		}else{
 			return false;
-		}      
+		}
 	}
-	
+
 	public SharedMap<String,Object> getAccount(String account,String trxType){
 		SharedMap<String,Object> result = null;
-		
+
 		String query = " SELECT A.*,B.issuerBank,B.bankCd,B.trxFee,B.issueDay,B.companyCd,B.pisp FROM PG_VACT_DTL A LEFT JOIN PG_VACT B ON A.account = B.account WHERE A.account =? ";
-		
+
 		if(!trxType.equals("40")){
 			query = query+" AND status =?";
 		}
-		
+
 		query = query+" order by A.issueId desc limit 1";
-		
+
 		DBManager db 			= null;
 		PreparedStatement pstmt	= null;
 		Connection conn			= null;
 		ResultSet rset			= null;
-		
+
 		try{
 			db 		= DBFactory.getInstance();
 			conn	= db.getConnection();
 			pstmt	= conn.prepareStatement(query);
 			pstmt.setString(1,account);
 			if(!trxType.equals("40")){
-				pstmt.setString(2,"¹ßÇà");
+				pstmt.setString(2,"ë°œí–‰");
 			}else{
-				
+
 			}
 			rset 	= pstmt.executeQuery();
 
@@ -220,7 +220,7 @@ private static Logger logger = LoggerFactory.getLogger( com.pgmate.firm.dao.Vact
 				result.put("trackId",rset.getString("trackId"));
 				result.put("expireAt",rset.getString("expireAt"));
 				Timestamp expireDate = rset.getTimestamp("expireDate");
-				
+
 				if(expireDate != null) {
 					result.put("expireDate",expireDate);
 				}
@@ -238,26 +238,26 @@ private static Logger logger = LoggerFactory.getLogger( com.pgmate.firm.dao.Vact
 		}finally{
 			db.close(conn,pstmt,rset);
 		}
-		
+
 		return result;
 	}
-	
+
 	public SharedMap<String,Object> getAccountDtl(String account){
 		SharedMap<String,Object> result = null;
-		
+
 		String query = " SELECT A.*,B.issuerBank,B.bankCd,B.trxFee,B.issueDay,B.companyCd,B.pisp FROM PG_VACT_DTL A LEFT JOIN PG_VACT B ON A.account = B.account WHERE A.account =? order by A.issueId desc limit 1";
-		
+
 		DBManager db 			= null;
 		PreparedStatement pstmt	= null;
 		Connection conn			= null;
 		ResultSet rset			= null;
-		
+
 		try{
 			db 		= DBFactory.getInstance();
 			conn	= db.getConnection();
 			pstmt	= conn.prepareStatement(query);
 			pstmt.setString(1,account);
-		
+
 			rset 	= pstmt.executeQuery();
 
 			while(rset.next()){
@@ -290,12 +290,12 @@ private static Logger logger = LoggerFactory.getLogger( com.pgmate.firm.dao.Vact
 		}finally{
 			db.close(conn,pstmt,rset);
 		}
-		
+
 		return result;
 	}
-	
+
 	/**
-	 * °¡»ó°èÁÂ ÀÔ±İÃë¼Ò¿¡ ´ëÇÑ ¿ø°Å·¡°Ç Á¤º¸ Á¶È¸
+	 * ê°€ìƒê³„ì¢Œ ì…ê¸ˆì·¨ì†Œì— ëŒ€í•œ ì›ê±°ë˜ê±´ ì •ë³´ ì¡°íšŒ
 	 * @param trxDay
 	 * @param account
 	 * @param bankCd
@@ -304,14 +304,14 @@ private static Logger logger = LoggerFactory.getLogger( com.pgmate.firm.dao.Vact
 	 */
 	public SharedMap<String,Object> getHisTrxMap(String trxDay , String account, String seqNo ){
 		SharedMap<String,Object> result = null;
-		
+
 		String query = " SELECT * FROM PG_VACT_TRX WHERE trxDay =? and account =? and seqNo = ?";
-		
+
 		DBManager db 			= null;
 		PreparedStatement pstmt	= null;
 		Connection conn			= null;
 		ResultSet rset			= null;
-		
+
 		try{
 			db 		= DBFactory.getInstance();
 			conn	= db.getConnection();
@@ -319,7 +319,7 @@ private static Logger logger = LoggerFactory.getLogger( com.pgmate.firm.dao.Vact
 			pstmt.setString(1,trxDay);
 			pstmt.setString(2,account);
 			pstmt.setString(3,seqNo);
-			
+
 			rset 	= pstmt.executeQuery();
 
 			while(rset.next()){
@@ -353,36 +353,36 @@ private static Logger logger = LoggerFactory.getLogger( com.pgmate.firm.dao.Vact
 		}finally{
 			db.close(conn,pstmt,rset);
 		}
-		
+
 		return result;
 	}
-	
+
 	/**
-	 * PG_MCHT_MNG_VACTÅ×ÀÌºí °¡¸ÍÁ¡ °¡»ó°èÁÂ °ü¸®Á¤º¸ Á¶È¸
+	 * PG_MCHT_MNG_VACTí…Œì´ë¸” ê°€ë§¹ì  ê°€ìƒê³„ì¢Œ ê´€ë¦¬ì •ë³´ ì¡°íšŒ
 	 * @param mchtId
 	 * @return
 	 */
 	public SharedMap<String,Object> getMchtMngVact(String mchtId){
 		SharedMap<String,Object> result = null;
-		
+
 		String query = " SELECT * FROM PG_MCHT_MNG_VACT WHERE mchtId =?";
-		
+
 		DBManager db 			= null;
 		PreparedStatement pstmt	= null;
 		Connection conn			= null;
 		ResultSet rset			= null;
-		
+
 		try{
 			db 		= DBFactory.getInstance();
 			conn	= db.getConnection();
 			pstmt	= conn.prepareStatement(query);
 			pstmt.setString(1,mchtId);
-		
+
 			rset 	= pstmt.executeQuery();
 
 			while(rset.next()){
 				result = new SharedMap<String,Object>();
-				
+
 				result.put("mchtId",rset.getString("mchtId"));
 				result.put("holderName",rset.getString("holderName"));
 				result.put("status",rset.getString("status"));
@@ -415,38 +415,38 @@ private static Logger logger = LoggerFactory.getLogger( com.pgmate.firm.dao.Vact
 		}finally{
 			db.close(conn,pstmt,rset);
 		}
-		
+
 		return result;
 	}
-	
-	public String getSettleDay(String today,int term) {	
+
+	public String getSettleDay(String today,int term) {
 		String start = CommonUtil.toString(term-1);
 		String q = "SELECT days FROM PG_CODE_HOLIDAY WHERE days > '"+today+"' AND status ='no' limit "+start+",1";
 		return getQuery(q);
 	}
-	
-	public String getSettleDay(String today) {	
+
+	public String getSettleDay(String today) {
 		String q = "SELECT days FROM PG_CODE_HOLIDAY WHERE days >= '"+today+"' AND status ='no' limit 1";
 		return getQuery(q);
 	}
-	
-	public String getVanDay(String today) {	
+
+	public String getVanDay(String today) {
 		String q = "SELECT days FROM PG_CODE_HOLIDAY WHERE days > '"+today+"' AND status ='no' limit 0,1";
 		return getQuery(q);
 	}
-	
+
 	private String getQuery(String query){
 		DBManager db 			= null;
 		PreparedStatement pstmt	= null;
 		Connection conn			= null;
 		ResultSet rset			= null;
 		String result 			= "";
-		
+
 		try{
 			db 		= DBFactory.getInstance();
 			conn	= db.getConnection();
 			pstmt	= conn.prepareStatement(query);
-		
+
 			rset 	= pstmt.executeQuery();
 
 			while(rset.next()){
@@ -460,15 +460,15 @@ private static Logger logger = LoggerFactory.getLogger( com.pgmate.firm.dao.Vact
 		}
 		return result;
 	}
-	
+
 	public boolean vactDtlSetExpired(String issueId,String vactId){
-		String query = "UPDATE PG_VACT_DTL set status ='»ç¿ë¸¸·á' , reason= ? ,expireDate = now() WHERE issueId = ?";
-		
+		String query = "UPDATE PG_VACT_DTL set status ='ì‚¬ìš©ë§Œë£Œ' , reason= ? ,expireDate = now() WHERE issueId = ?";
+
 		DBManager db 			= null;
 		PreparedStatement pstmt	= null;
 		Connection conn			= null;
 		int result				= 0;
-		
+
 		try{
 			db 		= DBFactory.getInstance();
 			conn	= db.getConnection();
@@ -476,7 +476,7 @@ private static Logger logger = LoggerFactory.getLogger( com.pgmate.firm.dao.Vact
 			pstmt.setString(1, vactId);
 			pstmt.setString(2, issueId);
 			result = pstmt.executeUpdate();
-			
+
 			conn.commit();
 		}catch(Exception e){
 			e.printStackTrace();
@@ -491,15 +491,15 @@ private static Logger logger = LoggerFactory.getLogger( com.pgmate.firm.dao.Vact
 			return false;
 		}
 	}
-	
+
 	public boolean vactDtlSetIssue(String issueId,String vactId){
-		String query = "UPDATE PG_VACT_DTL set status ='¹ßÇà' , reason= ? ,expireDate = null WHERE issueId = ?";
-		
+		String query = "UPDATE PG_VACT_DTL set status ='ë°œí–‰' , reason= ? ,expireDate = null WHERE issueId = ?";
+
 		DBManager db 			= null;
 		PreparedStatement pstmt	= null;
 		Connection conn			= null;
 		int result				= 0;
-		
+
 		try{
 			db 		= DBFactory.getInstance();
 			conn	= db.getConnection();
@@ -507,7 +507,7 @@ private static Logger logger = LoggerFactory.getLogger( com.pgmate.firm.dao.Vact
 			pstmt.setString(1, vactId);
 			pstmt.setString(2, issueId);
 			result = pstmt.executeUpdate();
-			
+
 			conn.commit();
 		}catch(Exception e){
 			e.printStackTrace();
@@ -522,16 +522,16 @@ private static Logger logger = LoggerFactory.getLogger( com.pgmate.firm.dao.Vact
 			return false;
 		}
 	}
-	
+
 	public boolean updateVactTrx(String vactId , String hookStatus,String hookResponse){
 		int result = 0;
 		String query = "UPDATE PG_VACT_TRX set hookStatus = ? , hookResponse = ? , hookSentDate = now() WHERE vactId = ?";
-		
+
 		DBManager db 			= null;
 		PreparedStatement pstmt	= null;
 		Connection conn			= null;
 		ResultSet rset			= null;
-		
+
 		try{
 			db 		= DBFactory.getInstance();
 			conn	= db.getConnection();
@@ -552,16 +552,16 @@ private static Logger logger = LoggerFactory.getLogger( com.pgmate.firm.dao.Vact
 			return false;
 		}
 	}
-	
+
 	public String isDuplicatedTrx(FBHeaderBean header,FB0200300Bean fbBean){
 		String result = "";
 		String query = " SELECT vactId FROM PG_VACT_TRX WHERE trxDay =? and account =? and seqNo = ?";
-		
+
 		DBManager db 			= null;
 		PreparedStatement pstmt	= null;
 		Connection conn			= null;
 		ResultSet rset			= null;
-		
+
 		try{
 			db 		= DBFactory.getInstance();
 			conn	= db.getConnection();
@@ -569,7 +569,7 @@ private static Logger logger = LoggerFactory.getLogger( com.pgmate.firm.dao.Vact
 			pstmt.setString(1,header.getTransactionTime().substring(0, 8));
 			pstmt.setString(2,fbBean.getVirtualAccount());
 			pstmt.setString(3,header.getSpecNumber());
-			
+
 			logger.info("isDuplicatedTrx : {},{},{}",header.getSpecNumber(), header.getTransactionTime().substring(0, 8),fbBean.getVirtualAccount());
 			rset 	= pstmt.executeQuery();
 
@@ -582,25 +582,25 @@ private static Logger logger = LoggerFactory.getLogger( com.pgmate.firm.dao.Vact
 		}finally{
 			db.close(conn,pstmt,rset);
 		}
-		
+
 		return result;
 	}
-	
+
 	/**
-	 * Å¸ÇàÀÌÃ¼ ºÒ´É °ü·Ã ½Ç½Ã°£ Ãâ±İ °á°ú ¾÷µ¥ÀÌÆ®
-	 * @param trxId : °Å·¡¹øÈ£
+	 * íƒ€í–‰ì´ì²´ ë¶ˆëŠ¥ ê´€ë ¨ ì‹¤ì‹œê°„ ì¶œê¸ˆ ê²°ê³¼ ì—…ë°ì´íŠ¸
+	 * @param trxId : ê±°ë˜ë²ˆí˜¸
 	 * @return
 	 */
 	public boolean updateRealTimePayOutRes(String trxId, String errCd){
 		String query = "UPDATE PG_REALTIME_PAYOUT "
-					+ "    SET resultCd=?, resultMsg=(SELECT concat('Å¸ÇàºÒ´É:',message) from PG_FIRM_CODE where bankcd='ERR' and code=?), sendCheck='N', sendCnt='3'"
-					+ "	 WHERE trxid = ?";
-		
+				+ "    SET resultCd=?, resultMsg=(SELECT concat('íƒ€í–‰ë¶ˆëŠ¥:',message) from PG_FIRM_CODE where bankcd='ERR' and code=?), sendCheck='N', sendCnt='3'"
+				+ "	 WHERE trxid = ?";
+
 		DBManager db 			= null;
 		PreparedStatement pstmt	= null;
 		Connection conn			= null;
 		int result				= 0;
-		
+
 		try{
 			db 		= DBFactory.getInstance();
 			conn	= db.getConnection();
@@ -619,33 +619,33 @@ private static Logger logger = LoggerFactory.getLogger( com.pgmate.firm.dao.Vact
 			db.close(conn);
 		}
 		if(result > 0){
-			logger.info("Å¸ÇàÀÌÃ¼ ºÒ´É °ü·Ã ½Ç½Ã°£ Ãâ±İ °á°ú UPDATE ¼º°ø IDX=["+trxId+"]",this);
+			logger.info("íƒ€í–‰ì´ì²´ ë¶ˆëŠ¥ ê´€ë ¨ ì‹¤ì‹œê°„ ì¶œê¸ˆ ê²°ê³¼ UPDATE ì„±ê³µ IDX=["+trxId+"]",this);
 			return true;
 		}else{
-			logger.info("Å¸ÇàÀÌÃ¼ ºÒ´É °ü·Ã ½Ç½Ã°£ Ãâ±İ °á°ú UPDATE ½ÇÆĞ IDX=["+trxId+"]",this);
+			logger.info("íƒ€í–‰ì´ì²´ ë¶ˆëŠ¥ ê´€ë ¨ ì‹¤ì‹œê°„ ì¶œê¸ˆ ê²°ê³¼ UPDATE ì‹¤íŒ¨ IDX=["+trxId+"]",this);
 			return false;
 		}
 	}
-	
+
 	/**
-	 * Å¸ÇàÀÌÃ¼ ºÒ´É °ü·Ã ½Ç½Ã°£ Ãâ±İ ¸ÅÀÔ »óÅÂ Á¤»êº¸·ù·Î ¾÷µ¥ÀÌÆ®
-	 * @param trxId : °Å·¡¹øÈ£
+	 * íƒ€í–‰ì´ì²´ ë¶ˆëŠ¥ ê´€ë ¨ ì‹¤ì‹œê°„ ì¶œê¸ˆ ë§¤ì… ìƒíƒœ ì •ì‚°ë³´ë¥˜ë¡œ ì—…ë°ì´íŠ¸
+	 * @param trxId : ê±°ë˜ë²ˆí˜¸
 	 * @return
 	 */
 	public boolean updatePayOutCancelCapUpdate(String trxId){
 		String query = "UPDATE PG_TRX_CAP_DTL "
-				+ "    SET stlStatus = 'Á¤»êº¸·ù'"
+				+ "    SET stlStatus = 'ì •ì‚°ë³´ë¥˜'"
 				+ "	 WHERE capId = "
 				+ "		(SELECT b.capId "
 				+ "		   FROM PG_TRX_CAP a inner join PG_TRX_CAP_DTL b on a.capId = b.capId"
 				+ "		  WHERE a.trxId = ?"
 				+ "		)";
-		
+
 		DBManager db 			= null;
 		PreparedStatement pstmt	= null;
 		Connection conn			= null;
 		int result				= 0;
-		
+
 		try{
 			db 		= DBFactory.getInstance();
 			conn	= db.getConnection();
@@ -662,23 +662,23 @@ private static Logger logger = LoggerFactory.getLogger( com.pgmate.firm.dao.Vact
 			db.close(conn);
 		}
 		if(result > 0){
-			logger.info("Å¸ÇàÀÌÃ¼ ºÒ´É °ü·Ã ½Ç½Ã°£ Ãâ±İ ¸ÅÀÔµ¥ÀÌÅÍ UPDATE ¼º°ø IDX=["+trxId+"]",this);
+			logger.info("íƒ€í–‰ì´ì²´ ë¶ˆëŠ¥ ê´€ë ¨ ì‹¤ì‹œê°„ ì¶œê¸ˆ ë§¤ì…ë°ì´í„° UPDATE ì„±ê³µ IDX=["+trxId+"]",this);
 			return true;
 		}else{
-			logger.info("Å¸ÇàÀÌÃ¼ ºÒ´É °ü·Ã ½Ç½Ã°£ Ãâ±İ ¸ÅÀÔµ¥ÀÌÅÍ UPDATE ½ÇÆĞ IDX=["+trxId+"]",this);
+			logger.info("íƒ€í–‰ì´ì²´ ë¶ˆëŠ¥ ê´€ë ¨ ì‹¤ì‹œê°„ ì¶œê¸ˆ ë§¤ì…ë°ì´í„° UPDATE ì‹¤íŒ¨ IDX=["+trxId+"]",this);
 			return false;
 		}
 	}
-	
+
 	/**
-	 * °¡»ó°èÁÂ ÃæÀü Ãâ±İ´ë»ó°Å·¡¿¡¼­ Ãâ±İÇÏÁö ¾ÊÀº µ¥ÀÌÅÍÁß¿¡ Àü¼Û½Ãµµ°¡ ³²Àº °Å·¡°Çµé Á¶È¸
+	 * ê°€ìƒê³„ì¢Œ ì¶©ì „ ì¶œê¸ˆëŒ€ìƒê±°ë˜ì—ì„œ ì¶œê¸ˆí•˜ì§€ ì•Šì€ ë°ì´í„°ì¤‘ì— ì „ì†¡ì‹œë„ê°€ ë‚¨ì€ ê±°ë˜ê±´ë“¤ ì¡°íšŒ
 	 * @return
 	 */
 	public ResultSet getVaPay(String trxId){
 		String query = "SELECT * "
-					+"	  FROM VA_TRX "
-					+"   WHERE trxId = ?";
-		
+				+"	  FROM VA_TRX "
+				+"   WHERE trxId = ?";
+
 		DBManager db 			= null;
 		PreparedStatement pstmt	= null;
 		Connection conn			= null;
@@ -702,25 +702,25 @@ private static Logger logger = LoggerFactory.getLogger( com.pgmate.firm.dao.Vact
 		}finally{
 			db.close(conn,pstmt,rset);
 		}
-		
+
 		return result;
 	}
-	
+
 	/**
-	 * °¡»ó°èÁÂ ÃæÀü Ãâ±İ °á°ú ¾÷µ¥ÀÌÆ®
-	 * @param trxId : °Å·¡¹øÈ£
+	 * ê°€ìƒê³„ì¢Œ ì¶©ì „ ì¶œê¸ˆ ê²°ê³¼ ì—…ë°ì´íŠ¸
+	 * @param trxId : ê±°ë˜ë²ˆí˜¸
 	 * @return
 	 */
 	public boolean updateVaPayOutRes(String trxId, String errCd){
 		String query = "UPDATE VA_TRX_FIRM "
-					+ "    SET resultCd=?, resultMsg=(SELECT concat('Å¸ÇàºÒ´É:',message) from PG_FIRM_CODE where bankcd='ERR' and code=?), retry='3', status='½ÇÆĞ'"
-					+ "	 WHERE trxid = ?";
-		
+				+ "    SET resultCd=?, resultMsg=(SELECT concat('íƒ€í–‰ë¶ˆëŠ¥:',message) from PG_FIRM_CODE where bankcd='ERR' and code=?), retry='3', status='ì‹¤íŒ¨'"
+				+ "	 WHERE trxid = ?";
+
 		DBManager db 			= null;
 		PreparedStatement pstmt	= null;
 		Connection conn			= null;
 		int result				= 0;
-		
+
 		try{
 			db 		= DBFactory.getInstance();
 			conn	= db.getConnection();
@@ -739,36 +739,36 @@ private static Logger logger = LoggerFactory.getLogger( com.pgmate.firm.dao.Vact
 			db.close(conn);
 		}
 		if(result > 0){
-			logger.info("Å¸ÇàÀÌÃ¼ ºÒ´É°ü·Ã °¡»ó°èÁÂ ´ëÇà¼­ºñ½º Ãâ±İ °á°ú UPDATE ¼º°ø IDX=["+trxId+"]",this);
+			logger.info("íƒ€í–‰ì´ì²´ ë¶ˆëŠ¥ê´€ë ¨ ê°€ìƒê³„ì¢Œ ëŒ€í–‰ì„œë¹„ìŠ¤ ì¶œê¸ˆ ê²°ê³¼ UPDATE ì„±ê³µ IDX=["+trxId+"]",this);
 			return true;
 		}else{
-			logger.info("Å¸ÇàÀÌÃ¼ ºÒ´É°ü·Ã °¡»ó°èÁÂ ´ëÇà¼­ºñ½º Ãâ±İ °á°ú UPDATE ½ÇÆĞ IDX=["+trxId+"]",this);
+			logger.info("íƒ€í–‰ì´ì²´ ë¶ˆëŠ¥ê´€ë ¨ ê°€ìƒê³„ì¢Œ ëŒ€í–‰ì„œë¹„ìŠ¤ ì¶œê¸ˆ ê²°ê³¼ UPDATE ì‹¤íŒ¨ IDX=["+trxId+"]",this);
 			return false;
 		}
 	}
-	
+
 	/**
-	 * VA_PTN µ¥ÀÌÅÍ Á¶È¸
+	 * VA_PTN ë°ì´í„° ì¡°íšŒ
 	 * @param ptnId
 	 * @return
 	 */
 	public long getPtnWithdrawFee(String ptnId){
 		String query = "SELECT withdrawFee "
-					+"	  FROM VA_PTN "
-					+"   WHERE ptnId = ?";
-	
+				+"	  FROM VA_PTN "
+				+"   WHERE ptnId = ?";
+
 		DBManager db 			= null;
 		PreparedStatement pstmt	= null;
 		Connection conn			= null;
 		ResultSet rset			= null;
 		long netFee 			= 0;
-		
+
 		try{
 			db 		= DBFactory.getInstance();
 			conn	= db.getConnection();
 			pstmt	= conn.prepareStatement(query);
 			pstmt.setString(1,ptnId);
-			
+
 			rset 	= pstmt.executeQuery();
 
 			while(rset.next()){
@@ -780,12 +780,12 @@ private static Logger logger = LoggerFactory.getLogger( com.pgmate.firm.dao.Vact
 		}finally{
 			db.close(conn,pstmt,rset);
 		}
-		
+
 		return netFee;
 	}
-	
+
 	/**
-	 * VA_TRX_ERR¿¡ ÃÖÁ¾ ½ÇÆĞ °Ç Ãß°¡
+	 * VA_TRX_ERRì— ìµœì¢… ì‹¤íŒ¨ ê±´ ì¶”ê°€
 	 * @param trxMap
 	 * @return
 	 */
@@ -793,12 +793,12 @@ private static Logger logger = LoggerFactory.getLogger( com.pgmate.firm.dao.Vact
 		int result = 0;
 		String query = "INSERT INTO VA_TRX_ERR  (`trxId`,`id`,`ptnId`,`userId`,`trxType`,`trxUnit`,`trxDay`,`trxTime`,`amount`,`feeType`,`feeRate`,`fee`,`feeVat`,`ptnFeeRate`,`ptnFee`,`ptnFeeVat`,`bankFee`,`stlAmount`,`balance`,`trackId`,`refId`,`bankCd`,`account`,`holder`,`resultCd`,`resultMsg`,`regDay`) VALUES "
 				+" (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
-		
+
 		DBManager db 	= null;
 		PreparedStatement pstmt	= null;
 		Connection conn			= null;
 		ResultSet rset			= null;
-		
+
 		try{
 			db 		= DBFactory.getInstance();
 			conn	= db.getConnection();
@@ -830,7 +830,7 @@ private static Logger logger = LoggerFactory.getLogger( com.pgmate.firm.dao.Vact
 			pstmt.setString(25,trxMap.getString("resultCd"));
 			pstmt.setString(26,trxMap.getString("resultMsg"));
 			pstmt.setInt(27,trxMap.getInt("regDay"));
-			
+
 			result = pstmt.executeUpdate();
 			conn.commit();
 		}catch(Exception e){
@@ -839,16 +839,16 @@ private static Logger logger = LoggerFactory.getLogger( com.pgmate.firm.dao.Vact
 		}finally{
 			db.close(conn,pstmt,rset);
 		}
-		
+
 		if(result > 0) {
 			return true;
 		}else {
 			return false;
 		}
 	}
-	
+
 	/**
-	 * PG_CHARGE_SETTLE_ERR¿¡ ÃÖÁ¾ ½ÇÆĞ °Ç Ãß°¡
+	 * PG_CHARGE_SETTLE_ERRì— ìµœì¢… ì‹¤íŒ¨ ê±´ ì¶”ê°€
 	 * @param trxMap
 	 * @return
 	 */
@@ -856,7 +856,7 @@ private static Logger logger = LoggerFactory.getLogger( com.pgmate.firm.dao.Vact
 		int result = 0;
 		String query = "INSERT INTO PG_CHARGE_SETTLE_ERR  (`trxId`,`mchtId`,`trxType`,`trxUnit`,`trxDay`,`trxTime`,`amount`,`fee`,`feeVat`,`bankFee`,`netAmount`,`balance`,`trackId`,`refId`,`bankCd`,'bankName',`account`,`holder`,'recordInfo','summary',`resultCd`,`resultMsg`,'regId',`regDay`) VALUES "
 				+" (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
-		
+
 		DBManager db 	= null;
 		PreparedStatement pstmt	= null;
 		Connection conn			= null;
@@ -890,7 +890,7 @@ private static Logger logger = LoggerFactory.getLogger( com.pgmate.firm.dao.Vact
 			pstmt.setString(22,trxMap.getString("resultMsg"));
 			pstmt.setString(23,trxMap.getString("regId"));
 			pstmt.setInt(24,trxMap.getInt("regDay"));
-			
+
 			result = pstmt.executeUpdate();
 			conn.commit();
 		}catch(Exception e){
@@ -899,36 +899,36 @@ private static Logger logger = LoggerFactory.getLogger( com.pgmate.firm.dao.Vact
 		}finally{
 			db.close(conn,pstmt,rset);
 		}
-		
+
 		if(result > 0) {
 			return true;
 		}else {
 			return false;
 		}
 	}
-	
+
 	/**
-	 * Ãë¼Ò°ÇÀÇ ½ÇÃâ±İ¾× Á¶È¸
+	 * ì·¨ì†Œê±´ì˜ ì‹¤ì¶œê¸ˆì•¡ ì¡°íšŒ
 	 * @param trxId
 	 * @return
 	 */
 	public long getStlAmt(String trxId){
 		String query = "SELECT stlAmount "
-					+"	  FROM VA_TRX "
-					+"   WHERE trxId = ?";
-	
+				+"	  FROM VA_TRX "
+				+"   WHERE trxId = ?";
+
 		DBManager db 			= null;
 		PreparedStatement pstmt	= null;
 		Connection conn			= null;
 		ResultSet rset			= null;
 		long stlAmount 			= 0;
-		
+
 		try{
 			db 		= DBFactory.getInstance();
 			conn	= db.getConnection();
 			pstmt	= conn.prepareStatement(query);
 			pstmt.setString(1,trxId);
-			
+
 			rset 	= pstmt.executeQuery();
 
 			while(rset.next()){
@@ -940,12 +940,12 @@ private static Logger logger = LoggerFactory.getLogger( com.pgmate.firm.dao.Vact
 		}finally{
 			db.close(conn,pstmt,rset);
 		}
-		
+
 		return stlAmount;
 	}
-	
+
 	/**
-	 * Ãâ±İ ½ÇÆĞÇÑ °Å·¡ °ÇÀÇ Ãâ±İ¿¹Á¤¾×¸¸Å­ ÀÌÈÄ°Å·¡°Çµé ÀÜ¾× Ãß°¡ 
+	 * ì¶œê¸ˆ ì‹¤íŒ¨í•œ ê±°ë˜ ê±´ì˜ ì¶œê¸ˆì˜ˆì •ì•¡ë§Œí¼ ì´í›„ê±°ë˜ê±´ë“¤ ì”ì•¡ ì¶”ê°€
 	 * @param trxId
 	 * @param id
 	 * @param stlAmount
@@ -953,24 +953,24 @@ private static Logger logger = LoggerFactory.getLogger( com.pgmate.firm.dao.Vact
 	 */
 	public boolean updateVaBalance(String trxId, String id, long stlAmount){
 		String query = "UPDATE VA_TRX "
-					+ "    SET balance = balance + ? "
-					+ "  WHERE trxId in "
-					+ "  ("
-					+ "		SELECT trxId "
-					+ "   	  FROM VA_TRX"
-					+ "		  WHERE regDate > "
-					+ "			("
-					+ "		 		SELECT regDate "
-					+ "		   	  	  FROM VA_TRX " 
-					+ "		     	 WHERE trxId = ?"
-					+ "			) and id = ?"
-					+ "	 )";
-		
+				+ "    SET balance = balance + ? "
+				+ "  WHERE trxId in "
+				+ "  ("
+				+ "		SELECT trxId "
+				+ "   	  FROM VA_TRX"
+				+ "		  WHERE regDate > "
+				+ "			("
+				+ "		 		SELECT regDate "
+				+ "		   	  	  FROM VA_TRX "
+				+ "		     	 WHERE trxId = ?"
+				+ "			) and id = ?"
+				+ "	 )";
+
 		DBManager db 	= null;
 		PreparedStatement pstmt	= null;
 		Connection conn			= null;
 		int result = 0;
-		
+
 		try{
 			db 		= DBFactory.getInstance();
 			conn	= db.getConnection();
@@ -978,7 +978,7 @@ private static Logger logger = LoggerFactory.getLogger( com.pgmate.firm.dao.Vact
 			pstmt.setLong(1,stlAmount);
 			pstmt.setString(2,trxId);
 			pstmt.setString(3,id);
-			
+
 			result = pstmt.executeUpdate();
 			conn.commit();
 		}catch(Exception e){
@@ -989,26 +989,26 @@ private static Logger logger = LoggerFactory.getLogger( com.pgmate.firm.dao.Vact
 			db.close(conn);
 		}
 		if(result > 0){
-			logger.info("Å¸ÇàÀÌÃ¼ ºÒ´É°ü·Ã °¡»ó°èÁÂ ´ëÇà¼­ºñ½º ÀÜ¾×¿øº¹ UPDATE ¼º°ø IDX=["+trxId+"]",this);
+			logger.info("íƒ€í–‰ì´ì²´ ë¶ˆëŠ¥ê´€ë ¨ ê°€ìƒê³„ì¢Œ ëŒ€í–‰ì„œë¹„ìŠ¤ ì”ì•¡ì›ë³µ UPDATE ì„±ê³µ IDX=["+trxId+"]",this);
 			return true;
 		}else{
-			logger.info("Å¸ÇàÀÌÃ¼ ºÒ´É°ü·Ã °¡»ó°èÁÂ ´ëÇà¼­ºñ½º ÀÜ¾×¿øº¹ UPDATE ½ÇÆĞ IDX=["+trxId+"]",this);
+			logger.info("íƒ€í–‰ì´ì²´ ë¶ˆëŠ¥ê´€ë ¨ ê°€ìƒê³„ì¢Œ ëŒ€í–‰ì„œë¹„ìŠ¤ ì”ì•¡ì›ë³µ UPDATE ì‹¤íŒ¨ IDX=["+trxId+"]",this);
 			return false;
 		}
 	}
-	
+
 	/**
-	 * Ãâ±İ ½ÇÆĞÇÑ °Å·¡°Ç VA_TRXÅ×ÀÌºí µ¥ÀÌÅÍ »èÁ¦
+	 * ì¶œê¸ˆ ì‹¤íŒ¨í•œ ê±°ë˜ê±´ VA_TRXí…Œì´ë¸” ë°ì´í„° ì‚­ì œ
 	 * @param trxId
 	 */
 	public boolean deleteVaTrx(String trxId){
 		String query = " DELETE FROM VA_TRX WHERE trxId =?";
 		int result = 0;
-		
+
 		DBManager db 	= null;
 		PreparedStatement pstmt	= null;
 		Connection conn			= null;
-		
+
 		try{
 			db 		= DBFactory.getInstance();
 			conn	= db.getConnection();
@@ -1029,27 +1029,27 @@ private static Logger logger = LoggerFactory.getLogger( com.pgmate.firm.dao.Vact
 			return false;
 		}
 	}
-	
+
 	/**
-	 * ÇØ´ç °èÁÂ°¡ °¡»ó°èÁÂ ´ëÇà¼­ºñ½º °èÁÂÀÎÁö Á¶È¸ÇÑ´Ù.
+	 * í•´ë‹¹ ê³„ì¢Œê°€ ê°€ìƒê³„ì¢Œ ëŒ€í–‰ì„œë¹„ìŠ¤ ê³„ì¢Œì¸ì§€ ì¡°íšŒí•œë‹¤.
 	 * @param account
 	 * @return
 	 */
 	public boolean vactCheck(String account){
 		String query = "select * from VA_PTN_VACCNT where account = ?";
-		
+
 		DBManager db 			= null;
 		PreparedStatement pstmt	= null;
 		Connection conn			= null;
 		int result				=0;
-		
+
 		try{
 			db 		= DBFactory.getInstance();
 			conn	= db.getConnection();
 			pstmt	= conn.prepareStatement(query);
 			pstmt.setString(1, account);
 			result 	= pstmt.executeUpdate();
-			
+
 			conn.commit();
 		}catch(Exception e){
 			e.printStackTrace();
@@ -1064,22 +1064,22 @@ private static Logger logger = LoggerFactory.getLogger( com.pgmate.firm.dao.Vact
 			return false;
 		}
 	}
-	
+
 	/**
-	 * ÃæÀüÁ¤»ê Ãâ±İ °á°ú ¾÷µ¥ÀÌÆ®
-	 * @param trxId : °Å·¡¹øÈ£
+	 * ì¶©ì „ì •ì‚° ì¶œê¸ˆ ê²°ê³¼ ì—…ë°ì´íŠ¸
+	 * @param trxId : ê±°ë˜ë²ˆí˜¸
 	 * @return
 	 */
 	public boolean updateChargeSettleRes(String trxId, String errCd){
 		String query = "UPDATE PG_CHARGE_SETTLE_FIRM "
-					+ "    SET resultCd=?, resultMsg=(SELECT concat('Å¸ÇàºÒ´É:',message) from PG_FIRM_CODE where bankcd='ERR' and code=?), retry='3', status='½ÇÆĞ'"
-					+ "	 WHERE trxid = ?";
-		
+				+ "    SET resultCd=?, resultMsg=(SELECT concat('íƒ€í–‰ë¶ˆëŠ¥:',message) from PG_FIRM_CODE where bankcd='ERR' and code=?), retry='3', status='ì‹¤íŒ¨'"
+				+ "	 WHERE trxid = ?";
+
 		DBManager db 	= null;
 		PreparedStatement pstmt	= null;
 		Connection conn			= null;
 		int result		=0;
-		
+
 		try{
 			db 		= DBFactory.getInstance();
 			conn	= db.getConnection();
@@ -1098,23 +1098,23 @@ private static Logger logger = LoggerFactory.getLogger( com.pgmate.firm.dao.Vact
 			db.close(conn);
 		}
 		if(result > 0){
-			logger.info("Å¸ÇàÀÌÃ¼ ºÒ´É°ü·Ã ÃæÀüÁ¤»ê ¼­ºñ½º Ãâ±İ °á°ú UPDATE ¼º°ø IDX=["+trxId+"]",this);
+			logger.info("íƒ€í–‰ì´ì²´ ë¶ˆëŠ¥ê´€ë ¨ ì¶©ì „ì •ì‚° ì„œë¹„ìŠ¤ ì¶œê¸ˆ ê²°ê³¼ UPDATE ì„±ê³µ IDX=["+trxId+"]",this);
 			return true;
 		}else{
-			logger.info("Å¸ÇàÀÌÃ¼ ºÒ´É°ü·Ã ÃæÀüÁ¤»ê ¼­ºñ½º Ãâ±İ °á°ú UPDATE ½ÇÆĞ IDX=["+trxId+"]",this);
+			logger.info("íƒ€í–‰ì´ì²´ ë¶ˆëŠ¥ê´€ë ¨ ì¶©ì „ì •ì‚° ì„œë¹„ìŠ¤ ì¶œê¸ˆ ê²°ê³¼ UPDATE ì‹¤íŒ¨ IDX=["+trxId+"]",this);
 			return false;
 		}
 	}
-	
+
 	/**
-	 * ÃæÀüÁ¤»ê ¿ø°Å·¡ µ¥ÀÌÅÍ 
+	 * ì¶©ì „ì •ì‚° ì›ê±°ë˜ ë°ì´í„°
 	 * @return
 	 */
 	public ResultSet getChargeSettle(String trxId){
 		String query = "SELECT * "
-					+"	  FROM PG_CHARGE_SETTLE_FIRM "
-					+"   WHERE trxId = ?";
-		
+				+"	  FROM PG_CHARGE_SETTLE_FIRM "
+				+"   WHERE trxId = ?";
+
 		DBManager db 	= null;
 		PreparedStatement pstmt	= null;
 		Connection conn			= null;
@@ -1138,19 +1138,19 @@ private static Logger logger = LoggerFactory.getLogger( com.pgmate.firm.dao.Vact
 		}finally{
 			db.close(conn,pstmt,rset);
 		}
-		
+
 		return result;
 	}
-	
+
 	/**
-	 * ÃæÀüÁ¤»ê ¸ÁÃë¼Ò ¿ø°Å·¡ µ¥ÀÌÅÍ 
+	 * ì¶©ì „ì •ì‚° ë§ì·¨ì†Œ ì›ê±°ë˜ ë°ì´í„°
 	 * @return
 	 */
 	public ResultSet getCancelChargeSettle(String trxId){
 		String query = "SELECT * "
-					+"	  FROM PG_CHARGE_SETTLE "
-					+"   WHERE trxId = ?";
-		
+				+"	  FROM PG_CHARGE_SETTLE "
+				+"   WHERE trxId = ?";
+
 		DBManager db 	= null;
 		PreparedStatement pstmt	= null;
 		Connection conn			= null;
@@ -1174,12 +1174,12 @@ private static Logger logger = LoggerFactory.getLogger( com.pgmate.firm.dao.Vact
 		}finally{
 			db.close(conn,pstmt,rset);
 		}
-		
+
 		return result;
 	}
-	
+
 	/**
-	 * ÃæÀüÁ¤»ê Ãâ±İ ½ÇÆĞÇÑ °Å·¡ °ÇÀÇ Ãâ±İ¿¹Á¤¾×¸¸Å­ ÀÌÈÄ°Å·¡°Çµé ÀÜ¾× Ãß°¡ 
+	 * ì¶©ì „ì •ì‚° ì¶œê¸ˆ ì‹¤íŒ¨í•œ ê±°ë˜ ê±´ì˜ ì¶œê¸ˆì˜ˆì •ì•¡ë§Œí¼ ì´í›„ê±°ë˜ê±´ë“¤ ì”ì•¡ ì¶”ê°€
 	 * @param trxId
 	 * @param mchtId
 	 * @param netAmount
@@ -1187,24 +1187,24 @@ private static Logger logger = LoggerFactory.getLogger( com.pgmate.firm.dao.Vact
 	 */
 	public boolean updateChargeSettleBalance(String trxId, String mchtId, long netAmount){
 		String query = "UPDATE PG_CHARGE_SETTLE "
-					+ "    SET balance = balance + ? "
-					+ "  WHERE trxId in "
-					+ "  ("
-					+ "		SELECT trxId "
-					+ "   	  FROM PG_CHARGE_SETTLE"
-					+ "		  WHERE regDate > "
-					+ "			("
-					+ "		 		SELECT regDate "
-					+ "		   	  	  FROM PG_CHARGE_SETTLE " 
-					+ "		     	 WHERE trxId = ?"
-					+ "			) and mchtId = ?"
-					+ "	 )";
-		
+				+ "    SET balance = balance + ? "
+				+ "  WHERE trxId in "
+				+ "  ("
+				+ "		SELECT trxId "
+				+ "   	  FROM PG_CHARGE_SETTLE"
+				+ "		  WHERE regDate > "
+				+ "			("
+				+ "		 		SELECT regDate "
+				+ "		   	  	  FROM PG_CHARGE_SETTLE "
+				+ "		     	 WHERE trxId = ?"
+				+ "			) and mchtId = ?"
+				+ "	 )";
+
 		DBManager db 	= null;
 		PreparedStatement pstmt	= null;
 		Connection conn			= null;
 		int result = 0;
-		
+
 		try{
 			db 		= DBFactory.getInstance();
 			conn	= db.getConnection();
@@ -1212,7 +1212,7 @@ private static Logger logger = LoggerFactory.getLogger( com.pgmate.firm.dao.Vact
 			pstmt.setLong(1,netAmount);
 			pstmt.setString(2,trxId);
 			pstmt.setString(3,mchtId);
-			
+
 			result = pstmt.executeUpdate();
 			conn.commit();
 		}catch(Exception e){
@@ -1223,16 +1223,16 @@ private static Logger logger = LoggerFactory.getLogger( com.pgmate.firm.dao.Vact
 			db.close(conn);
 		}
 		if(result > 0){
-			logger.info("Å¸ÇàÀÌÃ¼ ºÒ´É°ü·Ã ÃæÀüÁ¤»ê ¼­ºñ½º ÀÜ¾×¿øº¹ UPDATE ¼º°ø IDX=["+trxId+"]",this);
+			logger.info("íƒ€í–‰ì´ì²´ ë¶ˆëŠ¥ê´€ë ¨ ì¶©ì „ì •ì‚° ì„œë¹„ìŠ¤ ì”ì•¡ì›ë³µ UPDATE ì„±ê³µ IDX=["+trxId+"]",this);
 			return true;
 		}else{
-			logger.info("Å¸ÇàÀÌÃ¼ ºÒ´É°ü·Ã ÃæÀüÁ¤»ê ¼­ºñ½º ÀÜ¾×¿øº¹ UPDATE ½ÇÆĞ IDX=["+trxId+"]",this);
+			logger.info("íƒ€í–‰ì´ì²´ ë¶ˆëŠ¥ê´€ë ¨ ì¶©ì „ì •ì‚° ì„œë¹„ìŠ¤ ì”ì•¡ì›ë³µ UPDATE ì‹¤íŒ¨ IDX=["+trxId+"]",this);
 			return false;
 		}
 	}
-	
+
 	/**
-	 * VA_TRX_ERR¿¡ ÃÖÁ¾ ½ÇÆĞ °Ç Ãß°¡
+	 * VA_TRX_ERRì— ìµœì¢… ì‹¤íŒ¨ ê±´ ì¶”ê°€
 	 * @param trxMap
 	 * @return
 	 */
@@ -1240,12 +1240,12 @@ private static Logger logger = LoggerFactory.getLogger( com.pgmate.firm.dao.Vact
 		int result = 0;
 		String query = "INSERT INTO VA_TRX_ERR  (`trxId`,`id`,`ptnId`,`userId`,`trxType`,`trxUnit`,`trxDay`,`trxTime`,`amount`,`feeType`,`feeRate`,`fee`,`feeVat`,`ptnFeeRate`,`ptnFee`,`ptnFeeVat`,`bankFee`,`stlAmount`,`balance`,`trackId`,`refId`,`bankCd`,`account`,`holder`,`resultCd`,`resultMsg`,`regDay`) VALUES "
 				+" (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
-		
+
 		DBManager db 	= null;
 		PreparedStatement pstmt	= null;
 		Connection conn			= null;
 		ResultSet rset			= null;
-		
+
 		try{
 			db 		= DBFactory.getInstance();
 			conn	= db.getConnection();
@@ -1277,7 +1277,7 @@ private static Logger logger = LoggerFactory.getLogger( com.pgmate.firm.dao.Vact
 			pstmt.setString(25,trxMap.getString("resultCd"));
 			pstmt.setString(26,trxMap.getString("resultMsg"));
 			pstmt.setString(27,trxMap.getString("regDay"));
-			
+
 			result = pstmt.executeUpdate();
 			conn.commit();
 		}catch(Exception e){
@@ -1286,26 +1286,26 @@ private static Logger logger = LoggerFactory.getLogger( com.pgmate.firm.dao.Vact
 		}finally{
 			db.close(conn,pstmt,rset);
 		}
-		
+
 		if(result > 0) {
 			return true;
 		}else {
 			return false;
 		}
 	}
-	
+
 	/**
-	 * Ãâ±İ ½ÇÆĞÇÑ °Å·¡°Ç PG_CHARGE_SETTLE Å×ÀÌºí µ¥ÀÌÅÍ »èÁ¦
+	 * ì¶œê¸ˆ ì‹¤íŒ¨í•œ ê±°ë˜ê±´ PG_CHARGE_SETTLE í…Œì´ë¸” ë°ì´í„° ì‚­ì œ
 	 * @param trxId
 	 */
 	public boolean deleteChargeSettle(String trxId){
 		String query = " DELETE FROM PG_CHARGE_SETTLE WHERE trxId =?";
 		int result = 0;
-		
+
 		DBManager db 	= null;
 		PreparedStatement pstmt	= null;
 		Connection conn			= null;
-		
+
 		try{
 			db 		= DBFactory.getInstance();
 			conn	= db.getConnection();
@@ -1326,29 +1326,29 @@ private static Logger logger = LoggerFactory.getLogger( com.pgmate.firm.dao.Vact
 			return false;
 		}
 	}
-	
+
 	/**
-	 * ÃæÀüÁ¤»ê hookAddr Á¶È¸
+	 * ì¶©ì „ì •ì‚° hookAddr ì¡°íšŒ
 	 * @param trxId
 	 * @return
 	 */
 	public String getchargeSettleHookAddr(String mchtId){
 		String query = "SELECT hookAddr "
-					+"	  FROM PG_MCHT_CHARGE_MNG "
-					+"   WHERE mchtId = ?";
-	
+				+"	  FROM PG_MCHT_CHARGE_MNG "
+				+"   WHERE mchtId = ?";
+
 		DBManager db 			= null;
 		PreparedStatement pstmt	= null;
 		Connection conn			= null;
 		ResultSet rset			= null;
 		String hookAddr 		= "";
-		
+
 		try{
 			db 		= DBFactory.getInstance();
 			conn	= db.getConnection();
 			pstmt	= conn.prepareStatement(query);
 			pstmt.setString(1,mchtId);
-			
+
 			rset 	= pstmt.executeQuery();
 
 			while(rset.next()){
@@ -1360,18 +1360,18 @@ private static Logger logger = LoggerFactory.getLogger( com.pgmate.firm.dao.Vact
 		}finally{
 			db.close(conn,pstmt,rset);
 		}
-		
+
 		return hookAddr;
 	}
-	
+
 	public boolean insertChargeSettleNoti(SharedMap<String, Object> ntsMap) {
 		int result = 0;
-		String query = "INSERT INTO `PG_CHARGE_SETTLE_NOTI` (`trxId`, `trxType`, `mchtId`, `trackId`, `hookAddr`, `retry`, `status`, `code`, `payLoad`, `resData`, `sentDate`, `regDay`, `regTime`) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);"; 
+		String query = "INSERT INTO `PG_CHARGE_SETTLE_NOTI` (`trxId`, `trxType`, `mchtId`, `trackId`, `hookAddr`, `retry`, `status`, `code`, `payLoad`, `resData`, `sentDate`, `regDay`, `regTime`) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);";
 		DBManager db 	= null;
 		PreparedStatement pstmt	= null;
 		Connection conn			= null;
 		ResultSet rset			= null;
-		
+
 		try{
 			db 		= DBFactory.getInstance();
 			conn	= db.getConnection();
@@ -1389,7 +1389,7 @@ private static Logger logger = LoggerFactory.getLogger( com.pgmate.firm.dao.Vact
 			pstmt.setTimestamp(11,ntsMap.getTimestamp("sentDate"));
 			pstmt.setString(12,ntsMap.getString("regDay"));
 			pstmt.setString(13,ntsMap.getString("regTime"));
-			
+
 			result = pstmt.executeUpdate();
 			conn.commit();
 		}catch(Exception e){
@@ -1398,36 +1398,36 @@ private static Logger logger = LoggerFactory.getLogger( com.pgmate.firm.dao.Vact
 		}finally{
 			db.close(conn,pstmt,rset);
 		}
-		
+
 		if(result > 0) {
 			return true;
 		}else {
 			return false;
-		}	 
+		}
 	}
-	
+
 	/**
-	 * °¡»ó°èÁÂ ´ëÇà¼­ºñ½º »ç¿ëÀÚ ¾ÆÀÌµğ Á¶È¸
+	 * ê°€ìƒê³„ì¢Œ ëŒ€í–‰ì„œë¹„ìŠ¤ ì‚¬ìš©ì ì•„ì´ë”” ì¡°íšŒ
 	 * @param trxId
 	 * @return
 	 */
 	public String getVaUserId(String accont){
 		String query = "SELECT id "
-					+"	  FROM VA_USER_VACCNT "
-					+"   WHERE account = ?";
-	
+				+"	  FROM VA_USER_VACCNT "
+				+"   WHERE account = ?";
+
 		DBManager db 			= null;
 		PreparedStatement pstmt	= null;
 		Connection conn			= null;
 		ResultSet rset			= null;
 		String id 				= "";
-		
+
 		try{
 			db 		= DBFactory.getInstance();
 			conn	= db.getConnection();
 			pstmt	= conn.prepareStatement(query);
 			pstmt.setString(1,accont);
-			
+
 			rset 	= pstmt.executeQuery();
 
 			while(rset.next()){
@@ -1439,25 +1439,25 @@ private static Logger logger = LoggerFactory.getLogger( com.pgmate.firm.dao.Vact
 		}finally{
 			db.close(conn,pstmt,rset);
 		}
-		
+
 		return id;
 	}
-	
+
 	/**
-	 * °¡»ó°èÁÂ ´ëÇà¼­ºñ½ºÀÇ ÀÔ±İ ÃÖ¼Ò,ÃÖ´ë±İ¾× Á¶È¸
+	 * ê°€ìƒê³„ì¢Œ ëŒ€í–‰ì„œë¹„ìŠ¤ì˜ ì…ê¸ˆ ìµœì†Œ,ìµœëŒ€ê¸ˆì•¡ ì¡°íšŒ
 	 * @param id
 	 * @return
 	 */
 	public SharedMap<String,Object> getDepositLimit(String id){
 		SharedMap<String,Object> result = null;
-		
+
 		String query = "SELECT depositMinAmt,depositMaxAmt FROM VA_USER WHERE id =? ";
-		
+
 		DBManager db 	= null;
 		PreparedStatement pstmt	= null;
 		Connection conn			= null;
 		ResultSet rset			= null;
-		
+
 		try{
 			db 		= DBFactory.getInstance();
 			conn	= db.getConnection();
@@ -1477,34 +1477,34 @@ private static Logger logger = LoggerFactory.getLogger( com.pgmate.firm.dao.Vact
 		}finally{
 			db.close(conn,pstmt,rset);
 		}
-		
+
 		return result;
 	}
-	
+
 	/**
-	 * °¡»ó°èÁÂ ´ëÇà¼­ºñ½º 3ºĞÀÌ³» ÀÔ±İ °Å·¡°Ç Á¶È¸
-	 * @param trxDay : ¾îÀú²¾ °Å·¡ÀÏÀÚ
-	 * @param id : °èÁ¤¾ÆÀÌµğ
+	 * ê°€ìƒê³„ì¢Œ ëŒ€í–‰ì„œë¹„ìŠ¤ 3ë¶„ì´ë‚´ ì…ê¸ˆ ê±°ë˜ê±´ ì¡°íšŒ
+	 * @param trxDay : ì–´ì €ê¼ ê±°ë˜ì¼ì
+	 * @param id : ê³„ì •ì•„ì´ë””
 	 * @return
 	 */
 	public int getDuplicateTrans(String trxDay, String id){
 		String query = "SELECT COUNT(1) AS cnt"
-					+"	  FROM VA_TRX "
-					+"	 WHERE trxDay >= ? AND trxType = 'ÀÔ±İ' AND id = ? AND  regDate > DATE_ADD(NOW(), INTERVAL -3 MINUTE)";
-	
+				+"	  FROM VA_TRX "
+				+"	 WHERE trxDay >= ? AND trxType = 'ì…ê¸ˆ' AND id = ? AND  regDate > DATE_ADD(NOW(), INTERVAL -3 MINUTE)";
+
 		DBManager db 			= null;
 		PreparedStatement pstmt	= null;
 		Connection conn			= null;
 		ResultSet rset			= null;
 		int cnt 				= 0;
-		
+
 		try{
 			db 		= DBFactory.getInstance();
 			conn	= db.getConnection();
 			pstmt	= conn.prepareStatement(query);
 			pstmt.setString(1,trxDay);
 			pstmt.setString(2,id);
-			
+
 			rset 	= pstmt.executeQuery();
 
 			while(rset.next()){
@@ -1516,12 +1516,12 @@ private static Logger logger = LoggerFactory.getLogger( com.pgmate.firm.dao.Vact
 		}finally{
 			db.close(conn,pstmt,rset);
 		}
-		
+
 		return cnt;
 	}
-	
+
 	/**
-	 * ÇØ´ç °¡»ó°èÁÂ °¡¸ÍÁ¡ÀÇ Á¤»ê±¸ºĞ Á¶È¸
+	 * í•´ë‹¹ ê°€ìƒê³„ì¢Œ ê°€ë§¹ì ì˜ ì •ì‚°êµ¬ë¶„ ì¡°íšŒ
 	 * @param mchtId
 	 * @return
 	 */
@@ -1529,23 +1529,23 @@ private static Logger logger = LoggerFactory.getLogger( com.pgmate.firm.dao.Vact
 		String q = "SELECT settle FROM PG_MCHT_SVC WHERE mchtId = '"+mchtId+"'";
 		return getQuery(q);
 	}
-	
+
 	/**
-	 * ½Ç½Ã°£ Á¤»ê ½ÂÀÎ°Å·¡ ¿øÀå (PG_TRX_REALTIME_PAY) Å×ÀÌºí ÀúÀå
+	 * ì‹¤ì‹œê°„ ì •ì‚° ìŠ¹ì¸ê±°ë˜ ì›ì¥ (PG_TRX_REALTIME_PAY) í…Œì´ë¸” ì €ì¥
 	 * @param sharedMap
 	 * @param response
 	 */
 	public boolean insertTrxRealTimePay(SharedMap<String, Object> trxPayMap, SharedMap<String,Object> mchtMngMap) {
 		int result = 0;
 		String curDate = CommonUtil.getCurrentDate("yyyyMMddHHmmss");
-		
+
 		String query = "INSERT INTO `PG_TRX_REALTIME_PAY` (`trxId`, `mchtId`, `tmnId`, `trackId`, `amount`, `authCd`, `trxType`, `payType`, `trxDay`, `trxTime`, `resultCd`, `resultMsg`, `van`, `vanId`, `vanTrxId`, `sendYn`, `transferInterval`) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);";
 
 		DBManager db 	= null;
 		PreparedStatement pstmt	= null;
 		Connection conn			= null;
 		ResultSet rset			= null;
-		
+
 		try{
 			db 		= DBFactory.getInstance();
 			conn	= db.getConnection();
@@ -1556,8 +1556,8 @@ private static Logger logger = LoggerFactory.getLogger( com.pgmate.firm.dao.Vact
 			pstmt.setString(4,trxPayMap.getString("trackId"));
 			pstmt.setLong(5,trxPayMap.getLong("amount"));
 			pstmt.setString(6,"");
-			
-			if("ÀÔ±İ".equals(trxPayMap.getString("trxType"))) {
+
+			if("ì…ê¸ˆ".equals(trxPayMap.getString("trxType"))) {
 				pstmt.setString(7,"0");
 			}else {
 				pstmt.setString(7,"1");
@@ -1581,40 +1581,40 @@ private static Logger logger = LoggerFactory.getLogger( com.pgmate.firm.dao.Vact
 		}finally{
 			db.close(conn,pstmt,rset);
 		}
-		
+
 		if(result > 0) {
 			return true;
 		}else {
 			return false;
-		}	 
+		}
 	}
-	
+
 	/**
-	 * ÀÔ±İÃë¼Ò ½Ã ÇØ´ç Ãë¼ÒÀÇ ¿ø°Å·¡°ÇÀÌ ½Ç½Ã°£ Á¤»ê °Å·¡°Ç ÀÎÁö È®ÀÎ
+	 * ì…ê¸ˆì·¨ì†Œ ì‹œ í•´ë‹¹ ì·¨ì†Œì˜ ì›ê±°ë˜ê±´ì´ ì‹¤ì‹œê°„ ì •ì‚° ê±°ë˜ê±´ ì¸ì§€ í™•ì¸
 	 * @param vactId
 	 * @return
 	 */
 	public SharedMap<String,Object> getRealtimeTrx(String vactId){
 		SharedMap<String,Object> result = null;
-		
+
 		String query = " SELECT * FROM PG_TRX_REALTIME_PAY WHERE trxId =? ";
-		
+
 		DBManager db 	= null;
 		PreparedStatement pstmt	= null;
 		Connection conn			= null;
 		ResultSet rset			= null;
-		
+
 		try{
 			db 		= DBFactory.getInstance();
 			conn	= db.getConnection();
 			pstmt	= conn.prepareStatement(query);
 			pstmt.setString(1,vactId);
-			
+
 			rset 	= pstmt.executeQuery();
 
 			while(rset.next()){
 				result = new SharedMap<String,Object>();
-				
+
 				result.put("trxId",rset.getString("trxId"));
 				result.put("mchtId",rset.getString("mchtId"));
 				result.put("tmnId",rset.getString("tmnId"));
@@ -1639,32 +1639,32 @@ private static Logger logger = LoggerFactory.getLogger( com.pgmate.firm.dao.Vact
 		}finally{
 			db.close(conn,pstmt,rset);
 		}
-		
+
 		return result;
 	}
-	
+
 	/**
-	 * ½Ç½Ã°£ Á¤»ê ½ÂÀÎ°Å·¡ ¿øÀå (PG_TRX_REALTIME_PAY) Å×ÀÌºí Àü¼Û¿©ºÎ¿Í Àü¼ÛÀÏ½Ã ¾÷µ¥ÀÌÆ® 
-	 * ¿øÀå Ãâ±İÀü¿¡ Ãë¼Ò°¡ µé¾î¿ÔÀ» ½Ã Ãâ±İÀÌ ¾ÈµÇµµ·Ï ¾÷µ¥ÀÌÆ®
-	 * @param trxId : °Å·¡¹øÈ£
+	 * ì‹¤ì‹œê°„ ì •ì‚° ìŠ¹ì¸ê±°ë˜ ì›ì¥ (PG_TRX_REALTIME_PAY) í…Œì´ë¸” ì „ì†¡ì—¬ë¶€ì™€ ì „ì†¡ì¼ì‹œ ì—…ë°ì´íŠ¸
+	 * ì›ì¥ ì¶œê¸ˆì „ì— ì·¨ì†Œê°€ ë“¤ì–´ì™”ì„ ì‹œ ì¶œê¸ˆì´ ì•ˆë˜ë„ë¡ ì—…ë°ì´íŠ¸
+	 * @param trxId : ê±°ë˜ë²ˆí˜¸
 	 * @return
 	 */
 	public int updateRealtimeSendCheck(String trxId){
 		String query = "UPDATE PG_TRX_REALTIME_PAY "
-					+ "    SET sendYn='Y', sendDate = NOW() "
-					+ "	 WHERE trxid = ?";
-		
+				+ "    SET sendYn='Y', sendDate = NOW() "
+				+ "	 WHERE trxid = ?";
+
 		DBManager db 	= null;
 		PreparedStatement pstmt	= null;
 		Connection conn			= null;
 		int result = 0;
-		
+
 		try{
 			db 		= DBFactory.getInstance();
 			conn	= db.getConnection();
 			pstmt	= conn.prepareStatement(query);
 			pstmt.setString(1,trxId);
-			
+
 			result = pstmt.executeUpdate();
 			conn.commit();
 		}catch(Exception e){
@@ -1674,25 +1674,25 @@ private static Logger logger = LoggerFactory.getLogger( com.pgmate.firm.dao.Vact
 			db.close(pstmt);
 			db.close(conn);
 		}
-		
+
 		return result;
 	}
-	
+
 	/**
-	 * ½Ç½Ã°£ Á¤»ê ½ÂÀÎ°Å·¡ ¿øÀå (PG_REALTIME_PAYOUT) Å×ÀÌºí ÀúÀå
+	 * ì‹¤ì‹œê°„ ì •ì‚° ìŠ¹ì¸ê±°ë˜ ì›ì¥ (PG_REALTIME_PAYOUT) í…Œì´ë¸” ì €ì¥
 	 * @param sharedMap
 	 * @param response
 	 */
 	public boolean insertPgRealtimePayout(SharedMap<String, Object> payOutData) {
 		int result = 0;
-		
+
 		String query = "INSERT INTO `PG_REALTIME_PAYOUT` (`trxId`, `mchtId`, `tmnId`, `trackId`, `trxDay`, `trxTime`, `authCd`, `trxType`, `payType`, `amount`, `stlFee`, `stlFeeVat`, `stlAmount`, `payOutFee`, `payOutFeeVat`, `payOutAmount`, `bankCd`, `bankName`, `account`, `accntHolder`, `payOutDay`, `payOutTime`, `resultCd`, `resultMsg`, `sendCnt`, `sendCheck`) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);";
 
 		DBManager db 			= null;
 		PreparedStatement pstmt	= null;
 		Connection conn			= null;
 		ResultSet rset			= null;
-		
+
 		try{
 			db 		= DBFactory.getInstance();
 			conn	= db.getConnection();
@@ -1732,32 +1732,32 @@ private static Logger logger = LoggerFactory.getLogger( com.pgmate.firm.dao.Vact
 		}finally{
 			db.close(conn,pstmt,rset);
 		}
-		
+
 		if(result > 0) {
 			return true;
 		}else {
 			return false;
-		}	 
+		}
 	}
-	
+
 	/**
-	 * µ¥ÀÌÅÍ ¾ÏÈ£È­
+	 * ë°ì´í„° ì•”í˜¸í™”
 	 */
 	public String getAESEnc(String value){
 		String query 			= "SELECT FN_AES_ENC(?) pw";
-		
+
 		DBManager db 			= null;
 		PreparedStatement pstmt	= null;
 		Connection conn			= null;
 		ResultSet rset			= null;
 		String pw 				= "";
-		
+
 		try{
 			db 		= DBFactory.getInstance();
 			conn	= db.getConnection();
 			pstmt	= conn.prepareStatement(query);
 			pstmt.setString(1,value);
-			
+
 			rset 	= pstmt.executeQuery();
 
 			while(rset.next()){
@@ -1769,31 +1769,31 @@ private static Logger logger = LoggerFactory.getLogger( com.pgmate.firm.dao.Vact
 		}finally{
 			db.close(conn,pstmt,rset);
 		}
-		
+
 		return pw;
 	}
-	
+
 	/**
-	 * °¡¸ÍÁ¡ TAX Á¤º¸Á¶È¸
+	 * ê°€ë§¹ì  TAX ì •ë³´ì¡°íšŒ
 	 * @param mchtId
 	 * @return
 	 */
 	public SharedMap<String,Object> getMchtTaxByMchtId(String mchtId){
 		SharedMap<String,Object> result = null;
-		
+
 		String query = " SELECT * FROM PG_MCHT_TAX WHERE mchtId =?";
-		
+
 		DBManager db 	= null;
 		PreparedStatement pstmt	= null;
 		Connection conn			= null;
 		ResultSet rset			= null;
-		
+
 		try{
 			db 		= DBFactory.getInstance();
 			conn	= db.getConnection();
 			pstmt	= conn.prepareStatement(query);
 			pstmt.setString(1,mchtId);
-			
+
 			rset 	= pstmt.executeQuery();
 
 			while(rset.next()){
@@ -1809,12 +1809,12 @@ private static Logger logger = LoggerFactory.getLogger( com.pgmate.firm.dao.Vact
 		}finally{
 			db.close(conn,pstmt,rset);
 		}
-		
+
 		return result;
 	}
-	
+
 	/**
-	 * °¡»ó°èÁÂ ´ëÇà¼­ºñ½º ÆÄÆ®³Ê ÀÏÇÑµµ±İ¾× Á¶È¸
+	 * ê°€ìƒê³„ì¢Œ ëŒ€í–‰ì„œë¹„ìŠ¤ íŒŒíŠ¸ë„ˆ ì¼í•œë„ê¸ˆì•¡ ì¡°íšŒ
 	 * @param accont
 	 * @return
 	 */
@@ -1827,17 +1827,17 @@ private static Logger logger = LoggerFactory.getLogger( com.pgmate.firm.dao.Vact
 		PreparedStatement pstmt			= null;
 		Connection conn					= null;
 		ResultSet rset					= null;
-		
+
 		SharedMap<String,Object> result = null;
-		
+
 		try{
 			db 		= DBFactory.getInstance();
 			conn	= db.getConnection();
 			pstmt	= conn.prepareStatement(query);
 			pstmt.setString(1,accont);
-			
+
 			rset 	= pstmt.executeQuery();
-	
+
 			while(rset.next()){
 				result = new SharedMap<String,Object>();
 				result.put("ptnId",rset.getString("ptnId"));
@@ -1850,22 +1850,22 @@ private static Logger logger = LoggerFactory.getLogger( com.pgmate.firm.dao.Vact
 		}finally{
 			db.close(conn,pstmt,rset);
 		}
-		
+
 		return result;
 	}
-	
+
 	/**
-	 * °¡»ó°èÁÂ ´ëÇà¼­ºñ½º °èÁ¤ ÀÏÀÔ±İ ÇÕ°è±İ¾× Á¶È¸
+	 * ê°€ìƒê³„ì¢Œ ëŒ€í–‰ì„œë¹„ìŠ¤ ê³„ì • ì¼ì…ê¸ˆ í•©ê³„ê¸ˆì•¡ ì¡°íšŒ
 	 * @param ptnId
 	 * @return
 	 */
 	public long getPtnDaySumAmt(String ptnId){
 		long sumAmt = 0;
-		
+
 		String query = "SELECT IFNULL(SUM(amount) , 0) AS amount"
-					 + "  FROM VA_TRX  "
-					 + " WHERE ptnId = ? AND trxType = 'ÀÔ±İ' AND trxDay = date_format(NOW(),'%Y%m%d')";
-	
+				+ "  FROM VA_TRX  "
+				+ " WHERE ptnId = ? AND trxType = 'ì…ê¸ˆ' AND trxDay = date_format(NOW(),'%Y%m%d')";
+
 		DBManager db 			= null;
 		PreparedStatement pstmt	= null;
 		Connection conn			= null;
@@ -1876,7 +1876,7 @@ private static Logger logger = LoggerFactory.getLogger( com.pgmate.firm.dao.Vact
 			conn	= db.getConnection();
 			pstmt	= conn.prepareStatement(query);
 			pstmt.setString(1,ptnId);
-			
+
 			rset 	= pstmt.executeQuery();
 
 			while(rset.next()){
@@ -1888,53 +1888,53 @@ private static Logger logger = LoggerFactory.getLogger( com.pgmate.firm.dao.Vact
 		}finally{
 			db.close(conn,pstmt,rset);
 		}
-		
+
 		return sumAmt;
 	}
-	
+
 	/**
-	 * °¡¸ÍÁ¡ ÃæÀüÁ¤»ê °Å·¡³»¿ª (PG_CHARGE_SETTLE) Å×ÀÌºí ÀúÀå
+	 * ê°€ë§¹ì  ì¶©ì „ì •ì‚° ê±°ë˜ë‚´ì—­ (PG_CHARGE_SETTLE) í…Œì´ë¸” ì €ì¥
 	 * @param sharedMap
 	 * @param response
 	 */
 	public boolean insertChargeSettle(SharedMap<String, Object> trxPayMap, SharedMap<String,Object> mchtMngMap, Long bankFee) {
 		String query = "insert into PG_CHARGE_SETTLE (trxId, mchtId, trxType, trxUnit, trxDay, trxTime, amount, fee, feeVat, bankFee, netAmount, balance, trackId, refId, bankCd, bankName, account, holder, recordInfo, summary, regId, regDay)  values (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
-		
+
 		DBManager db 			= null;
 		PreparedStatement pstmt	= null;
 		Connection conn			= null;
 		ResultSet rset			= null;
-		
+
 		int result 				= 0;
 		long balance			= 0;
 		long netAmount			= 0;
-		
+
 		String curDate 			= CommonUtil.getCurrentDate("yyyyMMddHHmmss");
 		String type 			= "";
 		String refId 			= "";
-		
+
 		try{
 			db 		= DBFactory.getInstance();
 			conn	= db.getConnection();
 			pstmt	= conn.prepareStatement(query);
-			
+
 			pstmt.setString(1	, trxPayMap.getString("vactId"));
 			pstmt.setString(2	, trxPayMap.getString("mchtId"));
-			
-			if("ÀÔ±İ".equals(trxPayMap.getString("trxType"))) {
-				type = "ÀÔ±İ";
+
+			if("ì…ê¸ˆ".equals(trxPayMap.getString("trxType"))) {
+				type = "ì…ê¸ˆ";
 				netAmount = trxPayMap.getLong("amount") - trxPayMap.getLong("stlFee") - trxPayMap.getLong("stlFeeVat");
 				balance = getMchtBalance(trxPayMap.getString("mchtId")) + netAmount;
 				refId = trxPayMap.getString("vactId");
-			}else if("Ãë¼Ò".equals(trxPayMap.getString("trxType"))) {
-				type = "Ãâ±İ";
+			}else if("ì·¨ì†Œ".equals(trxPayMap.getString("trxType"))) {
+				type = "ì¶œê¸ˆ";
 				netAmount = trxPayMap.getLong("amount") - trxPayMap.getLong("stlFee") - trxPayMap.getLong("stlFeeVat");
 				balance = getMchtBalance(trxPayMap.getString("mchtId")) - netAmount;
 				refId = trxPayMap.getString("rootVactId");
 			}
-			
+
 			pstmt.setString(3	, type);
-			pstmt.setString(4	, "°¡»ó°èÁÂÁ¤»ê");
+			pstmt.setString(4	, "ê°€ìƒê³„ì¢Œì •ì‚°");
 			pstmt.setString(5	, curDate.substring(0, 8));
 			pstmt.setString(6	, curDate.substring(8));
 			pstmt.setLong(7  	, trxPayMap.getLong("amount"));
@@ -1950,7 +1950,7 @@ private static Logger logger = LoggerFactory.getLogger( com.pgmate.firm.dao.Vact
 			pstmt.setString(17	, "");
 			pstmt.setString(18	, "");
 			pstmt.setString(19	, "");
-			pstmt.setString(20	, "°¡»ó°èÁÂ ½Ç½Ã°£ÃæÀü Á¤»ê±İ Áö±İ");
+			pstmt.setString(20	, "ê°€ìƒê³„ì¢Œ ì‹¤ì‹œê°„ì¶©ì „ ì •ì‚°ê¸ˆ ì§€ê¸ˆ");
 			pstmt.setString(21	, trxPayMap.getString("mchtId"));
 			pstmt.setString(22	, curDate.substring(0, 8));
 
@@ -1962,36 +1962,36 @@ private static Logger logger = LoggerFactory.getLogger( com.pgmate.firm.dao.Vact
 		}finally{
 			db.close(conn,pstmt,rset);
 		}
-		
+
 		if(result > 0) {
 			return true;
 		}else {
 			return false;
-		}	 
+		}
 	}
-	
+
 	/**
-	 * ÃæÀüÁ¤»ê ÀÜ¾×Á¶È¸
+	 * ì¶©ì „ì •ì‚° ì”ì•¡ì¡°íšŒ
 	 * @param mchtId
 	 * @return
 	 */
 	public long getMchtBalance(String mchtId){
 		String query = "SELECT balance"
-					+"	  FROM PG_MCHT_BALANCE "
-					+"	 WHERE mchtId = ?";
-	
+				+"	  FROM PG_MCHT_BALANCE "
+				+"	 WHERE mchtId = ?";
+
 		DBManager db 			= null;
 		PreparedStatement pstmt	= null;
 		Connection conn			= null;
 		ResultSet rset			= null;
 		long balance 			= 0;
-		
+
 		try{
 			db 		= DBFactory.getInstance();
 			conn	= db.getConnection();
 			pstmt	= conn.prepareStatement(query);
 			pstmt.setString(1,mchtId);
-			
+
 			rset 	= pstmt.executeQuery();
 
 			while(rset.next()){
@@ -2003,30 +2003,30 @@ private static Logger logger = LoggerFactory.getLogger( com.pgmate.firm.dao.Vact
 		}finally{
 			db.close(conn,pstmt,rset);
 		}
-		
+
 		return balance;
 	}
-	
+
 	/**
-	 * ÇØ´çÀÏÀÚ°¡ ÈŞÀÏÀÎÁö Ã¼Å©
+	 * í•´ë‹¹ì¼ìê°€ íœ´ì¼ì¸ì§€ ì²´í¬
 	 * @param today
 	 * @return
 	 */
-	public String getHolidayCheck(String today) {	
+	public String getHolidayCheck(String today) {
 		String query 			= "SELECT status FROM PG_CODE_HOLIDAY WHERE days = ?";
-		
+
 		DBManager db 			= null;
 		PreparedStatement pstmt	= null;
 		Connection conn			= null;
 		ResultSet rset			= null;
 		String status 			= "";
-		
+
 		try{
 			db 		= DBFactory.getInstance();
 			conn	= db.getConnection();
 			pstmt	= conn.prepareStatement(query);
 			pstmt.setString(1,today);
-			
+
 			rset 	= pstmt.executeQuery();
 
 			while(rset.next()){
@@ -2038,22 +2038,22 @@ private static Logger logger = LoggerFactory.getLogger( com.pgmate.firm.dao.Vact
 		}finally{
 			db.close(conn,pstmt,rset);
 		}
-		
-		return status;	
+
+		return status;
 	}
-	
+
 	/**
-	 * °¡»ó°èÁÂ 1ÀÏÇÑµµ, 1È¸ÇÑµµ µ¥ÀÌÅÍ Á¶È¸
+	 * ê°€ìƒê³„ì¢Œ 1ì¼í•œë„, 1íšŒí•œë„ ë°ì´í„° ì¡°íšŒ
 	 * @param accont
 	 * @return
 	 */
 	public SharedMap<String,Object> getVactLimitData(String account){
 		SharedMap<String,Object> result = null;
-		
+
 		String query = "SELECT b.mchtId,b.limitOnce, b.limitDay"
-					 + "  FROM PG_VACT_DTL a, PG_MCHT_MNG_VACT b "
-					 + " WHERE a.mchtId = b.mchtId AND a.account = ?";
-	
+				+ "  FROM PG_VACT_DTL a, PG_MCHT_MNG_VACT b "
+				+ " WHERE a.mchtId = b.mchtId AND a.account = ?";
+
 		DBManager db 			= null;
 		PreparedStatement pstmt	= null;
 		Connection conn			= null;
@@ -2064,7 +2064,7 @@ private static Logger logger = LoggerFactory.getLogger( com.pgmate.firm.dao.Vact
 			conn	= db.getConnection();
 			pstmt	= conn.prepareStatement(query);
 			pstmt.setString(1,account);
-			
+
 			rset 	= pstmt.executeQuery();
 
 			while(rset.next()){
@@ -2079,22 +2079,22 @@ private static Logger logger = LoggerFactory.getLogger( com.pgmate.firm.dao.Vact
 		}finally{
 			db.close(conn,pstmt,rset);
 		}
-		
+
 		return result;
 	}
-	
+
 	/**
-	 * °¡»ó°èÁÂ 1ÀÏÇÕ°è Á¶È¸
+	 * ê°€ìƒê³„ì¢Œ 1ì¼í•©ê³„ ì¡°íšŒ
 	 * @param trxDay
 	 * @return
 	 */
 	public long getVactDaySum(String trxDay, String mchtId){
 		long sumAmt = 0;
-		
+
 		String query = "SELECT SUM(amount) as sumAmt"
-					 + "  FROM PG_VACT_TRX "
-					 + " WHERE trxDay = ? and trxType = 'ÀÔ±İ' AND mchtId = ?";
-	
+				+ "  FROM PG_VACT_TRX "
+				+ " WHERE trxDay = ? and trxType = 'ì…ê¸ˆ' AND mchtId = ?";
+
 		DBManager db 			= null;
 		PreparedStatement pstmt	= null;
 		Connection conn			= null;
@@ -2106,7 +2106,7 @@ private static Logger logger = LoggerFactory.getLogger( com.pgmate.firm.dao.Vact
 			pstmt	= conn.prepareStatement(query);
 			pstmt.setString(1,trxDay);
 			pstmt.setString(2,mchtId);
-			
+
 			rset 	= pstmt.executeQuery();
 
 			while(rset.next()){
@@ -2118,38 +2118,38 @@ private static Logger logger = LoggerFactory.getLogger( com.pgmate.firm.dao.Vact
 		}finally{
 			db.close(conn,pstmt,rset);
 		}
-		
+
 		return sumAmt;
 	}
-	
+
 	/**
-	 * PG_MCHT, PG_MCHT_MNG_VACTÅ×ÀÌºíÀÇ »óÅÂÃ¼Å©
+	 * PG_MCHT, PG_MCHT_MNG_VACTí…Œì´ë¸”ì˜ ìƒíƒœì²´í¬
 	 * @param mchtId
 	 * @return
 	 */
 	public SharedMap<String,Object> getVactStatus(String mchtId){
 		SharedMap<String,Object> result = null;
-		
+
 		String query = " SELECT A.status, B.status as vactStatus "
-						+ "FROM PG_MCHT A, PG_MCHT_MNG_VACT B "
-						+"WHERE A.mchtId = B.mchtId and A.mchtId = ?";
-		
+				+ "FROM PG_MCHT A, PG_MCHT_MNG_VACT B "
+				+"WHERE A.mchtId = B.mchtId and A.mchtId = ?";
+
 		DBManager db 			= null;
 		PreparedStatement pstmt	= null;
 		Connection conn			= null;
 		ResultSet rset			= null;
-		
+
 		try{
 			db 		= DBFactory.getInstance();
 			conn	= db.getConnection();
 			pstmt	= conn.prepareStatement(query);
 			pstmt.setString(1,mchtId);
-		
+
 			rset 	= pstmt.executeQuery();
 
 			while(rset.next()){
 				result = new SharedMap<String,Object>();
-				
+
 				result.put("status",rset.getString("status"));
 				result.put("vactStatus",rset.getString("vactStatus"));
 			}
@@ -2159,7 +2159,7 @@ private static Logger logger = LoggerFactory.getLogger( com.pgmate.firm.dao.Vact
 		}finally{
 			db.close(conn,pstmt,rset);
 		}
-		
+
 		return result;
 	}
 }
