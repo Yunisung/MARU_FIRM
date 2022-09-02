@@ -413,10 +413,15 @@ public class InterProcess implements java.io.Serializable{
 			try {
 				apiRes = (JSONObject) jsonParser.parse(resData);
 				String replayCode = apiRes.get("replyCode").toString();
-				String enReplayCode = CommonUtil.nToB(FirmUtil.changeCharset(replayCode,"MS949"));
 
+				hyphenBean.setReplyCode(replayCode);
 				hyphenBean.setSuccessYn(apiRes.get("successYn").toString());
-				hyphenBean.setReplyCode(enReplayCode);
+
+				//오류메세지 세팅
+				if(!replayCode.equals("0000")) {
+					hyphenBean.setSuccessYn(FirmDAO.getCodeDesc("ERR", replayCode));
+				}
+
 
 				String balance = apiRes.get("sign").toString() + apiRes.get("balance").toString();
 				String fee = apiRes.get("svcCharge").toString();
@@ -427,8 +432,8 @@ public class InterProcess implements java.io.Serializable{
 				depositBean.setTradeTime(transferTime);
 
 			} catch (Exception e) {
-				hyphenBean.setSuccessYn("N");
 				hyphenBean.setReplyCode("XXXX");
+				hyphenBean.setSuccessYn("X");
 			}
 			hyphenBean.setResdata(resData);
 			logger.info("TRX RESULT {},[{}]",hyphenBean.getSuccessYn(),hyphenBean.getReplyCode());

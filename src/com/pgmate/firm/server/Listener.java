@@ -36,7 +36,8 @@ public class Listener {
 		}else if(!firm.server.internalIp.equals("") && clientIp.indexOf(firm.server.internalIp) > -1){
 			source = FirmUtil.INTERNAL;
 		}else if(clientIp.indexOf("1.212.11.242") > -1 || clientIp.indexOf("175.209.131.216") > -1 ||
-				clientIp.indexOf("127.0.0.1") > -1 || clientIp.indexOf("10.100.200.10") > -1){
+				clientIp.indexOf("127.0.0.1") > -1 || clientIp.indexOf("10.100.200.10") > -1 ||
+				clientIp.indexOf("192.168.") > -1){
 			source = FirmUtil.INTERNAL;
 		}else{
 			source = FirmUtil.KSNET;
