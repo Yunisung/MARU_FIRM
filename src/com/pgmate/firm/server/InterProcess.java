@@ -365,6 +365,12 @@ public class InterProcess implements java.io.Serializable{
 			sender = "(주)부국위너스";
 		}
 
+		String UTF = FirmUtil.changeCharset(sender, "UTF-8");
+		String EUC = FirmUtil.changeCharset(sender, "EUC-KR");
+		String MS = FirmUtil.changeCharset(sender, "MS949");
+
+		logger.info("TEST : {} {} {}", UTF, EUC, MS);
+
 		logger.info("account : {}",bankBean.account);
 		logger.info("recvBankCd : {}",firmBean.data.getString("recvBankCd"));
 		logger.info("recvAccount : {}",firmBean.data.getString("recvAccount"));
@@ -460,7 +466,6 @@ public class InterProcess implements java.io.Serializable{
 			}
 
 		}
-
 		return firmBean;
 	}
 
