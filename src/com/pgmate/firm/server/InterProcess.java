@@ -365,12 +365,6 @@ public class InterProcess implements java.io.Serializable{
 			sender = "(주)부국위너스";
 		}
 
-		String UTF = FirmUtil.changeCharset(sender, "UTF-8");
-		String EUC = FirmUtil.changeCharset(sender, "EUC-KR");
-		String MS = FirmUtil.changeCharset(sender, "MS949");
-
-		logger.info("TEST : {} {} {}", UTF, EUC, MS);
-
 		logger.info("account : {}",bankBean.account);
 		logger.info("recvBankCd : {}",firmBean.data.getString("recvBankCd"));
 		logger.info("recvAccount : {}",firmBean.data.getString("recvAccount"));
@@ -378,97 +372,94 @@ public class InterProcess implements java.io.Serializable{
 		logger.info("amount : {}",CommonUtil.getAmountFormat(firmBean.data.getString("amount")));
 		logger.info("procType : {}",firmBean.data.getString("procType"));
 
-//		String seqNo = trxDAO.getBankSeq();
-//
-//		long idx = trxDAO.insertTrx(firmBean.bankCd, firmBean.data.getLong("amount"), firmBean.data.getString("recvBankCd"), firmBean.data.getString("recvAccount"), sender, firmBean.data.getString("recordInfo"), firmBean.data.getString("procType"), seqNo);
-//		if(idx == 0){
-//			firmBean.resultCd ="XXXX";
-//			firmBean.resultMsg ="이체데이터 등록실패";
-//		}else{
-//			//데몬 안쓰고 직접 통신하기
-//
-//			//상태값 I로 update
-//			logger.info("TRX STATUS UPDATE : {}",trxDAO.updateStatus(idx, "I"));
-//
-//			//통신하기 위해 클래스화
-//			DepositBean depositBean = new DepositBean();
-//			depositBean.setCompCode(bankBean.compCd);
-//			depositBean.setBankCode(bankBean.bankCd);
-//
-//			depositBean.setSeqNo(CommonUtil.nToB(seqNo));
-//			depositBean.setOutAccount(bankBean.account);
-//			depositBean.setAmount(firmBean.data.getLong("amount"));
-//			depositBean.setInBankCode(firmBean.data.getString("recvBankCd"));
-//			depositBean.setInAccount(firmBean.data.getString("recvAccount"));
-//			depositBean.setInPrintContent(sender);
-//
-//			HyphenBean hyphenBean = new HyphenBean();
-//			hyphenBean.setIndex(idx);
-//			hyphenBean.setKscode(bankBean.kscode);
-//			hyphenBean.setEkey(bankBean.ekey);
-//			hyphenBean.setMsalt(bankBean.msalt);
-//			hyphenBean.setSendurl("rfb/retail/deposit");
-//			hyphenBean.setReqdata(depositBean);
-//
-//			//통신
-//			String resData = hyphenComm.connect(hyphenBean);
-//
-//			//통신결과 클래스화
-//			JSONObject apiRes = new JSONObject();
-//			JSONParser jsonParser = new JSONParser();
-//			try {
-//				apiRes = (JSONObject) jsonParser.parse(resData);
-//				String replayCode = apiRes.get("replyCode").toString();
-//
-//				hyphenBean.setReplyCode(replayCode);
-//				hyphenBean.setSuccessYn(apiRes.get("successYn").toString());
-//
-//				//오류메세지 세팅
-//				if(!replayCode.equals("0000")) {
-//					hyphenBean.setSuccessYn(FirmDAO.getCodeDesc("ERR", replayCode));
-//				}
-//
-//
-//				String balance = apiRes.get("sign").toString() + apiRes.get("balance").toString();
-//				String fee = apiRes.get("svcCharge").toString();
-//				String transferTime = apiRes.get("tradeTime").toString();
-//
-//				depositBean.setBalance(balance.trim());
-//				depositBean.setSvcCharge(fee.trim());
-//				depositBean.setTradeTime(transferTime);
-//
-//			} catch (Exception e) {
-//				hyphenBean.setReplyCode("XXXX");
-//				hyphenBean.setSuccessYn("X");
-//			}
-//			hyphenBean.setResdata(resData);
-//			logger.info("TRX RESULT {},[{}]",hyphenBean.getSuccessYn(),hyphenBean.getReplyCode());
-//
-//			//통신결과 update
-//			logger.info("TRX RESULT UPDATE : {}",trxDAO.updatebyHyphen(hyphenBean));
-//
-//			//firmbean 채우기
-//			firmBean.resultCd = hyphenBean.getReplyCode();
-//			firmBean.resultMsg = hyphenBean.getSuccessYn();
-//			firmBean.idx = idx;
-//			if(firmBean.data == null){
-//				firmBean.data = new SharedMap<String,Object>();
-//			}
-//			firmBean.data.put("recvHolder", sender);
-//			firmBean.data.put("balance", depositBean.getBalance());
-//			firmBean.data.put("fee", depositBean.getSvcCharge());
-//			firmBean.data.put("transferTime", depositBean.getTradeTime());
-//
-//			if(firmBean.resultCd.equals("0000")){
-//				String amount = firmBean.data.getString("balance");
-//				logger.info("[{}]원 이체완료 ", amount);
-//				new FirmMasterDAO().insertBalance(firm.bank.get(firmBean.bankCd).bankCd, firm.bank.get(firmBean.bankCd).account, amount.trim());
-//			}
-//
-//		}
+		String seqNo = trxDAO.getBankSeq();
 
-		firmBean.resultCd = "test";
-		firmBean.resultMsg = "test";
+		long idx = trxDAO.insertTrx(firmBean.bankCd, firmBean.data.getLong("amount"), firmBean.data.getString("recvBankCd"), firmBean.data.getString("recvAccount"), sender, firmBean.data.getString("recordInfo"), firmBean.data.getString("procType"), seqNo);
+		if(idx == 0){
+			firmBean.resultCd ="XXXX";
+			firmBean.resultMsg ="이체데이터 등록실패";
+		}else{
+			//데몬 안쓰고 직접 통신하기
+
+			//상태값 I로 update
+			logger.info("TRX STATUS UPDATE : {}",trxDAO.updateStatus(idx, "I"));
+
+			//통신하기 위해 클래스화
+			DepositBean depositBean = new DepositBean();
+			depositBean.setCompCode(bankBean.compCd);
+			depositBean.setBankCode(bankBean.bankCd);
+
+			depositBean.setSeqNo(CommonUtil.nToB(seqNo));
+			depositBean.setOutAccount(bankBean.account);
+			depositBean.setAmount(firmBean.data.getLong("amount"));
+			depositBean.setInBankCode(firmBean.data.getString("recvBankCd"));
+			depositBean.setInAccount(firmBean.data.getString("recvAccount"));
+			depositBean.setInPrintContent(sender);
+
+			HyphenBean hyphenBean = new HyphenBean();
+			hyphenBean.setIndex(idx);
+			hyphenBean.setKscode(bankBean.kscode);
+			hyphenBean.setEkey(bankBean.ekey);
+			hyphenBean.setMsalt(bankBean.msalt);
+			hyphenBean.setSendurl("rfb/retail/deposit");
+			hyphenBean.setReqdata(depositBean);
+
+			//통신
+			String resData = hyphenComm.connect(hyphenBean);
+
+			//통신결과 클래스화
+			JSONObject apiRes = new JSONObject();
+			JSONParser jsonParser = new JSONParser();
+			try {
+				apiRes = (JSONObject) jsonParser.parse(resData);
+				String replayCode = apiRes.get("replyCode").toString();
+
+				hyphenBean.setReplyCode(replayCode);
+				hyphenBean.setSuccessYn(apiRes.get("successYn").toString());
+
+				//오류메세지 세팅
+				if(!replayCode.equals("0000")) {
+					hyphenBean.setSuccessYn(FirmDAO.getCodeDesc("ERR", replayCode));
+				}
+
+
+				String balance = apiRes.get("sign").toString() + apiRes.get("balance").toString();
+				String fee = apiRes.get("svcCharge").toString();
+				String transferTime = apiRes.get("tradeTime").toString();
+
+				depositBean.setBalance(balance.trim());
+				depositBean.setSvcCharge(fee.trim());
+				depositBean.setTradeTime(transferTime);
+
+			} catch (Exception e) {
+				hyphenBean.setReplyCode("XXXX");
+				hyphenBean.setSuccessYn("X");
+			}
+			hyphenBean.setResdata(resData);
+			logger.info("TRX RESULT {},[{}]",hyphenBean.getSuccessYn(),hyphenBean.getReplyCode());
+
+			//통신결과 update
+			logger.info("TRX RESULT UPDATE : {}",trxDAO.updatebyHyphen(hyphenBean));
+
+			//firmbean 채우기
+			firmBean.resultCd = hyphenBean.getReplyCode();
+			firmBean.resultMsg = hyphenBean.getSuccessYn();
+			firmBean.idx = idx;
+			if(firmBean.data == null){
+				firmBean.data = new SharedMap<String,Object>();
+			}
+			firmBean.data.put("recvHolder", sender);
+			firmBean.data.put("balance", depositBean.getBalance());
+			firmBean.data.put("fee", depositBean.getSvcCharge());
+			firmBean.data.put("transferTime", depositBean.getTradeTime());
+
+			if(firmBean.resultCd.equals("0000")){
+				String amount = firmBean.data.getString("balance");
+				logger.info("[{}]원 이체완료 ", amount);
+				new FirmMasterDAO().insertBalance(firm.bank.get(firmBean.bankCd).bankCd, firm.bank.get(firmBean.bankCd).account, amount.trim());
+			}
+
+		}
 
 		return firmBean;
 	}
