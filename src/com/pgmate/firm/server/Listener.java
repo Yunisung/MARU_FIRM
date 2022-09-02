@@ -27,6 +27,9 @@ public class Listener {
 		this.firm = firm;
 		socket = new TcpSocket(receiveSocket);
 		clientIp = socket.getClientIp().replaceAll("[/]", "");
+
+		logger.info("Connect Client IP : [{}]", clientIp);
+
 		if(!firm.server.monitorIp.equals("") && clientIp.indexOf(firm.server.monitorIp) > -1){
 			source = FirmUtil.MONITOR;
 			socket.socketClose();
