@@ -3,6 +3,7 @@ package com.pgmate.firm.main;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 
+import com.pgmate.firm.dao.FirmDAO;
 import com.pgmate.firm.hyphen.BalanceBean;
 import com.pgmate.firm.hyphen.HyphenBaseBean;
 import com.pgmate.firm.hyphen.HyphenBean;
@@ -119,14 +120,17 @@ public class FirmMain{
 				apiRes = (JSONObject) jsonParser.parse(resData);
 				hyphenBean.setSuccessYn(apiRes.get("successYn").toString());
 				hyphenBean.setReplyCode(apiRes.get("replyCode").toString());
+				if(!hyphenBean.getReplyCode().equals("0000")) {
+					hyphenBean.setSuccessYn(FirmDAO.getCodeDesc("ERR", hyphenBean.getReplyCode()));
+				}
 			} catch (Exception e) {
-				hyphenBean.setSuccessYn("N");
+				hyphenBean.setSuccessYn("X");
 				hyphenBean.setReplyCode("XXXX");
 			}
 
 			hyphenBean.setResdata(resData);
 
-			logger.info("MASTER RESULT {},[{}]",hyphenBean.getSuccessYn(),hyphenBean.getReplyCode());
+			logger.info("MASTER RESULT {},[{}]",hyphenBean.getReplyCode(), hyphenBean.getSuccessYn());
 			logger.info("MASTER RESULT UPDATE : {} : {}",(i+1),firmMasterDAO.updatebyHyphen(hyphenBean));
 		}
 	}
