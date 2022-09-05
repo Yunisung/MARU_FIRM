@@ -443,7 +443,7 @@ public class InterProcess implements java.io.Serializable{
 
 			//firmbean Ã¤¿ì±â
 			firmBean.resultCd = hyphenBean.getReplyCode();
-			firmBean.resultMsg = hyphenBean.getSuccessYn();
+			firmBean.resultMsg =  FirmUtil.changeCharset(hyphenBean.getSuccessYn(), "UTF-8");
 			firmBean.idx = idx;
 			if(firmBean.data == null){
 				firmBean.data = new SharedMap<String,Object>();
