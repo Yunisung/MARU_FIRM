@@ -121,7 +121,10 @@ public class FirmMain{
 				hyphenBean.setSuccessYn(apiRes.get("successYn").toString());
 				hyphenBean.setReplyCode(apiRes.get("replyCode").toString());
 				if(!hyphenBean.getReplyCode().equals("0000")) {
-					hyphenBean.setSuccessYn(FirmDAO.getCodeDesc("ERR", hyphenBean.getReplyCode()));
+//					hyphenBean.setSuccessYn(FirmDAO.getCodeDesc("ERR", hyphenBean.getReplyCode()));
+					String resultMsg = FirmDAO.getCodeDesc("ERR", hyphenBean.getReplyCode());
+					hyphenBean.setSuccessYn(FirmUtil.changeCharset(resultMsg, "UTF-8"));
+
 				}
 			} catch (Exception e) {
 				hyphenBean.setSuccessYn("X");
