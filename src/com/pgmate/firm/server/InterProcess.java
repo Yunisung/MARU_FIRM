@@ -27,6 +27,8 @@ import com.pgmate.firm.util.KsnetComm;
 import com.pgmate.lib.util.gson.GsonUtil;
 import com.pgmate.lib.util.lang.CommonUtil;
 
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 
 /**
@@ -43,7 +45,6 @@ public class InterProcess implements java.io.Serializable{
 		this.hyphenComm = new HyphenComm(firm.server);
 
 	}
-
 
 	public String execute(String json){
 		FirmBean firmBean = (FirmBean)GsonUtil.fromJson(json, FirmBean.class);
@@ -361,15 +362,8 @@ public class InterProcess implements java.io.Serializable{
 
 		String sender = firmBean.data.getString("sender");
 		if("".equals(sender)) {
-//			sender = CommonUtil.nToB(FirmUtil.changeCharset("(주)부국위너스","EUC-KR"));
 			sender = "(주)부국위너스";
 		}
-
-		String UTF = FirmUtil.changeCharset(sender, "UTF-8");
-		String EUC = FirmUtil.changeCharset(sender, "EUC-KR");
-		String MS = FirmUtil.changeCharset(sender, "MS949");
-
-		logger.info("TEST : {} {} {}", UTF, EUC, MS);
 
 		logger.info("account : {}",bankBean.account);
 		logger.info("recvBankCd : {}",firmBean.data.getString("recvBankCd"));
@@ -461,7 +455,7 @@ public class InterProcess implements java.io.Serializable{
 
 			if(firmBean.resultCd.equals("0000")){
 				String amount = firmBean.data.getString("balance");
-				logger.info("[{}]원 이체완료 ", amount);
+				logger.info("잔액 : [{}]원", amount);
 				new FirmMasterDAO().insertBalance(firm.bank.get(firmBean.bankCd).bankCd, firm.bank.get(firmBean.bankCd).account, amount.trim());
 			}
 
