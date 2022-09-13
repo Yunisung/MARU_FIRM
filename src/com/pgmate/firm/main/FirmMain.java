@@ -131,7 +131,8 @@ public class FirmMain{
 				hyphenBean.setReplyCode("XXXX");
 			}
 
-			hyphenBean.setResdata(resData);
+			String eucResData = FirmUtil.changeCharset(resData, "UTF-8");
+			hyphenBean.setResdata(eucResData);
 
 			logger.info("MASTER RESULT {},[{}]",hyphenBean.getReplyCode(), hyphenBean.getSuccessYn());
 			logger.info("MASTER RESULT UPDATE : {} : {}",(i+1),firmMasterDAO.updatebyHyphen(hyphenBean));
