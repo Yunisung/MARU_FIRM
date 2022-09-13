@@ -231,7 +231,8 @@ public class InterProcess implements java.io.Serializable{
 
 			HolderBean holderBean = new HolderBean();
 			holderBean.setCompCode(configBean.compCd);
-			holderBean.setBankCode(configBean.bankCd);
+			//PYS : 이름조회는 099 고정
+			holderBean.setBankCode("099");
 			holderBean.setAccountBankCode(firmBean.data.getString("bankCd"));
 			holderBean.setAccountNo(firmBean.data.getString("account"));
 			holderBean.setAgencyYn(firmBean.data.getString("agencyYn"));
