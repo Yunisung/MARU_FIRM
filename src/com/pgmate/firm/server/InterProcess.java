@@ -423,7 +423,11 @@ public class InterProcess implements java.io.Serializable{
 
 				//오류메세지 세팅
 				if(!replayCode.equals("0000")) {
-					hyphenBean.setSuccessYn(FirmDAO.getCodeDesc("ERR", replayCode));
+					if(replayCode.startsWith("KS")) {
+						hyphenBean.setSuccessYn(FirmDAO.getCodeDesc("ERR", replayCode));
+					} else {
+						hyphenBean.setSuccessYn(FirmDAO.getCodeDesc(bankBean.bankCd, replayCode));
+					}
 				}
 
 
@@ -523,6 +527,7 @@ public class InterProcess implements java.io.Serializable{
 
 		String resCode = "";
 		String resMsg = "";
+
 		if(!transferBean.getResultCode().equals("") && !transferBean.getResultCode().equals("0000")) {
 			resCode = transferBean.getResultCode();
 			resMsg = FirmDAO.getCodeDesc(configBean.bankCd, resCode);
