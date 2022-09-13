@@ -247,6 +247,9 @@ public class InterProcess implements java.io.Serializable{
 			hyphenBean.setReqdata(holderBean);
 			hyphenBean.setSendurl("rfb/retail/account/accountname");
 
+			String holderCode = firmBean.data.getString("bankCd");
+			String holderAccount = firmBean.data.getString("account");
+
 			String jsonParams = new Gson().toJson(hyphenBean);
 
 			long idx = masterDAO.setMasterbyHyphen(firmBean.msgType.substring(0,4), firmBean.msgType.substring(4), firmBean.bankCd, hyphenBean.getSendurl(), jsonParams);
@@ -256,7 +259,7 @@ public class InterProcess implements java.io.Serializable{
 				holderBean = (HolderBean) GsonUtil.fromJson(resJson, HolderBean.class);
 				String name = holderBean.getAccountName();
 				firmBean.data.put("accountName", CommonUtil.parseLong(name.trim()));
-				masterDAO.insertAccnt(configBean.bankCd, configBean.account, name.trim());
+				masterDAO.insertAccnt(holderCode, holderAccount, name.trim());
 			}
 		}catch (Exception e) {
 

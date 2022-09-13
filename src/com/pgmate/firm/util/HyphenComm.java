@@ -59,7 +59,7 @@ public class HyphenComm {
             conn.getOutputStream().flush();
             conn.getOutputStream().close();
 
-            BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(conn.getInputStream(), "EUC-KR"), conn.getContentLength());
+            BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(conn.getInputStream(), "UTF-8"), conn.getContentLength());
             String inputLine;
 
             while ((inputLine = bufferedReader.readLine()) != null)  {
