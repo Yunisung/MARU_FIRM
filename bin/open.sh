@@ -1,6 +1,6 @@
 #!/bin/sh
 
-cd /home/MARUeuc/MARU_FIRM/bin
+cd /home/bkwinners/MARU_FIRM/bin
 
 unset LANG
 

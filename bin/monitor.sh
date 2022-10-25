@@ -1,6 +1,6 @@
 #!/bin/sh
 
-cd /home/MARUeuc/MARU_FIRM/bin
+cd /home/bkwinners/MARU_FIRM/bin
 
 pid_file="firm.pid"
 
