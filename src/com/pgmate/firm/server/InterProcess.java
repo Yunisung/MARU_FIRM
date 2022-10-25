@@ -58,8 +58,8 @@ public class InterProcess implements java.io.Serializable{
 				firmBean = proc0800(firmBean);
 			}else if(firmBean.msgType.startsWith("0600300")){
 				//잔액조회
-//				firmBean = proc0600300(firmBean);
-				firmBean = procBalance(firmBean);
+				firmBean = proc0600300(firmBean);
+//				firmBean = procBalance(firmBean);
 			}else if(firmBean.msgType.startsWith("0600400")){
 				//성명조회
 				//firmBean = proc0600400(firmBean);
