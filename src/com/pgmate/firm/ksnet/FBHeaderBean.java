@@ -72,7 +72,7 @@ public class FBHeaderBean extends CommBean {
 		transaction.append(CommonUtil.byteFiller(ksnetResponseCode,4));
 		transaction.append(CommonUtil.byteFiller(bankResponseCode,4));
 		transaction.append(CommonUtil.byteFiller(inquiryDay,8));
-		transaction.append(CommonUtil.zerofill(inqueryNumber,6));
+		transaction.append(CommonUtil.byteFiller(inqueryNumber,6));
 		transaction.append(CommonUtil.byteFiller(bankSpecNumber,15));
 		transaction.append(CommonUtil.byteFiller(newBankCode,3));
 		transaction.append(CommonUtil.byteFiller(extra,13));
