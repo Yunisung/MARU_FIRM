@@ -13,6 +13,12 @@
       "bankCd": "099",
       "account": ""
     },
+    "089": {
+      "trCd": "",
+      "compCd": "BKWIN001",
+      "bankCd": "089",
+      "account": "70110001999557"
+    },
     "039": {
       "trCd": "",
       "compCd": "BGWINNER",
@@ -27,8 +33,8 @@
   "server": {
     "serverIp": "pgwas3",
     "serverPort": 10006,
-    "ksnetIp": "121.138.30.10",
-    "ksnetPort": 19237,
+    "ksnetIp": "210.181.29.130",
+    "ksnetPort": 9500,
     "timeout": 30000,
     "internalIp": "10.100.",
     "monitorIp": "10.10.47.30",

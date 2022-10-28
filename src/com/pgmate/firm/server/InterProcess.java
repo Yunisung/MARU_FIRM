@@ -58,23 +58,23 @@ public class InterProcess implements java.io.Serializable{
 				firmBean = proc0800(firmBean);
 			}else if(firmBean.msgType.startsWith("0600300")){
 				//잔액조회
-//				firmBean = proc0600300(firmBean);
-				firmBean = procBalance(firmBean);
+				firmBean = proc0600300(firmBean);
+//				firmBean = procBalance(firmBean);
 			}else if(firmBean.msgType.startsWith("0600400")){
 				//성명조회
-				//firmBean = proc0600400(firmBean);
-				firmBean = procHolder(firmBean);
+				firmBean = proc0600400(firmBean);
+//				firmBean = procHolder(firmBean);
 			}else if(firmBean.msgType.startsWith("0700100")){
 				//집계
 				firmBean = proc0700100(firmBean);
 			}else if(firmBean.msgType.startsWith("0100100")){
 				//이체
-//				firmBean = proc0100100(firmBean);
-				firmBean = procDeposit(firmBean);
+				firmBean = proc0100100(firmBean);
+//				firmBean = procDeposit(firmBean);
 			}else if(firmBean.msgType.startsWith("0600101")){
 				//처리결과조회
-				//firmBean = proc0600101(firmBean);
-				firmBean = procTransfer(firmBean);
+				firmBean = proc0600101(firmBean);
+//				firmBean = procTransfer(firmBean);
 			}else if(firmBean.msgType.startsWith("0900400")){
 				//가상계좌 출금정보 등록
 				firmBean = proc0900400(firmBean);
