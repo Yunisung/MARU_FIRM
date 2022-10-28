@@ -23,10 +23,13 @@ public class FB0600400Bean extends CommBean {
 	private String mAccount			= "";   //새마을 금고 이용할때 (은행과 직계약 일 경우) 모계좌번호
 	private String newBankCode		= "";	//계좌은행코드3자리 
 	private String extra			= "";	//예비(개별부) SPACE
-	private String companySpace 	= "";	//회사사용정보 SPACE
-	private String hangulSpace		= "";	//한글사용정보 SPACE
-	private String bankSpace		= "";	//접속은행예비 SPACE
-	
+//	private String companySpace 	= "";	//회사사용정보 SPACE
+//	private String hangulSpace		= "";	//한글사용정보 SPACE
+//	private String bankSpace		= "";	//접속은행예비 SPACE
+
+	private String dotcomSpace		= "";	//닷컴통장 조회 : 우리닷컴 통장조회시 'D'세팅, 우리은행 계약업체에 한함
+	private String otherBankSpace	= "";	//당타행인증유형
+	private String nhSpace			= "";	//농협계좌구분
 	
 	public FB0600400Bean(){	
 	}
@@ -45,10 +48,13 @@ public class FB0600400Bean extends CommBean {
 		socialCheck		= CommonUtil.toString(transaction,57,2).trim();		//계좌의 주민번호 체크 여부 99:일반체크 88:두음법칙체크
 		mAccount		= CommonUtil.toString(transaction,59,20).trim();	//새마을 금고 이용할때 (은행과 직계약 일 경우) 모계좌번호
 		newBankCode		= CommonUtil.toString(transaction,79,3).trim();		//은행코드 3자리
-		extra			= CommonUtil.toString(transaction,82,93).trim();	//예비(개별부) SPACE
-		companySpace 	= CommonUtil.toString(transaction,175,20).trim();	//회사사용정보 SPACE
-		hangulSpace		= CommonUtil.toString(transaction,195,1).trim();	//한글사용정보 SPACE
-		bankSpace		= CommonUtil.toString(transaction,196,4).trim();	//접속은행예비 SPACE
+		dotcomSpace		= CommonUtil.toString(transaction, 82, 1).trim();
+		otherBankSpace  = CommonUtil.toString(transaction, 83, 1).trim();
+		nhSpace			= CommonUtil.toString(transaction, 84, 1).trim();
+		extra			= CommonUtil.toString(transaction,85,115).trim();	//예비(개별부) SPACE
+//		companySpace 	= CommonUtil.toString(transaction,175,20).trim();	//회사사용정보 SPACE
+//		hangulSpace		= CommonUtil.toString(transaction,195,1).trim();	//한글사용정보 SPACE
+//		bankSpace		= CommonUtil.toString(transaction,196,4).trim();	//접속은행예비 SPACE
 	}
 	
 	public String getTransaction(){
@@ -61,10 +67,13 @@ public class FB0600400Bean extends CommBean {
 		transaction.append(CommonUtil.zerofill(socialCheck,2));
 		transaction.append(CommonUtil.byteFiller(mAccount,20));
 		transaction.append(CommonUtil.byteFiller(newBankCode,3));
-		transaction.append(CommonUtil.byteFiller(extra,93));
-		transaction.append(CommonUtil.byteFiller(companySpace,20));
-		transaction.append(CommonUtil.byteFiller(hangulSpace,1));
-		transaction.append(CommonUtil.zerofill(bankSpace,4));
+		transaction.append(CommonUtil.byteFiller(dotcomSpace, 1));
+		transaction.append(CommonUtil.byteFiller(otherBankSpace, 1));
+		transaction.append(CommonUtil.byteFiller(nhSpace, 1));
+		transaction.append(CommonUtil.byteFiller(extra,115));
+//		transaction.append(CommonUtil.byteFiller(companySpace,20));
+//		transaction.append(CommonUtil.byteFiller(hangulSpace,1));
+//		transaction.append(CommonUtil.zerofill(bankSpace,4));
 		
 		return transaction.toString();
 	}
@@ -133,29 +142,29 @@ public class FB0600400Bean extends CommBean {
 		this.extra = extra;
 	}
 
-	public String getCompanySpace() {
-		return companySpace;
-	}
-
-	public void setCompanySpace(String companySpace) {
-		this.companySpace = companySpace;
-	}
-
-	public String getHangulSpace() {
-		return hangulSpace;
-	}
-
-	public void setHangulSpace(String hangulSpace) {
-		this.hangulSpace = hangulSpace;
-	}
-
-	public String getBankSpace() {
-		return bankSpace;
-	}
-
-	public void setBankSpace(String bankSpace) {
-		this.bankSpace = bankSpace;
-	}
+//	public String getCompanySpace() {
+//		return companySpace;
+//	}
+//
+//	public void setCompanySpace(String companySpace) {
+//		this.companySpace = companySpace;
+//	}
+//
+//	public String getHangulSpace() {
+//		return hangulSpace;
+//	}
+//
+//	public void setHangulSpace(String hangulSpace) {
+//		this.hangulSpace = hangulSpace;
+//	}
+//
+//	public String getBankSpace() {
+//		return bankSpace;
+//	}
+//
+//	public void setBankSpace(String bankSpace) {
+//		this.bankSpace = bankSpace;
+//	}
 
 	public String getNewBankCode() {
 		return newBankCode;
@@ -164,6 +173,18 @@ public class FB0600400Bean extends CommBean {
 	public void setNewBankCode(String newBankCode) {
 		this.newBankCode = newBankCode;
 	}
+
+	public String getDotcomSpace() { return dotcomSpace; }
+
+	public void setDotcomSpace(String dotcom) { this.dotcomSpace = dotcom; }
+
+	public String getOtherBankSpace() { return otherBankSpace; }
+
+	public void setOtherBankSpace(String otherbank) { this.otherBankSpace = otherbank; }
+
+	public String getNhSpace() { return nhSpace; }
+
+	public void setNhSpace(String nh) { this.nhSpace = nh; }
 	
 	
 	

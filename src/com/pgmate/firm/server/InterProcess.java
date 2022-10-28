@@ -183,7 +183,7 @@ public class InterProcess implements java.io.Serializable{
 	 */
 	public FirmBean proc0600400(FirmBean firmBean){
 
-
+		BankBean configBean = firm.bank.get(firmBean.bankCd);
 
 		FirmMasterDAO masterDAO = new FirmMasterDAO();
 		FB0600400Bean fbBean = new FB0600400Bean();
@@ -193,6 +193,8 @@ public class InterProcess implements java.io.Serializable{
 		fbBean.setAccount(firmBean.data.getString("account"));
 		fbBean.setSocialNumber(firmBean.data.getString("socialNumber"));
 		fbBean.setSocialCheck(firmBean.data.getString("socialCheck"));
+
+		fbBean.setMAccount(configBean.account);
 		fbBean.setName(firmBean.data.getString("holder"));
 
 		if(firmBean.bankCd.equals("099") && firmBean.data.isNullOrSpace("socialCheck")) {
