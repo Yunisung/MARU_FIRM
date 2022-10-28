@@ -33,8 +33,8 @@
   "server": {
     "serverIp": "pgwas3",
     "serverPort": 10006,
-    "ksnetIp": "210.181.29.130",
-    "ksnetPort": 9500,
+    "ksnetIp": "127.0.0.1",
+    "ksnetPort": 27701,
     "timeout": 30000,
     "internalIp": "10.100.",
     "monitorIp": "10.10.47.30",
