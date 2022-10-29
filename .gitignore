@@ -1,2 +1,13 @@
 classes/
+.settings/org.eclipse.jdt.core.prefs
 lib/MARU_firm.jar
+logs/
+.classpath
+
+conf/config.ini
+
+### IntelliJ IDEA ###
+.idea
+*.iws
+*.iml
+*.ipr
