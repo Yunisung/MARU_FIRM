@@ -22,15 +22,19 @@ public class FB0600400Bean extends CommBean {
 	private String socialCheck      = "";	//계좌의 주민번호 체크 여부 99:일반체크 88:두음법칙체크
 	private String mAccount			= "";   //새마을 금고 이용할때 (은행과 직계약 일 경우) 모계좌번호
 	private String newBankCode		= "";	//계좌은행코드3자리 
-	private String extra			= "";	//예비(개별부) SPACE
+
 //	private String companySpace 	= "";	//회사사용정보 SPACE
 //	private String hangulSpace		= "";	//한글사용정보 SPACE
 //	private String bankSpace		= "";	//접속은행예비 SPACE
 
+	//PYS: 하이픈전문에 추가된것
+	private String amount			= ""; 	//금액
 	private String dotcomSpace		= "";	//닷컴통장 조회 : 우리닷컴 통장조회시 'D'세팅, 우리은행 계약업체에 한함
 	private String otherBankSpace	= "";	//당타행인증유형
 	private String nhSpace			= "";	//농협계좌구분
-	
+
+	private String extra			= "";	//예비(개별부) SPACE
+
 	public FB0600400Bean(){	
 	}
 	
@@ -48,10 +52,11 @@ public class FB0600400Bean extends CommBean {
 		socialCheck		= CommonUtil.toString(transaction,57,2).trim();		//계좌의 주민번호 체크 여부 99:일반체크 88:두음법칙체크
 		mAccount		= CommonUtil.toString(transaction,59,20).trim();	//새마을 금고 이용할때 (은행과 직계약 일 경우) 모계좌번호
 		newBankCode		= CommonUtil.toString(transaction,79,3).trim();		//은행코드 3자리
-		dotcomSpace		= CommonUtil.toString(transaction, 82, 1).trim();
-		otherBankSpace  = CommonUtil.toString(transaction, 83, 1).trim();
-		nhSpace			= CommonUtil.toString(transaction, 84, 1).trim();
-		extra			= CommonUtil.toString(transaction,85,115).trim();	//예비(개별부) SPACE
+		amount			= CommonUtil.toString(transaction, 82, 13).trim();	//금액
+		dotcomSpace		= CommonUtil.toString(transaction, 95, 1).trim();//닷컴통장조회
+		otherBankSpace  = CommonUtil.toString(transaction, 96, 1).trim();//당타행인증유형
+		nhSpace			= CommonUtil.toString(transaction, 97, 1).trim();//농협계좌구분
+		extra			= CommonUtil.toString(transaction,98,102).trim();	//예비(개별부) SPACE
 //		companySpace 	= CommonUtil.toString(transaction,175,20).trim();	//회사사용정보 SPACE
 //		hangulSpace		= CommonUtil.toString(transaction,195,1).trim();	//한글사용정보 SPACE
 //		bankSpace		= CommonUtil.toString(transaction,196,4).trim();	//접속은행예비 SPACE

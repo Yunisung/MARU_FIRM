@@ -39,7 +39,7 @@ public class FB0600300Bean extends CommBean {
 		personalCheck	= CommonUtil.toString(transaction,42,13);
 		billCheck		= CommonUtil.toString(transaction,55,13);
 		payAmount		= CommonUtil.toString(transaction,68,13);
-		extra			= CommonUtil.toString(transaction,81,transaction.length-81);
+		extra			= CommonUtil.toString(transaction,81,119);
 		
 	}
 	
