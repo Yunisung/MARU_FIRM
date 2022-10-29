@@ -33,7 +33,9 @@ public class Listener {
 		if(!firm.server.monitorIp.equals("") && clientIp.indexOf(firm.server.monitorIp) > -1){
 			source = FirmUtil.MONITOR;
 			socket.socketClose();
-		}else if(!firm.server.internalIp.equals("") && clientIp.indexOf(firm.server.internalIp) > -1){
+		}
+		/*
+		else if(!firm.server.internalIp.equals("") && clientIp.indexOf(firm.server.internalIp) > -1){
 			source = FirmUtil.INTERNAL;
 		}else if(clientIp.indexOf("1.212.11.242") > -1 || clientIp.indexOf("175.209.131.216") > -1 ||
 				clientIp.indexOf("127.0.0.1") > -1 || clientIp.indexOf("10.100.200.10") > -1 ||
@@ -41,6 +43,10 @@ public class Listener {
 			source = FirmUtil.INTERNAL;
 		}else{
 			source = FirmUtil.KSNET;
+		}
+		*/
+		else {
+			source = FirmUtil.HYPHEN;
 		}
 
 		if(!source.equals(FirmUtil.MONITOR)){
@@ -56,7 +62,8 @@ public class Listener {
 			logger.debug("-> {},{}",source,clientIp);
 			recv = socket.recvAll();
 			//logger.debug("-> {} [{}],{}",source,CommonUtil.toString(recv),recv.length);
-			if(source.equals(FirmUtil.KSNET)){	//KSNET 수신 프로세스
+
+			/*if(source.equals(FirmUtil.KSNET)){	//KSNET 수신 프로세스
 				
 				logger.debug("-> {} [{}]",source,CommonUtil.toString(recv));
 				
@@ -83,6 +90,13 @@ public class Listener {
 				logger.info("<- {} [{}]",source,CommonUtil.toString(send));
 				//send = FirmUtil.uencode_3des(firm.server.encryptKey.getBytes(),send);
 				
+			}*/
+
+			// 소켓 통신으로 펌뱅킹만 사용함. 가상계좌는 MARU_VACT_HYPHEN에서 사용
+			if(source.equals(FirmUtil.HYPHEN)) {
+				logger.info("-> {} [{}]", source, CommonUtil.toString(recv));
+				send = new InterProcess(firm).execute(new String(recv)).getBytes();
+				logger.info("<- {} [{}]", source, CommonUtil.toString(send));
 			}
 			
 			socket.send(send);
