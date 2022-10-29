@@ -13,7 +13,10 @@ public class FB0900100Bean extends CommBean {
 	private String amount				= "";		//입금금액
 	private String classificationCode	= "10";		//구분코드  	(등록:10 , 해제:40)
 	private String transactionType		= "";		//거래종류     (10:수취,20:입금,51:취소)
-	private String requestorName		= "";		//의뢰인명 
+	private String requestorName		= "";		//의뢰인명
+	//PYS : 하이픈 전문 추가된것
+	private String newBankCode			= "";		//은행코드3자리
+
 	private String extra				= "";		//예비 
 	
 	public FB0900100Bean(){
@@ -32,10 +35,11 @@ public class FB0900100Bean extends CommBean {
 		startDay		= CommonUtil.toString(transaction,48,8).trim();		//시작일자	(SPACE)
 		endTime			= CommonUtil.toString(transaction,56,14).trim();	//종료시간	(YYYYMMDDHHMMSS)
 		amount			= CommonUtil.toString(transaction,70,13).trim();	//입금금액
-		classificationCode=CommonUtil.toString(transaction,83,2).trim();	//구분코드  	(등록:10 , 해제:40)
-		transactionType = CommonUtil.toString(transaction,85,2).trim();		//거래종류
+		classificationCode=CommonUtil.toString(transaction,83,2).trim();	//구분코드(등록:10 , 해제:40)
+		transactionType = CommonUtil.toString(transaction,85,2).trim();	//거래종류
 		requestorName 	= CommonUtil.toString(transaction,87,20).trim();	//의뢰인명
-		extra			= CommonUtil.toString(transaction,107,transaction.length-107).trim();	//예비 
+		newBankCode		= CommonUtil.toString(transaction, 107, 3).trim(); //은행코드3자리
+		extra			= CommonUtil.toString(transaction,110,90).trim();	//예비
 	}
 	
 	public String getTransaction(){
@@ -49,7 +53,8 @@ public class FB0900100Bean extends CommBean {
 		transaction.append(CommonUtil.byteFiller(classificationCode,2));
 		transaction.append(CommonUtil.byteFiller(transactionType,2));
 		transaction.append(CommonUtil.byteFiller(requestorName,20));
-		transaction.append(CommonUtil.byteFiller(extra,93));
+		transaction.append(CommonUtil.byteFiller(newBankCode,3));
+		transaction.append(CommonUtil.byteFiller(extra,90));
 		return transaction.toString();
 	}
 
@@ -193,7 +198,9 @@ public class FB0900100Bean extends CommBean {
 		this.extra = extra;
 	}
 
-	
+	public String getNewBankCode() { return newBankCode; }
+
+	public void setNewBankCode(String newBankCode) { this.newBankCode = newBankCode; }
 	
 	
 	
