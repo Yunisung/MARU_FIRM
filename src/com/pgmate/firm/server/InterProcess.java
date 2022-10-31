@@ -183,7 +183,7 @@ public class InterProcess implements java.io.Serializable{
 	 * data.bankCd, data.account , data.socialNumber, data.socialCheck
 	 */
 	public FirmBean proc0600400(FirmBean firmBean){
-
+		logger.info("=================== 예금주조회 ========================");
 		BankBean configBean = firm.bank.get(firmBean.bankCd);
 
 		FirmMasterDAO masterDAO = new FirmMasterDAO();
@@ -194,10 +194,10 @@ public class InterProcess implements java.io.Serializable{
 		fbBean.setAccount(firmBean.data.getString("account"));
 		fbBean.setSocialNumber(firmBean.data.getString("socialNumber"));
 		fbBean.setSocialCheck(firmBean.data.getString("socialCheck"));
-
 		fbBean.setMAccount(configBean.account);
 		fbBean.setName(firmBean.data.getString("holder"));
 
+		//PYS : 이미 조회한 계좌는 테이블에서 조회
 		if(firmBean.bankCd.equals("099") && firmBean.data.isNullOrSpace("socialCheck")) {
 			String holder = masterDAO.selectAccnt(firmBean.data.getString("bankCd"), firmBean.data.getString("account"));
 			logger.info("INTER ACCNT CHECK: {}",holder);

@@ -11,8 +11,12 @@
 package com.pgmate.firm.ksnet;
 
 import com.pgmate.lib.util.lang.CommonUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class FB0600400Bean extends CommBean {
+
+	private Logger logger = LoggerFactory.getLogger( getClass() );
 
 	private String transactionDay 	= "";	//MMDD
 	private String bankCode			= "";	//계좌은행
@@ -60,6 +64,26 @@ public class FB0600400Bean extends CommBean {
 //		companySpace 	= CommonUtil.toString(transaction,175,20).trim();	//회사사용정보 SPACE
 //		hangulSpace		= CommonUtil.toString(transaction,195,1).trim();	//한글사용정보 SPACE
 //		bankSpace		= CommonUtil.toString(transaction,196,4).trim();	//접속은행예비 SPACE
+
+		log();
+	}
+
+	public void log() {
+		logger.info("=================== 예금주 조회 결과 ===================");
+		logger.info("transactionDay : {}", transactionDay);
+		logger.info("bankCode : {}", bankCode);
+		logger.info("account : {}", account);
+		logger.info("name : {}", name);
+		logger.info("socialNumber : {}", socialNumber);
+		logger.info("socialCheck : {}", socialCheck);
+		logger.info("mAccount : {}", mAccount);
+		logger.info("newBankCode : {}", newBankCode);
+		logger.info("amount : {}", amount);
+		logger.info("dotcomSpace : {}", dotcomSpace);
+		logger.info("otherBankSpace : {}", otherBankSpace);
+		logger.info("nhSpace : {}", nhSpace);
+		logger.info("extra : {}", extra);
+
 	}
 	
 	public String getTransaction(){
@@ -68,8 +92,8 @@ public class FB0600400Bean extends CommBean {
 		transaction.append(CommonUtil.byteFiller(bankCode,2));
 		transaction.append(CommonUtil.byteFiller(account,16));
 		transaction.append(CommonUtil.byteFiller(name,22));
-		transaction.append(CommonUtil.zerofill(socialNumber,13));
-		transaction.append(CommonUtil.zerofill(socialCheck,2));
+		transaction.append(CommonUtil.byteFiller(socialNumber,13));
+		transaction.append(CommonUtil.byteFiller(socialCheck,2));
 		transaction.append(CommonUtil.byteFiller(mAccount,20));
 		transaction.append(CommonUtil.byteFiller(newBankCode,3));
 		transaction.append(CommonUtil.byteFiller(dotcomSpace, 1));

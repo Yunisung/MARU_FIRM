@@ -8,10 +8,10 @@
       "newAccount": "1005004107798"
     },
     "099": {
-      "trCd": "",
-      "compCd": "FCS04150",
-      "bankCd": "099",
-      "account": ""
+      "trCd": "KSBPAY",
+      "compCd": "BKWIN001",
+      "bankCd": "089",
+      "account": "70110001999557"
     },
     "089": {
       "trCd": "KSBPAY",
