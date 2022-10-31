@@ -74,7 +74,7 @@ public class KsnetComm {
 //    		request = encrypt(key,reqMsg);
     		logger.info("-> KSNET [{}]",reqMsg);
     		//logger.debug("-> KSNET [{}],{}",CommonUtil.toString(request),request.length);
-    		output.write(reqMsg.getBytes());
+    		output.write(reqMsg.getBytes("euc-kr"));
     		output.flush();
     		
     		message= "데이터 수신 오류";
