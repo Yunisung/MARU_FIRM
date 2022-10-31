@@ -210,6 +210,7 @@ public class InterProcess implements java.io.Serializable{
 			}
 		}
 
+		logger.info("INSERT MASTSER TABLE");
 
 		long idx = masterDAO.setMaster(firmBean.msgType.substring(0,4), firmBean.msgType.substring(4), firmBean.bankCd, fbBean.getTransaction());
 		firmBean = processCheck(idx,firmBean,masterDAO);
