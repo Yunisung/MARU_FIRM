@@ -39,17 +39,18 @@ public class InterProcess implements java.io.Serializable{
 
 	private Logger logger = LoggerFactory.getLogger( getClass() );
 	private Firm firm = null;
-	
+	private HyphenComm hyphenComm = null;
 	public InterProcess(Firm firm) {
 		this.firm = firm;
+		this.hyphenComm = new HyphenComm(firm.server);
+
 	}
-	
-	
+
 	public String execute(String json){
 		FirmBean firmBean = (FirmBean)GsonUtil.fromJson(json, FirmBean.class);
-		
+
 		firmBean = valid(firmBean);
-		
+
 		if(firmBean.resultCd.equals("9999")){
 			return GsonUtil.toJson(firmBean);
 		}else{
@@ -69,6 +70,7 @@ public class InterProcess implements java.io.Serializable{
 			}else if(firmBean.msgType.startsWith("0100100")){
 				//이체
 				firmBean = proc0100100(firmBean);
+//				firmBean = procDeposit(firmBean);
 			}else if(firmBean.msgType.startsWith("0600101")){
 				//처리결과조회
 				firmBean = proc0600101(firmBean);
@@ -78,22 +80,22 @@ public class InterProcess implements java.io.Serializable{
 				firmBean = proc0900400(firmBean);
 			}
 		}
-		
-		
+
+
 		return GsonUtil.toJson(firmBean);
-		
+
 	}
-	
-	
-	
+
+
+
 	public FirmBean proc0800(FirmBean firmBean){
 		FirmMasterDAO masterDAO = new FirmMasterDAO();
-		
+
 		long idx = masterDAO.setMaster(firmBean.msgType.substring(0,4), firmBean.msgType.substring(4), firmBean.bankCd, "");
 		return processCheck(idx,firmBean,masterDAO);
 	}
-	
-	
+
+
 	/*
 	 * 잔액조회
 	 */
@@ -105,7 +107,7 @@ public class InterProcess implements java.io.Serializable{
 			FB0600300Bean fbBean = new FB0600300Bean();
 			fbBean.setAccount(firmBean.mAccnt);
 			//fbBean.setAccount(firm.bank.get(firmBean.bankCd).account);
-			
+
 			long idx = masterDAO.setMaster(firmBean.msgType.substring(0,4), firmBean.msgType.substring(4), firmBean.bankCd, fbBean.getTransaction());
 			firmBean = processCheck(idx,firmBean,masterDAO);
 			if(firmBean.resultCd.equals("0000")){
@@ -168,13 +170,13 @@ public class InterProcess implements java.io.Serializable{
 			e.printStackTrace();
 			logger.error("잔액조회 Error : [{}]", e.getMessage());
 		}
-		
+
 		logger.info("===================================================");
-		
+
 		return firmBean;
 	}
-	
-	
+
+
 	/*
 	 * 성명조회 은행코드를 099 를 사용하면 KSNET 그외는 각 은행
 	 * data.bankCd, data.account , data.socialNumber, data.socialCheck
@@ -185,7 +187,7 @@ public class InterProcess implements java.io.Serializable{
 
 		FirmMasterDAO masterDAO = new FirmMasterDAO();
 		FB0600400Bean fbBean = new FB0600400Bean();
-		
+
 		fbBean.setTransactionDay(CommonUtil.getCurrentDate("MMdd"));
 		fbBean.setNewBankCode(firmBean.data.getString("bankCd"));
 		fbBean.setAccount(firmBean.data.getString("account"));
@@ -194,7 +196,7 @@ public class InterProcess implements java.io.Serializable{
 
 		fbBean.setMAccount(configBean.account);
 		fbBean.setName(firmBean.data.getString("holder"));
-		
+
 		if(firmBean.bankCd.equals("099") && firmBean.data.isNullOrSpace("socialCheck")) {
 			String holder = masterDAO.selectAccnt(firmBean.data.getString("bankCd"), firmBean.data.getString("account"));
 			logger.info("INTER ACCNT CHECK: {}",holder);
@@ -206,8 +208,8 @@ public class InterProcess implements java.io.Serializable{
 				return firmBean;
 			}
 		}
-		
-		
+
+
 		long idx = masterDAO.setMaster(firmBean.msgType.substring(0,4), firmBean.msgType.substring(4), firmBean.bankCd, fbBean.getTransaction());
 		firmBean = processCheck(idx,firmBean,masterDAO);
 		if(firmBean.resultCd.equals("0000")){
@@ -274,8 +276,7 @@ public class InterProcess implements java.io.Serializable{
 
 		return firmBean;
 	}
-	
-	
+
 	/*
 	 * 집계
 	 */
@@ -287,7 +288,7 @@ public class InterProcess implements java.io.Serializable{
 		firmBean = processCheck(idx,firmBean,masterDAO);
 		if(firmBean.resultCd.equals("0000")){
 			fbBean = new FB0700100Bean(firmBean.data.getString("resData"));
-			
+
 			firmBean.data.put("reqCount", CommonUtil.parseLong(fbBean.getReqCount()));
 			firmBean.data.put("reqAmount", CommonUtil.parseLong(fbBean.getReqAmount()));
 			firmBean.data.put("sucCount", CommonUtil.parseLong(fbBean.getSuccessCount()));
@@ -295,7 +296,7 @@ public class InterProcess implements java.io.Serializable{
 			firmBean.data.put("failCount", CommonUtil.parseLong(fbBean.getFailCount()));
 			firmBean.data.put("failAmount", CommonUtil.parseLong(fbBean.getFailAmount()));
 			firmBean.data.put("fee", CommonUtil.parseLong(fbBean.getFee()));
-			
+
 			firmBean.data.put("oReqCount", CommonUtil.parseLong(fbBean.getOtherReqCount()));
 			firmBean.data.put("oReqAmount", CommonUtil.parseLong(fbBean.getOtherReqAmount()));
 			firmBean.data.put("oSucCount", CommonUtil.parseLong(fbBean.getOtherSuccessCount()));
@@ -303,36 +304,36 @@ public class InterProcess implements java.io.Serializable{
 			firmBean.data.put("oFailCount", CommonUtil.parseLong(fbBean.getOtherFailCount()));
 			firmBean.data.put("oFailAmount", CommonUtil.parseLong(fbBean.getOtherFailAmount()));
 			firmBean.data.put("oFee", CommonUtil.parseLong(fbBean.getOtherFee()));
-			
+
 		}
-		
+
 		return firmBean;
 	}
-	
-	
-	
+
+
+
 	public FirmBean proc0100100(FirmBean firmBean){
 		// 이체가능시간 외 데이터 등록 막기
 		Firm firm = FirmLoader.getConfig();
 		long currentTime = CommonUtil.parseLong(CommonUtil.getCurrentDate("HHmmss"));
-		
+
 		if(firm.daemon.startTime > currentTime || currentTime > firm.daemon.stopTime){
 			firmBean.resultCd ="XXXX";
 			firmBean.resultMsg ="이체 가능 시간 아님";
 			return firmBean;
 		}
-		
+
 		FirmTrxDAO trxDAO = new FirmTrxDAO();
-		
+
 		//String sign = 	WooriSign.getSign(firmBean.data.getString("recvAccount"), CommonUtil.getAmountFormat(firmBean.data.getString("amount")), firmBean.data.getString("recvBankCd"), firm.bank.get(firmBean.bankCd).account);
-		
+
 		logger.info("account : {}",firm.bank.get(firmBean.bankCd).account);
 		logger.info("recvBankCd : {}",firmBean.data.getString("recvBankCd"));
 		logger.info("recvAccount : {}",firmBean.data.getString("recvAccount"));
 		logger.info("sender : {}",firmBean.data.getString("sender"));
 		logger.info("amount : {}",CommonUtil.getAmountFormat(firmBean.data.getString("amount")));
 		logger.info("procType : {}",firmBean.data.getString("procType"));
-		
+
 		long idx = trxDAO.insertTrx(firmBean.bankCd, firmBean.data.getLong("amount"), firmBean.data.getString("recvBankCd"), firmBean.data.getString("recvAccount"), firmBean.data.getString("sender"), firmBean.data.getString("recordInfo"), firmBean.data.getString("procType"));
 		if(idx == 0){
 			firmBean.resultCd ="XXXX";
@@ -410,7 +411,6 @@ public class InterProcess implements java.io.Serializable{
 			hyphenBean.setReqdata(depositBean);
 
 			//통신
-			HyphenComm hyphenComm = new HyphenComm(firm.server);
 			String resData = hyphenComm.connect(hyphenBean);
 
 			//통신결과 클래스화
@@ -561,10 +561,10 @@ public class InterProcess implements java.io.Serializable{
 		logger.info("idx 	  : {}",firmBean.idx);
 		logger.info("bankCd   : {}",firmBean.bankCd);
 		logger.info("orgSeqNo : {}",firmBean.data.getString("orgSeqNo"));
-		
+
 		headerBean.setIndex(firmBean.idx);
 		headerBean.setNewBankCode(firmBean.bankCd);
-		
+
 		BankBean configBean = firm.bank.get(headerBean.getNewBankCode());
 		headerBean.setIdentificationCode(configBean.trCd);
 		headerBean.setCompanyCode(configBean.compCd);
@@ -585,31 +585,31 @@ public class InterProcess implements java.io.Serializable{
 
 		KsnetComm comm	= new KsnetComm(firm.server);
 		FBHeaderBean resHeader = comm.ksnet(headerBean);
-		
+
 		FB0600101Bean fb06001001bean = new FB0600101Bean(resHeader.getTransactionIndex());
-		
+
 		String resCode = "";
-		
+
 		if(!"0000".equals(resHeader.getBankResponseCode())) {
 			resCode = resHeader.getBankResponseCode();
 		}else {
 			resCode = fb06001001bean.getResultCd();
 		}
-		
+
 		resMsg = FirmDAO.getCodeDesc(headerBean.getNewBankCode(), resCode);
-		
+
 		logger.info("TRX RESULT CHECK [{}],[{}]",resCode,resMsg);
-		
+
 		logger.info("TRANSFER CHECK UPDATE : {} ",firmTrxDAO.updateResultCheck(resHeader, resCode, resMsg));
-		
+
 		logger.info("===================================================");
-		
+
 		firmBean.resultCd = resCode;
 		firmBean.resultMsg = resMsg;
-		
+
 		return firmBean;
 	}
-	
+
 	/*
 	 * 가상계좌 출금정보 등록
 	 */
@@ -651,12 +651,15 @@ public class InterProcess implements java.io.Serializable{
 		if("004".equals(firmBean.bankCd)) {
 			logger.info("고객명 	  	: {}",firmBean.data.getString("customerName"));
 		}
-				
+
 		logger.info("=========================================================");
-		
+
 		headerBean.setIndex(firmBean.idx);
 		headerBean.setNewBankCode(firmBean.bankCd);
-		headerBean.setIdentificationCode("");
+
+		BankBean configBean = firm.bank.get(headerBean.getNewBankCode());
+		headerBean.setIdentificationCode(configBean.trCd);
+
 		headerBean.setCompanyCode(firmBean.data.getString("companyCd"));
 		headerBean.setSpecCode("0900");
 		headerBean.setClassificationCode("400");
@@ -691,23 +694,23 @@ public class InterProcess implements java.io.Serializable{
 		}
 
 		headerBean.setTransactionIndex(fb0900400Bean.getTransaction());
-		
+
 		KsnetComm comm	= new KsnetComm(firm.server);
 		FBHeaderBean resHeader = comm.ksnet(headerBean);
-		
+
 		String resCode = resHeader.getBankResponseCode();
-		
+
 		resMsg = FirmDAO.getCodeDesc(headerBean.getNewBankCode(), resCode);
 
 		logger.info("가상계좌 출금정보 등록 : [{}][{}]",resCode,resMsg);
 		logger.info("===================================================");
-		
+
 		firmBean.resultCd = resCode;
 		firmBean.resultMsg = resMsg;
-		
+
 		return firmBean;
 	}
-	
+
 	public FirmBean processCheck(long idx,FirmBean firmBean,FirmMasterDAO masterDAO){
 		int limit = 40;
 		int count = 1;
@@ -721,12 +724,12 @@ public class InterProcess implements java.io.Serializable{
 				}
 			}
 		}catch(Exception e){
-			
+
 		}
 		return firmBean;
 	}
-	
-	
+
+
 	public FirmBean processCheck(long idx,FirmBean firmBean,FirmTrxDAO trxDAO){
 		int limit = 70;
 		int count = 1;
@@ -740,11 +743,11 @@ public class InterProcess implements java.io.Serializable{
 				}
 			}
 		}catch(Exception e){
-			
+
 		}
 		return firmBean;
 	}
-	
+
 	public FirmBean valid(FirmBean firmBean){
 		if(firmBean == null){
 			return formatError(firmBean,"메세지 포맷 오류");
@@ -762,8 +765,8 @@ public class InterProcess implements java.io.Serializable{
 		}
 		return firmBean;
 	}
-	
-	
+
+
 	public FirmBean formatError(FirmBean firmBean,String resultMsg){
 		if(firmBean == null){
 			firmBean = new FirmBean();
