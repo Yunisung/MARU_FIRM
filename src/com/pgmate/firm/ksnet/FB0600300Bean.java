@@ -10,8 +10,11 @@
 package com.pgmate.firm.ksnet;
 
 import com.pgmate.lib.util.lang.CommonUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class FB0600300Bean extends CommBean {
+	private Logger logger = LoggerFactory.getLogger( getClass() );
 
 	private String account			= "";	//계좌번호
 	private String sign				= "";	//부호
@@ -40,7 +43,17 @@ public class FB0600300Bean extends CommBean {
 		billCheck		= CommonUtil.toString(transaction,55,13);
 		payAmount		= CommonUtil.toString(transaction,68,13);
 		extra			= CommonUtil.toString(transaction,81,119);
-		
+	}
+
+	public void log() {
+		logger.info("=================== 잔액조회 결과 ===================");
+		logger.info("account : {}", account);
+		logger.info("sign : {}", sign);
+		logger.info("currentAmount : {}", currentAmount);
+		logger.info("cashierCheck : {}", cashierCheck);
+		logger.info("personalCheck : {}", personalCheck);
+		logger.info("billCheck : {}", billCheck);
+		logger.info("payAmount : {}", payAmount);
 	}
 	
 	public String getTransaction(){

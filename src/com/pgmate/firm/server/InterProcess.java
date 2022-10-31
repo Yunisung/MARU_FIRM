@@ -112,6 +112,7 @@ public class InterProcess implements java.io.Serializable{
 			firmBean = processCheck(idx,firmBean,masterDAO);
 			if(firmBean.resultCd.equals("0000")){
 				fbBean = new FB0600300Bean(firmBean.data.getString("resData"));
+				fbBean.log();
 				firmBean.data.put("amount", CommonUtil.parseLong(fbBean.getSign()+fbBean.getCurrentAmount()));
 				masterDAO.insertBalance(firmBean.bankCd, fbBean.getAccount(), fbBean.getSign()+fbBean.getCurrentAmount());
 			}
