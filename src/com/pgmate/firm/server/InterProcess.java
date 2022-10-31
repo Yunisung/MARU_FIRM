@@ -653,10 +653,11 @@ public class InterProcess implements java.io.Serializable{
 		}
 
 		logger.info("=========================================================");
-
+		BankBean configBean = firm.bank.get(headerBean.getNewBankCode());
 		headerBean.setIndex(firmBean.idx);
 		headerBean.setNewBankCode(firmBean.bankCd);
-		headerBean.setIdentificationCode("");
+		headerBean.setIdentificationCode(configBean.trCd);
+
 		headerBean.setCompanyCode(firmBean.data.getString("companyCd"));
 		headerBean.setSpecCode("0900");
 		headerBean.setClassificationCode("400");
