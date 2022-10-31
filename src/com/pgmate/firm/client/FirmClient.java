@@ -19,8 +19,8 @@ import com.pgmate.lib.util.gson.GsonUtil;
 public class FirmClient {
 
 	private static Logger logger = LoggerFactory.getLogger( com.pgmate.firm.client.FirmClient.class );
-	private static String host 	= "203.245.13.63";
-	private static int port 	= 10028;
+	private static String host 	= "10.100.200.10";
+	private static int port 	= 10006;
 	private static int timeout  = 40000;
 
 
@@ -72,6 +72,7 @@ public class FirmClient {
 		firmBean.bankCd 	= bankCd;
 		firmBean.msgType 	= "0600300";
 		firmBean.userId		= "SYSTEM";
+		firmBean.mAccnt     = "70110001999557";
 
 		firmBean = comm(firmBean);
 		logger.info("응답:{},{}",firmBean.resultCd,firmBean.resultMsg);
@@ -160,7 +161,7 @@ public class FirmClient {
 	public void holder(String userBankCd,String userAccount){
 		logger.info("예금주조회");
 		FirmBean firmBean = new FirmBean();
-		firmBean.bankCd 	= "020";
+		firmBean.bankCd 	= "089";
 		firmBean.msgType 	= "0600400";
 		firmBean.userId		= "SYSTEM";
 		firmBean.data.put("bankCd", userBankCd);
@@ -273,6 +274,15 @@ public class FirmClient {
 
 	public static void main(String[] args){
 		FirmClient client = new FirmClient();
+
+		//###########부국 테스트 #################
+
+//		client.balance("089");
+		client.holder("088", "110487944164");
+
+
+
+		//#####################################
 		//client.open("020");
 		//client.testCall("020");
 		//client.balance("020");
@@ -286,7 +296,7 @@ public class FirmClient {
 		//logger.info("계좌조회");
 		//client.holderFCS("088", "110311129095");
 		//client.holderFCS("020", "");
-		client.balance("039","2070079982702","SDS00268"); //FCS용 테스트 계좌 . 850611 , 달나라가자
+//		client.balance("039","2070079982702","SDS00268"); //FCS용 테스트 계좌 . 850611 , 달나라가자
 		/*
 		logger.info("계좌 + 신원확인번호 ");
 		client.holderFCS("011", "24202211712","","850611","77"); //FCS용 테스트 계좌 . 850611 , 달나라가자
