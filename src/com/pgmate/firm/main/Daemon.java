@@ -35,9 +35,9 @@ public class Daemon extends Thread{
 					if(firm.daemon.startTime < currentTime && currentTime < firm.daemon.stopTime){
 						//logger.info("firm daemon running");
 						FirmMain main = new FirmMain(firm);
-						//main.transMaster();
-						//main.wireTransfer();
-						main.firmMaster();
+						main.transMaster();
+						main.wireTransfer();
+//						main.firmMaster();
 						//main.firmTrx();
 
 					}

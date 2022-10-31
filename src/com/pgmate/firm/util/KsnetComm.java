@@ -70,11 +70,11 @@ public class KsnetComm {
     		
     		output = socket.getOutputStream();
     		message= "데이터 전송 실패";
-    		key = generateKey();
-    		request = encrypt(key,reqMsg);
+//    		key = generateKey();
+//    		request = encrypt(key,reqMsg);
     		logger.info("-> KSNET [{}]",reqMsg);
     		//logger.debug("-> KSNET [{}],{}",CommonUtil.toString(request),request.length);
-    		output.write(request);
+    		output.write(reqMsg.getBytes());
     		output.flush();
     		
     		message= "데이터 수신 오류";
