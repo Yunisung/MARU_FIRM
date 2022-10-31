@@ -100,10 +100,10 @@ public class KsnetComm {
             bout.close();
     		
             if(response != null){
-            	//logger.debug("<- KSNET [{}],{}",CommonUtil.toString(response),response.length);
+            	logger.debug("<- KSNET [{}],{}",CommonUtil.toString(response),response.length);
             	byte[] resBuf = new byte[response.length-4];
             	System.arraycopy(response, 4, resBuf, 0, response.length-4);
-            	response  = decrypt(key, resBuf);
+//            	response  = decrypt(key, resBuf);
             }else{
             	logger.info("<- KSNET [null]");
             }
