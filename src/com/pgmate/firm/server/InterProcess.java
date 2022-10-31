@@ -652,6 +652,11 @@ public class InterProcess implements java.io.Serializable{
 			logger.info("고객명 	  	: {}",firmBean.data.getString("customerName"));
 		}
 
+		//가상계좌가 케이뱅크일때 세팅
+		if("089".equals(firmBean.bankCd)) {
+			logger.info("고객명 	  	: {}",firmBean.data.getString("customerName"));
+		}
+
 		logger.info("=========================================================");
 
 		headerBean.setIndex(firmBean.idx);
@@ -691,6 +696,10 @@ public class InterProcess implements java.io.Serializable{
 		//가상계좌가 농협은행일때만 세팅
 		if("011".equals(firmBean.bankCd) || "012".equals(firmBean.bankCd)) {
 			fb0900400Bean.setRegType(firmBean.data.getString("regType"));
+		}
+
+		if("089".equals(firmBean.bankCd)) {
+			fb0900400Bean.setCustomerName(firmBean.data.getString("customerName"));
 		}
 
 		headerBean.setTransactionIndex(fb0900400Bean.getTransaction());
