@@ -1,9 +1,6 @@
 package com.pgmate.firm.util;
 
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
+import java.io.*;
 import java.math.BigInteger;
 import java.net.InetSocketAddress;
 import java.net.Socket;
@@ -43,7 +40,7 @@ public class KsnetComm {
 	}
 	
 	
-	public FBHeaderBean ksnet(FBHeaderBean headerBean){
+	public FBHeaderBean ksnet(FBHeaderBean headerBean) throws UnsupportedEncodingException {
 		long time 					= System.currentTimeMillis();
 		
 		FBHeaderBean resHeaderBean 	= null;
@@ -129,7 +126,7 @@ public class KsnetComm {
 			headerBean.setBankResponseCode("XXXX");
 			headerBean.setKsnetResponseCode("XXXX");
 			headerBean.setTransactionTime(CommonUtil.getCurrentDate("yyyyMMddHHmmss"));
-			response = (headerBean.getTransaction()+headerBean.getTransactionIndex()).getBytes();
+			response = (headerBean.getTransaction()+headerBean.getTransactionIndex()).getBytes("UTF-8");
 			if(headerBean.getSpecCode().equals("0100")) {
 				String msgBody = "KSNET Æß¹ðÅ· Ãâ±Ý Àå¾Ö ¹ß»ý [" + message + "] ";
 				smsGw.sendMessage("1", "1", msgBody);
