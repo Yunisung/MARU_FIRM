@@ -90,17 +90,18 @@ public class InterKsnetExcuter implements InterExcuter {
         fbBean.setName(firmBean.data.getString("holder"));
 
         //PYS : 이미 조회한 계좌는 테이블에서 조회
-        if(firmBean.bankCd.equals("099") && firmBean.data.isNullOrSpace("socialCheck")) {
-            String holder = masterDAO.selectAccnt(firmBean.data.getString("bankCd"), firmBean.data.getString("account"));
-            logger.info("INTER ACCNT CHECK: {}",holder);
-            if(!CommonUtil.isNullOrSpace(holder)) {
-                firmBean.data.put("name", holder);
-                firmBean.resultCd ="0000";
-                firmBean.resultMsg = "정상조회";
-
-                return firmBean;
-            }
-        }
+        // 나중에 주석처리 하던가 할것.
+//        if(firmBean.bankCd.equals("099") && firmBean.data.isNullOrSpace("socialCheck")) {
+//            String holder = masterDAO.selectAccnt(firmBean.data.getString("bankCd"), firmBean.data.getString("account"));
+//            logger.info("INTER ACCNT CHECK: {}",holder);
+//            if(!CommonUtil.isNullOrSpace(holder)) {
+//                firmBean.data.put("name", holder);
+//                firmBean.resultCd ="0000";
+//                firmBean.resultMsg = "정상조회";
+//
+//                return firmBean;
+//            }
+//        }
 
         logger.info("INSERT MASTSER TABLE");
 
