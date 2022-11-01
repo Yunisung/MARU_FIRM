@@ -309,8 +309,8 @@ public class InterKsnetExcuter implements InterExcuter {
         headerBean.setIndex(firmBean.idx);
         headerBean.setNewBankCode(firmBean.bankCd);
 
-        BankBean configBean = firm.bank.get(headerBean.getNewBankCode());
-        headerBean.setIdentificationCode(configBean.trCd);
+        //가상계좌용 식별코드 : KSNETVR
+        headerBean.setIdentificationCode("KSNETVR");
 
         headerBean.setCompanyCode(firmBean.data.getString("companyCd"));
         headerBean.setSpecCode("0900");
@@ -344,7 +344,7 @@ public class InterKsnetExcuter implements InterExcuter {
         if("011".equals(firmBean.bankCd) || "012".equals(firmBean.bankCd)) {
             fb0900400Bean.setRegType(firmBean.data.getString("regType"));
         }
-
+        //가상계좌가 케이뱅크일때 세팅
         if("089".equals(firmBean.bankCd)) {
             fb0900400Bean.setCustomerName(firmBean.data.getString("customerName"));
         }

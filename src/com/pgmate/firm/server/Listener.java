@@ -34,7 +34,6 @@ public class Listener {
 			source = FirmUtil.MONITOR;
 			socket.socketClose();
 		}
-		/*
 		else if(!firm.server.internalIp.equals("") && clientIp.indexOf(firm.server.internalIp) > -1){
 			source = FirmUtil.INTERNAL;
 		}else if(clientIp.indexOf("1.212.11.242") > -1 || clientIp.indexOf("175.209.131.216") > -1 ||
@@ -44,10 +43,9 @@ public class Listener {
 		}else{
 			source = FirmUtil.KSNET;
 		}
-		*/
-		else {
-			source = FirmUtil.HYPHEN;
-		}
+//		else {
+//			source = FirmUtil.HYPHEN;
+//		}
 
 		if(!source.equals(FirmUtil.MONITOR)){
 			process();
@@ -64,7 +62,7 @@ public class Listener {
 			//logger.debug("-> {} [{}],{}",source,CommonUtil.toString(recv),recv.length);
 			//logger.debug("-> {} [{}],{}",source,CommonUtil.toString(recv),recv.length);
 
-			/*if(source.equals(FirmUtil.KSNET)){	//KSNET 수신 프로세스
+			if(source.equals(FirmUtil.KSNET)){	//KSNET 수신 프로세스
 
 				logger.debug("-> {} [{}]",source,CommonUtil.toString(recv));
 
@@ -75,7 +73,7 @@ public class Listener {
 				send = new BankProcess(firm).execute(recv);
 				logger.info("-> {} resultCd : [{}]",source,CommonUtil.toString(send,51,4));
 				logger.info("<- {} [{}]",source,CommonUtil.toString(send));
-				send = FirmUtil.uencode_3des(firm.server.serverAuthKey.getBytes(),send);
+//				send = FirmUtil.uencode_3des(firm.server.serverAuthKey.getBytes(),send);
 				logger.debug("<- {} [{}]",source,CommonUtil.toString(send));
 
 
@@ -91,14 +89,14 @@ public class Listener {
 				logger.info("<- {} [{}]",source,CommonUtil.toString(send));
 				//send = FirmUtil.uencode_3des(firm.server.encryptKey.getBytes(),send);
 
-			}*/
+			}
 
 			// 소켓 통신으로 펌뱅킹만 사용함. 가상계좌는 MARU_VACT_HYPHEN에서 사용
-			if(source.equals(FirmUtil.HYPHEN)) {
-				logger.info("-> {} [{}]", source, CommonUtil.toString(recv));
-				send = new InterProcess(firm).execute(new String(recv)).getBytes();
-				logger.info("<- {} [{}]", source, CommonUtil.toString(send));
-			}
+//			if(source.equals(FirmUtil.HYPHEN)) {
+//				logger.info("-> {} [{}]", source, CommonUtil.toString(recv));
+//				send = new InterProcess(firm).execute(new String(recv)).getBytes();
+//				logger.info("<- {} [{}]", source, CommonUtil.toString(send));
+//			}
 			
 			socket.send(send);
 			socket.ioClose();
