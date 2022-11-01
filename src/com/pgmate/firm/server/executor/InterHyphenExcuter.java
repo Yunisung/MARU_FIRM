@@ -47,7 +47,7 @@ public class InterHyphenExcuter implements InterExcuter {
      */
     @Override
     public FirmBean proc0600300(FirmBean firmBean){
-
+        FirmMasterDAO masterDAO = new FirmMasterDAO();
         FirmTrxDAO firmTrxDAO = new FirmTrxDAO();
         FBHeaderBean headerBean = new FBHeaderBean();
 
@@ -63,7 +63,7 @@ public class InterHyphenExcuter implements InterExcuter {
         headerBean.setIdentificationCode(configBean.trCd);
         headerBean.setCompanyCode(configBean.compCd);
         headerBean.setSpecCode("0600");
-        headerBean.setClassificationCode("101");
+        headerBean.setClassificationCode("300");
         headerBean.setFrequency("1");
         headerBean.setTransactionTime(CommonUtil.getCurrentDate("yyyyMMddHHmmss"));
         headerBean.setSpecNumber(firmTrxDAO.getBankSeq()) ;
@@ -76,18 +76,24 @@ public class InterHyphenExcuter implements InterExcuter {
 
         FBHeaderBean resHeader = ksnetComm.ksnet(headerBean);
         logger.info("TRX RESULT {},[{}]",resHeader.getBankResponseCode(),resHeader.getMessage());
-        logger.info("TRX RESULT UPDATE : {}",firmTrxDAO.update(resHeader));
 
         String resCode = resHeader.getBankResponseCode();
         String resMsg = FirmDAO.getCodeDesc(headerBean.getNewBankCode(), resCode);
+
+        firmBean.resultCd = resCode;
+        firmBean.resultMsg = resMsg;
+
+        if(firmBean.resultCd.equals("0000")){
+            fbBean = new FB0600300Bean(firmBean.data.getString("resData"));
+            String amount = fbBean.getSign()+fbBean.getCurrentAmount();
+            firmBean.data.put("amount", CommonUtil.parseLong(amount.trim()));
+            masterDAO.insertBalance(firmBean.bankCd, fbBean.getAccount(), amount.trim());
+        }
 
         logger.info("TRX RESULT CHECK [{}],[{}]",resCode,resMsg);
         logger.info("TRANSFER CHECK UPDATE : {} ",firmTrxDAO.updateResultCheck(resHeader, resCode, resMsg));
 
         logger.info("===================================================");
-
-        firmBean.resultCd = resCode;
-        firmBean.resultMsg = resMsg;
 
         return firmBean;
     }

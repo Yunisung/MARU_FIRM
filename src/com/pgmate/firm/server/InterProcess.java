@@ -29,6 +29,7 @@ public class InterProcess implements java.io.Serializable{
 		firmBean = valid(firmBean);
 
 		InterExcuter interExcuter = new InterKsnetExcuter(firm);
+//		InterExcuter interExcuter = new InterHyphenExcuter(firm);
 
 		if(firmBean.resultCd.equals("9999")){
 			return GsonUtil.toJson(firmBean);

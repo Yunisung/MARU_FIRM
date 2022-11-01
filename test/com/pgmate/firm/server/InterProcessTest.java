@@ -7,6 +7,7 @@ import com.pgmate.firm.main.Daemon;
 import com.pgmate.firm.util.FirmUtil;
 import com.pgmate.lib.util.gson.GsonUtil;
 import com.pgmate.lib.util.lang.CommonUtil;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.slf4j.Logger;
@@ -16,7 +17,6 @@ public class InterProcessTest {
 
     InterProcess interProcess;
     Firm firm;
-    Server ss;
     private static Logger logger = LoggerFactory.getLogger(InterProcessTest.class);
 
 
@@ -30,7 +30,7 @@ public class InterProcessTest {
 
     @Test
     public void balance() {
-        // 0600300
+        // 잔액조회
         FirmBean firmBean = new FirmBean();
         firmBean.bankCd 	= "089";
         firmBean.msgType 	= "0600300";
@@ -40,10 +40,23 @@ public class InterProcessTest {
         String reqJson = GsonUtil.toJson(firmBean);
         logger.info("reqJson: {} ", reqJson);
         String send = interProcess.execute(reqJson);
-        logger.info("<- {} [{}]", FirmUtil.HYPHEN, CommonUtil.toString(send));
+        logger.info("<- {} [{}]", FirmUtil.KSNET, CommonUtil.toString(send));
+    }
 
-        //KsnetComm comm	= new KsnetComm(firm.server);
-        //FBHeaderBean resHeader = comm.ksnet(headerBean);
+    @Test
+    public void getExecutionResult() {
+        // 처리결과조회 - PG_FIRM_MASTER로 전송하지 않고 직접 comm으로 전송함.
+        FirmBean firmBean = new FirmBean();
+        firmBean.bankCd 	= "089";
+        firmBean.msgType 	= "0600101";
+        firmBean.userId		= "SYSTEM";
+        firmBean.mAccnt     = "70110001999557";
+        firmBean.data.put("orgSeqNo", "");
+
+        String reqJson = GsonUtil.toJson(firmBean);
+        logger.info("reqJson: {} ", reqJson);
+        String send = interProcess.execute(reqJson);
+        logger.info("<- {} [{}]", FirmUtil.KSNET, CommonUtil.toString(send));
     }
 
 

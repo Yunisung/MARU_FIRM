@@ -160,7 +160,7 @@ public class InterKsnetExcuter implements InterExcuter {
     @Override
     public FirmBean proc0100100(FirmBean firmBean){
         // 이체가능시간 외 데이터 등록 막기
-        Firm firm = FirmLoader.getConfig();
+        //Firm firm = FirmLoader.getConfig();
         long currentTime = CommonUtil.parseLong(CommonUtil.getCurrentDate("HHmmss"));
 
         if(firm.daemon.startTime > currentTime || currentTime > firm.daemon.stopTime){
@@ -196,6 +196,7 @@ public class InterKsnetExcuter implements InterExcuter {
      * @param firmBean
      * @return
      */
+    /*
     @Override
     public FirmBean proc0600101(FirmBean firmBean){
         FirmTrxDAO firmTrxDAO = new FirmTrxDAO();
@@ -251,6 +252,37 @@ public class InterKsnetExcuter implements InterExcuter {
 
         firmBean.resultCd = resCode;
         firmBean.resultMsg = resMsg;
+
+        return firmBean;
+    }
+    */
+
+    /**
+     * 처리결과조회
+     * @param firmBean
+     * @return
+     */
+    @Override
+    public FirmBean proc0600101(FirmBean firmBean){
+        try {
+            FirmMasterDAO masterDAO = new FirmMasterDAO();
+            FB0600101Bean fbBean = new FB0600101Bean();
+            fbBean.setRootSpecNumber(firmBean.data.getString("orgSeqNo")) ;
+
+            long idx = masterDAO.setMaster(firmBean.msgType.substring(0,4), firmBean.msgType.substring(4), firmBean.bankCd, fbBean.getTransaction());
+            firmBean = processCheck(idx,firmBean,masterDAO);
+            if(firmBean.resultCd.equals("0000")){
+                // 아무것도 하지 않음
+            }
+        }catch (Exception e) {
+            firmBean.resultCd ="XXXX";
+            firmBean.resultMsg ="처리결과조회 오류";
+
+            e.printStackTrace();
+            logger.error("처리결과조회 Error : [{}]", e.getMessage());
+        }
+
+        logger.info("===================================================");
 
         return firmBean;
     }
