@@ -40,7 +40,7 @@ public class KsnetComm {
 	}
 	
 	
-	public FBHeaderBean ksnet(FBHeaderBean headerBean) throws UnsupportedEncodingException {
+	public FBHeaderBean ksnet(FBHeaderBean headerBean) {
 		long time 					= System.currentTimeMillis();
 		
 		FBHeaderBean resHeaderBean 	= null;
@@ -71,7 +71,7 @@ public class KsnetComm {
 //    		request = encrypt(key,reqMsg);
     		logger.info("-> KSNET [{}]",reqMsg);
     		//logger.debug("-> KSNET [{}],{}",CommonUtil.toString(request),request.length);
-    		output.write(reqMsg.getBytes("euc-kr"));
+    		output.write(reqMsg.getBytes());
     		output.flush();
     		
     		message= "데이터 수신 오류";
@@ -126,7 +126,7 @@ public class KsnetComm {
 			headerBean.setBankResponseCode("XXXX");
 			headerBean.setKsnetResponseCode("XXXX");
 			headerBean.setTransactionTime(CommonUtil.getCurrentDate("yyyyMMddHHmmss"));
-			response = (headerBean.getTransaction()+headerBean.getTransactionIndex()).getBytes("UTF-8");
+			response = (headerBean.getTransaction()+headerBean.getTransactionIndex()).getBytes();
 			if(headerBean.getSpecCode().equals("0100")) {
 				String msgBody = "KSNET 펌뱅킹 출금 장애 발생 [" + message + "] ";
 				smsGw.sendMessage("1", "1", msgBody);
