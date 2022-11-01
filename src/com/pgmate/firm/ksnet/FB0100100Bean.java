@@ -64,18 +64,18 @@ public class FB0100100Bean extends CommBean {
 		transaction.append(CommonUtil.byteFiller(sign,6));
 		transaction.append(CommonUtil.zerofill(amount,13));
 		transaction.append(CommonUtil.byteFiller(remainAmountSign,1));
-		transaction.append(CommonUtil.zerofill(remainAmount,13));
+		transaction.append(CommonUtil.byteFiller(remainAmount,13));
 		transaction.append(CommonUtil.byteFiller(receiveBankCode,2));
 		transaction.append(CommonUtil.byteFiller(receiveAccount,15));
-		transaction.append(CommonUtil.zerofill(commission,9));
+		transaction.append(CommonUtil.byteFiller(commission,9));
 		transaction.append(CommonUtil.byteFiller(trasferTime,6));
 		transaction.append(CommonUtil.byteFiller(senderName,20));
 		transaction.append(CommonUtil.byteFiller(cmsCode,16));
 		transaction.append(CommonUtil.byteFiller(socialNumber,13));
 		transaction.append(CommonUtil.byteFiller(ATMCode,2));
 		transaction.append(CommonUtil.byteFiller(receiverName,20));
-		transaction.append(CommonUtil.zerofill(receiveNewBankCode,3));
-		transaction.append(CommonUtil.zerofill(salary,1));
+		transaction.append(CommonUtil.byteFiller(receiveNewBankCode,3));
+		transaction.append(CommonUtil.byteFiller(salary,1));
 		transaction.append(CommonUtil.byteFiller(extra,37));
 		
 		return transaction.toString();
