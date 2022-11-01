@@ -508,8 +508,8 @@ public class FirmTrxDAO {
 		return result;
 	}
 
-	public long insertTrx(String bankCd,long amount,String recvBankCd,String recvAccount,String recver, String sender,String recordInfo,String procType, String seqNo){
-		String query = "INSERT INTO PG_FIRM_TRX  (bankCd,sendDate,sendTime,seqNo,amount,recvBank,recvAccount,recver, recordInfo,recvHolder,procType,filler ) values (?,DATE_FORMAT(now(),'%Y%m%d') , DATE_FORMAT(now(),'%H%i%s'),?,?,?,?,?,?,?,?,?)";
+	public long insertTrx(String bankCd,long amount,String recvBankCd,String recvAccount,String sender,String recordInfo,String procType, String seqNo){
+		String query = "INSERT INTO PG_FIRM_TRX  (bankCd,sendDate,sendTime,seqNo,amount,recvBank,recvAccount,recordInfo,recvHolder,procType,filler ) values (?,DATE_FORMAT(now(),'%Y%m%d') , DATE_FORMAT(now(),'%H%i%s'),?,?,?,?,?,?,?,?)";
 
 		DBManager db 			= null;
 		PreparedStatement pstmt	= null;
@@ -546,11 +546,10 @@ public class FirmTrxDAO {
 			pstmt.setLong(3,amount);
 			pstmt.setString(4,recvBankCd);
 			pstmt.setString(5,recvAccount);
-			pstmt.setString(6, recver);
-			pstmt.setString(7,sendMemo);
-			pstmt.setString(8,sender);
-			pstmt.setString(9,procType);
-			pstmt.setString(10,recordInfo);
+			pstmt.setString(6,sendMemo);
+			pstmt.setString(7,sender);
+			pstmt.setString(8,procType);
+			pstmt.setString(9,recordInfo);
 
 			result = pstmt.executeUpdate();
 			rset		= pstmt.executeQuery("SELECT LAST_INSERT_ID() ");
@@ -568,8 +567,8 @@ public class FirmTrxDAO {
 		return result;
 	}
 
-	public long insertTrx(String bankCd,long amount,String recvBankCd,String recvAccount,String recver, String sender,String recordInfo,String procType){
-		String query = "INSERT INTO PG_FIRM_TRX  (bankCd,sendDate,sendTime,seqNo,amount,recvBank,recvAccount,recver,recordInfo,recvHolder,procType,filler ) values (?,DATE_FORMAT(now(),'%Y%m%d') , DATE_FORMAT(now(),'%H%i%s'),FN_BANKSEQ(),?,?,?,?,?,?,?,?)";
+	public long insertTrx(String bankCd,long amount,String recvBankCd,String recvAccount,String sender,String recordInfo,String procType){
+		String query = "INSERT INTO PG_FIRM_TRX  (bankCd,sendDate,sendTime,seqNo,amount,recvBank,recvAccount,recordInfo,recvHolder,procType,filler ) values (?,DATE_FORMAT(now(),'%Y%m%d') , DATE_FORMAT(now(),'%H%i%s'),FN_BANKSEQ(),?,?,?,?,?,?,?)";
 
 		DBManager db 			= null;
 		PreparedStatement pstmt	= null;
@@ -605,11 +604,10 @@ public class FirmTrxDAO {
 			pstmt.setLong(2,amount);
 			pstmt.setString(3,recvBankCd);
 			pstmt.setString(4,recvAccount);
-			pstmt.setString(5, recver);
-			pstmt.setString(6,sendMemo);
-			pstmt.setString(7,sender);
-			pstmt.setString(8,procType);
-			pstmt.setString(9,recordInfo);
+			pstmt.setString(5,sendMemo);
+			pstmt.setString(6,sender);
+			pstmt.setString(7,procType);
+			pstmt.setString(8,recordInfo);
 
 			result = pstmt.executeUpdate();
 			rset		= pstmt.executeQuery("SELECT LAST_INSERT_ID() ");

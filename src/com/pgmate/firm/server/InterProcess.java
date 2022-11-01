@@ -332,12 +332,11 @@ public class InterProcess implements java.io.Serializable{
 		logger.info("account : {}",firm.bank.get(firmBean.bankCd).account);
 		logger.info("recvBankCd : {}",firmBean.data.getString("recvBankCd"));
 		logger.info("recvAccount : {}",firmBean.data.getString("recvAccount"));
-		logger.info("recver : {}", firmBean.data.getString("recver"));
 		logger.info("sender : {}",firmBean.data.getString("sender"));
 		logger.info("amount : {}",CommonUtil.getAmountFormat(firmBean.data.getString("amount")));
 		logger.info("procType : {}",firmBean.data.getString("procType"));
 
-		long idx = trxDAO.insertTrx(firmBean.bankCd, firmBean.data.getLong("amount"), firmBean.data.getString("recvBankCd"), firmBean.data.getString("recvAccount"), firmBean.data.getString("recver"),firmBean.data.getString("sender"), firmBean.data.getString("recordInfo"), firmBean.data.getString("procType"));
+		long idx = trxDAO.insertTrx(firmBean.bankCd, firmBean.data.getLong("amount"), firmBean.data.getString("recvBankCd"), firmBean.data.getString("recvAccount"), firmBean.data.getString("sender"), firmBean.data.getString("recordInfo"), firmBean.data.getString("procType"));
 		if(idx == 0){
 			firmBean.resultCd ="XXXX";
 			firmBean.resultMsg ="이체데이터 등록실패";
