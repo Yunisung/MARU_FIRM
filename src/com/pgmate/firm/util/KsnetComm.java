@@ -69,7 +69,8 @@ public class KsnetComm {
     		message= "데이터 전송 실패";
 //    		key = generateKey();
 //    		request = encrypt(key,reqMsg);
-    		logger.info("-> KSNET [{}]",reqMsg);
+//    		output.write(request);
+			logger.info("-> KSNET [{}], {}",reqMsg, reqMsg.length());
     		//logger.debug("-> KSNET [{}],{}",CommonUtil.toString(request),request.length);
     		output.write(reqMsg.getBytes());
     		output.flush();
@@ -139,6 +140,7 @@ public class KsnetComm {
 				if(socket != null){socket.close();}
 			}catch(IOException io){
 			}
+
 			resHeaderBean = new FBHeaderBean(response);
 			resHeaderBean.setIndex(headerBean.getIndex());
 			resHeaderBean.setProcId(headerBean.getProcId());
@@ -234,7 +236,7 @@ public class KsnetComm {
 		byte tdata[]	= new  KSBankSeed(kbuf).cbc_encrypt(mbuf) ;
 		return tdata;
 	}
-	
+
 	
 	
 	

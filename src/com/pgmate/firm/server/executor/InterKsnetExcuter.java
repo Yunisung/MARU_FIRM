@@ -177,7 +177,6 @@ public class InterKsnetExcuter implements InterExcuter {
         logger.info("recvBankCd : {}",firmBean.data.getString("recvBankCd"));
         logger.info("recvAccount : {}",firmBean.data.getString("recvAccount"));
         logger.info("sender : {}",firmBean.data.getString("sender"));
-        logger.info("recver : {}", firmBean.data.getString("recver"));
         logger.info("amount : {}",CommonUtil.getAmountFormat(firmBean.data.getString("amount")));
         logger.info("procType : {}",firmBean.data.getString("procType"));
 
@@ -408,6 +407,7 @@ public class InterKsnetExcuter implements InterExcuter {
             while(count < limit){
                 Thread.sleep(1000);
                 firmBean = masterDAO.checkResult(idx,firmBean);
+                firmBean.resultMsg = FirmDAO.getResultMsg(firmBean.resultCd);
                 if(!firmBean.resultCd.equals("")){
                     count = limit;
                     break;
