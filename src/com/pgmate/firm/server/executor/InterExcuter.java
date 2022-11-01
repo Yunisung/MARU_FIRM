@@ -7,28 +7,28 @@ public interface InterExcuter {
     FirmBean proc0800(FirmBean firmBean);
 
     /**
-     * ì”ì•¡ì¡°íšŒ
+     * ÀÜ¾×Á¶È¸
      * @param firmBean
      * @return
      */
     FirmBean proc0600300(FirmBean firmBean);
 
     /**
-     * ì„±ëª…ì¡°íšŒ
+     * ¼º¸íÁ¶È¸
      * @param firmBean
      * @return
      */
     FirmBean proc0600400(FirmBean firmBean);
 
     /**
-     * ì§‘ê³„
+     * Áı°è
      * @param firmBean
      * @return
      */
     FirmBean proc0700100(FirmBean firmBean);
 
     /**
-     * ì†¡ê¸ˆì´ì²´
+     * ¼Û±İÀÌÃ¼
      * proc0100100
      * @param firmBean
      * @return
@@ -36,14 +36,14 @@ public interface InterExcuter {
     FirmBean proc0100100(FirmBean firmBean);
 
     /**
-     * ì²˜ë¦¬ê²°ê³¼ì¡°íšŒ
+     * Ã³¸®°á°úÁ¶È¸
      * @param firmBean
      * @return
      */
     FirmBean proc0600101(FirmBean firmBean);
 
     /**
-     * ê°€ìƒê³„ì¢Œ ì¶œê¸ˆì •ë³´ ë“±ë¡
+     * °¡»ó°èÁÂ Ãâ±İÁ¤º¸ µî·Ï
      * @param firmBean
      * @return
      */
