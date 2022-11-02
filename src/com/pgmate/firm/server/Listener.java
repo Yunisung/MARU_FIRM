@@ -47,6 +47,11 @@ public class Listener {
 //			source = FirmUtil.HYPHEN;
 //		}
 
+		//PYS : BankProcess TEST
+//		source = FirmUtil.KSNET;
+
+
+
 		if(!source.equals(FirmUtil.MONITOR)){
 			process();
 		}
