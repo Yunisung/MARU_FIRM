@@ -153,10 +153,11 @@ public class FirmTrxDAO {
 					headerBean.setProcType(CommonUtil.nToB(rset.getString("procType")));
 					headerBean.setProcId(CommonUtil.nToB(rset.getString("procId")));
 
-					if(headerBean.getNewBankCode().equals("020") && CommonUtil.isNullOrSpace(fb0100100Bean.getSign())){
-						String sign = 	WooriSign.getSign(fb0100100Bean.getReceiveAccount(), CommonUtil.getAmountFormat(fb0100100Bean.getAmount()), fb0100100Bean.getReceiveNewBankCode(), fb0100100Bean.getMAccount());
-						fb0100100Bean.setSign(sign);
-					}
+					//PYS: 안쓰는 로직
+//					if(headerBean.getNewBankCode().equals("020") && CommonUtil.isNullOrSpace(fb0100100Bean.getSign())){
+//						String sign = 	WooriSign.getSign(fb0100100Bean.getReceiveAccount(), CommonUtil.getAmountFormat(fb0100100Bean.getAmount()), fb0100100Bean.getReceiveNewBankCode(), fb0100100Bean.getMAccount());
+//						fb0100100Bean.setSign(sign);
+//					}
 
 					headerBean.setTransactionIndex(fb0100100Bean.getTransaction());
 					list.add(headerBean);

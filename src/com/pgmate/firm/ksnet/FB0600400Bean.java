@@ -51,7 +51,7 @@ public class FB0600400Bean extends CommBean {
 		transactionDay 	= CommonUtil.toString(transaction,0,4).trim();		//MMDD
 		bankCode		= CommonUtil.toString(transaction,4,2).trim();		//계좌은행
 		account			= CommonUtil.toString(transaction,6,16).trim();		//계좌번호
-		name			= CommonUtil.encodeString(transaction,22,22, "euc-kr").trim();	//계좌성명
+		name			= CommonUtil.toString(transaction,22,22).trim();	//계좌성명
 		socialNumber	= CommonUtil.toString(transaction,44,13).trim();	//계좌의 주민번호
 		socialCheck		= CommonUtil.toString(transaction,57,2).trim();		//계좌의 주민번호 체크 여부 99:일반체크 88:두음법칙체크
 		mAccount		= CommonUtil.toString(transaction,59,20).trim();	//새마을 금고 이용할때 (은행과 직계약 일 경우) 모계좌번호
