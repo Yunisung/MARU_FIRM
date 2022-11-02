@@ -392,8 +392,9 @@ public class InterKsnetExcuter implements InterExcuter {
         resMsg = FirmDAO.getCodeDesc(headerBean.getNewBankCode(), resCode);
 
         logger.info("MASTER TRANSFER : {}",headerBean.getSpecCode()+headerBean.getClassificationCode());
-        masterDAO.setMasterForResponse(firmBean.msgType.substring(0,4), firmBean.msgType.substring(4)
+        long idx = masterDAO.setMasterForResponse(firmBean.msgType.substring(0,4), firmBean.msgType.substring(4)
                 , firmBean.bankCd, fb0900400Bean.getTransaction(), "I");
+        resHeader.setIndex(idx);
 
         logger.info("MASTER RESULT {},[{}]",resHeader.getBankResponseCode(),resHeader.getMessage());
         logger.info("MASTER RESULT UPDATE : {}", masterDAO.update(resHeader));
