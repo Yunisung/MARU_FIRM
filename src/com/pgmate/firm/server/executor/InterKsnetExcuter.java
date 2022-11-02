@@ -293,6 +293,7 @@ public class InterKsnetExcuter implements InterExcuter {
      */
     @Override
     public FirmBean proc0900400(FirmBean firmBean){
+        FirmMasterDAO masterDAO = new FirmMasterDAO();
         FirmTrxDAO firmTrxDAO = new FirmTrxDAO();
         FBHeaderBean headerBean = new FBHeaderBean();
         String resMsg = "";
@@ -390,6 +391,13 @@ public class InterKsnetExcuter implements InterExcuter {
 
         resMsg = FirmDAO.getCodeDesc(headerBean.getNewBankCode(), resCode);
 
+        logger.info("MASTER TRANSFER : {}",headerBean.getSpecCode()+headerBean.getClassificationCode());
+        masterDAO.setMasterForResponse(firmBean.msgType.substring(0,4), firmBean.msgType.substring(4)
+                , firmBean.bankCd, fb0900400Bean.getTransaction(), "I");
+
+        logger.info("MASTER RESULT {},[{}]",resHeader.getBankResponseCode(),resHeader.getMessage());
+        logger.info("MASTER RESULT UPDATE : {}", masterDAO.update(resHeader));
+
         logger.info("가상계좌 출금정보 등록 : [{}][{}]",resCode,resMsg);
         logger.info("===================================================");
 
@@ -398,6 +406,52 @@ public class InterKsnetExcuter implements InterExcuter {
 
         return firmBean;
     }
+
+    /**
+     * 가상계좌 출금정보 등록
+     * firm.json 에 아래와 같이 세팅되어야 동작함. 현재는 KSBPAY로 구성되어 있음
+     * "089": {
+     *       "trCd": "KSNETVR",
+     *       "compCd": "",
+     *       "bankCd": "089",
+     *       "account": "70110001999557"
+     *     },
+     * @param firmBean
+     * @return
+     */
+    /*@Override
+    public FirmBean proc0900400(FirmBean firmBean){
+        try {
+            FirmMasterDAO masterDAO = new FirmMasterDAO();
+            FB0900400Bean fbBean = new FB0900400Bean();
+
+            logger.info("고객명 	  	: {}",firmBean.data.getString("customerName"));
+
+            logger.info("======================== 가상계좌 출금정보 등록 =================================");
+
+            fbBean.setTrxType(firmBean.data.getString("trxType"));
+            fbBean.setVirtualAccount(firmBean.data.getString("virtualAccount"));
+            fbBean.setWithdrawBankCd(firmBean.data.getString("withdrawBankCd"));
+            fbBean.setWithdrawAccount(firmBean.data.getString("withdrawAccount"));
+            fbBean.setCustomerName(firmBean.data.getString("customerName"));
+
+            long idx = masterDAO.setMaster(firmBean.msgType.substring(0,4), firmBean.msgType.substring(4), firmBean.bankCd, fbBean.getTransaction());
+            firmBean = processCheck(idx,firmBean,masterDAO);
+            if(firmBean.resultCd.equals("0000")){
+                // 아무것도 하지 않음
+            }
+        }catch (Exception e) {
+            firmBean.resultCd ="XXXX";
+            firmBean.resultMsg ="처리결과조회 오류";
+
+            e.printStackTrace();
+            logger.error("처리결과조회 Error : [{}]", e.getMessage());
+        }
+
+        logger.info("===================================================");
+
+        return firmBean;
+    }*/
 
 
     public FirmBean processCheck(long idx,FirmBean firmBean,FirmMasterDAO masterDAO){

@@ -107,6 +107,44 @@ public class FirmMasterDAO {
 		return result;
 	}
 
+	// 응답처리후 insert: 로그성으로 처리 결과값 저장
+	// procGb: R(요청), I(대기), N(기타에러), X(장애), Y(정상처리)
+	public long setMasterForResponse(String msgCd,String jobGb,String bankCd,String reqData,String procGb){
+		String query = "INSERT INTO PG_FIRM_MASTER (bankCd,msgCd,jobGb,seqNo,sendDate,sendTime,reqData,procGb) "
+				+" VALUES (?,?,?,FN_BANKSEQ(), DATE_FORMAT(now(), '%Y%m%d'), DATE_FORMAT(now(), '%H%i%s'),?,?)";
+
+		DBManager db 			= null;
+		PreparedStatement pstmt	= null;
+		Connection conn			= null;
+		ResultSet rset 			= null;
+		long result				= 0;
+
+		try{
+			db 		= DBFactory.getInstance();
+			conn	= db.getConnection();
+			pstmt	= conn.prepareStatement(query);
+
+			pstmt.setString(1,bankCd);
+			pstmt.setString(2,msgCd);
+			pstmt.setString(3,jobGb);
+			pstmt.setString(4,reqData);
+			pstmt.setString(5,procGb);
+			result = pstmt.executeUpdate();
+			rset		= pstmt.executeQuery("SELECT LAST_INSERT_ID() ");
+			while(rset.next()){
+				result = rset.getLong(1);
+			}
+			conn.commit();
+
+		}catch(Exception e){
+			logger.info("DB Error : {} , {} , [{}]",Thread.currentThread().getStackTrace()[1].getMethodName(),e.getMessage(),query);
+		}finally{
+			db.close(pstmt);
+			db.close(conn);
+		}
+		return result;
+	}
+
 
 	public FirmBean checkResult(long idx,FirmBean firmBean){
 		String query = " SELECT resultCd,resultMsg,resData FROM PG_FIRM_MASTER WHERE idx =?  AND procGb in ('N','Y') ";
