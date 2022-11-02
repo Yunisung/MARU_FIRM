@@ -14,6 +14,8 @@ import com.pgmate.lib.util.lang.CommonUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.nio.charset.Charset;
+
 public class FB0600400Bean extends CommBean {
 
 	private Logger logger = LoggerFactory.getLogger( getClass() );
@@ -43,7 +45,7 @@ public class FB0600400Bean extends CommBean {
 	}
 	
 	public FB0600400Bean(String transaction){
-		this(transaction.getBytes());
+		this(transaction.getBytes(Charset.forName("euc-kr")));
 	}
 	
 	public FB0600400Bean(byte[] transaction){
