@@ -30,7 +30,7 @@ public class Listener {
 
 		logger.info("Connect Client IP : [{}]", clientIp);
 
-		/*if(!firm.server.monitorIp.equals("") && clientIp.indexOf(firm.server.monitorIp) > -1){
+		if(!firm.server.monitorIp.equals("") && clientIp.indexOf(firm.server.monitorIp) > -1){
 			source = FirmUtil.MONITOR;
 			socket.socketClose();
 		}
@@ -42,13 +42,13 @@ public class Listener {
 			source = FirmUtil.INTERNAL;
 		}else{
 			source = FirmUtil.KSNET;
-		}*/
+		}
 //		else {
 //			source = FirmUtil.HYPHEN;
 //		}
 
 		//PYS : BankProcess TEST
-		source = FirmUtil.KSNET;
+//		source = FirmUtil.KSNET;
 
 
 
