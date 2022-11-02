@@ -73,7 +73,7 @@ public class Listener {
 				send = new BankProcess(firm).execute(recv);
 				logger.info("-> {} resultCd : [{}]",source,CommonUtil.toString(send,51,4));
 				logger.info("<- {} [{}]",source,CommonUtil.toString(send));
-//				send = FirmUtil.uencode_3des(firm.server.serverAuthKey.getBytes(),send);
+				send = FirmUtil.uencode_3des(firm.server.serverAuthKey.getBytes(),send);
 				logger.debug("<- {} [{}]",source,CommonUtil.toString(send));
 
 
