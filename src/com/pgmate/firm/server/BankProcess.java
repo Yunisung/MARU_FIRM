@@ -429,7 +429,7 @@ public class BankProcess implements Serializable {
 
 							//가상계좌 1회한도 체크
 							if(vactLimitData.getLong("limitOnce") > 0 && vactLimitData.getLong("limitOnce") < amount){
-								resultCd = "V713";
+								resultCd = "0022";
 								resultMsg = "가상계좌 1회 한도초과";
 
 								logger.info("가상계좌 1회 한도초과 : [{}][{}][{}][{}]",  fbBean.getVirtualAccount(), vactLimitData.getString("mchtId"), vactLimitData.getLong("limitOnce"), amount);
@@ -440,7 +440,7 @@ public class BankProcess implements Serializable {
 								long vactDaySum = vactDAO.getVactDaySum(CommonUtil.getCurrentDate("yyyyMMdd"), vactLimitData.getString("mchtId"));
 
 								if(vactLimitData.getDouble("limitDay") < vactDaySum + amount){
-									resultCd = "V713";
+									resultCd = "0022";
 									resultMsg = "가맹점 1일 한도초과";
 
 									logger.info("가맹점 1일 한도초과 : [{}][{}][{}][{}][{}]",  fbBean.getVirtualAccount(), vactLimitData.getString("mchtId"), vactLimitData.getLong("limitDay"), vactDaySum, amount);
