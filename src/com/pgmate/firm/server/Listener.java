@@ -68,7 +68,7 @@ public class Listener {
 			//logger.debug("-> {} [{}],{}",source,CommonUtil.toString(recv),recv.length);
 
 			if(source.equals(FirmUtil.KSNET)){
-				//KSNET ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½Î¼ï¿½ï¿½ï¿½
+				//KSNET ¼ö½Å ÇÁ·Î¼¼½º
 
 				logger.debug("-> {} [{}]",source,CommonUtil.toString(recv));
 
@@ -85,7 +85,7 @@ public class Listener {
 
 
 			}else{
-				//ë‚´ë¶€ë§ í”„ë¡œì„¸ìŠ¤
+				//³»ºÎ¸Á ÇÁ·Î¼¼½º
 				//recv = FirmUtil.udecode_3des(firm.server.encryptKey.getBytes(),recv);
 
 				logger.info("-> {} [{}]",source,CommonUtil.toString(recv));

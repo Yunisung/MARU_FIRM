@@ -58,14 +58,14 @@ public class KsnetComm {
      	
      	try{
     		socket = new Socket();
-    		message= "ì†Œì¼“ ì˜¤í”ˆ ì˜¤ë¥˜";
+    		message= "¼ÒÄÏ ¿ÀÇÂ ¿À·ù";
     		
     		socket.connect(new InetSocketAddress(conf.ksnetIp,conf.ksnetPort));
     		socket.setSoTimeout(conf.timeout);
     		
     		
     		output = socket.getOutputStream();
-    		message= "ë°ì´í„° ì „ì†¡ ì‹¤íŒ¨";
+    		message= "µ¥ÀÌÅÍ Àü¼Û ½ÇÆĞ";
 //    		key = generateKey();
 //    		request = encrypt(key,reqMsg);
 //    		output.write(request);
@@ -74,7 +74,7 @@ public class KsnetComm {
     		output.write(reqMsg.getBytes());
     		output.flush();
     		
-    		message= "ë°ì´í„° ìˆ˜ì‹  ì˜¤ë¥˜";
+    		message= "µ¥ÀÌÅÍ ¼ö½Å ¿À·ù";
     		input = socket.getInputStream();
     		
     		
@@ -128,7 +128,7 @@ public class KsnetComm {
 			headerBean.setTransactionTime(CommonUtil.getCurrentDate("yyyyMMddHHmmss"));
 			response = (headerBean.getTransaction()+headerBean.getTransactionIndex()).getBytes();
 			if(headerBean.getSpecCode().equals("0100")) {
-				String msgBody = "KSNET íŒë±…í‚¹ ì¶œê¸ˆ ì¥ì•  ë°œìƒ [" + message + "] ";
+				String msgBody = "KSNET Æß¹ğÅ· Ãâ±İ Àå¾Ö ¹ß»ı [" + message + "] ";
 				smsGw.sendMessage("1", "1", msgBody);
 			}
 			
@@ -148,7 +148,7 @@ public class KsnetComm {
 			
 			logger.info("<- KSNET [{}],{},{}",CommonUtil.toString(response),response.length,(System.currentTimeMillis()-time));
 			
-			//ì—¬ìœ  í•„ë“œì— ì‘ë‹µì½”ë“œì— í•´ë‹¹í•˜ëŠ” ë©”ì„¸ì§€ë¥¼ ê¸°ì…í•œë‹¤.
+			//¿©À¯ ÇÊµå¿¡ ÀÀ´äÄÚµå¿¡ ÇØ´çÇÏ´Â ¸Ş¼¼Áö¸¦ ±âÀÔÇÑ´Ù.
 //			resHeaderBean.setMessage(FirmDAO.getCodeDesc(resHeaderBean.getNewBankCode(),resHeaderBean.getBankResponseCode()));
 			resHeaderBean.setMessage(FirmDAO.getResultMsg(resHeaderBean.getBankResponseCode()));
 		}
@@ -164,7 +164,7 @@ public class KsnetComm {
 		byte[] buf = null;
 		
 		if(req.substring(19,23).equals("0900") && req.substring(23,26).equals("400")){
-			//ê°€ìƒê³„ì¢Œ ì¶œê¸ˆì •ë³´ ë“±ë¡ì‹œ ì„œë¹„ìŠ¤ì½”ë“œ 4000
+			//°¡»ó°èÁÂ Ãâ±İÁ¤º¸ µî·Ï½Ã ¼­ºñ½ºÄÚµå 4000
 			logger.info("ENCRYPT : {}",KsnetComm.REG_SVC_CODE);
 			buf = (KsnetComm.REG_SVC_CODE+conf.sendAuthKey+req).getBytes();
 		}else {
