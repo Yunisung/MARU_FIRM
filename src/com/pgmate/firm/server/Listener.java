@@ -34,7 +34,6 @@ public class Listener {
 			source = FirmUtil.MONITOR;
 			socket.socketClose();
 		}
-		/*
 		else if(!firm.server.internalIp.equals("") && clientIp.indexOf(firm.server.internalIp) > -1){
 			source = FirmUtil.INTERNAL;
 		}else if(clientIp.indexOf("1.212.11.242") > -1 || clientIp.indexOf("175.209.131.216") > -1 ||
@@ -44,10 +43,14 @@ public class Listener {
 		}else{
 			source = FirmUtil.KSNET;
 		}
-		*/
-		else {
-			source = FirmUtil.HYPHEN;
-		}
+//		else {
+//			source = FirmUtil.HYPHEN;
+//		}
+
+		//PYS : BankProcess TEST
+//		source = FirmUtil.KSNET;
+
+
 
 		if(!source.equals(FirmUtil.MONITOR)){
 			process();
@@ -62,42 +65,43 @@ public class Listener {
 			logger.debug("-> {},{}",source,clientIp);
 			recv = socket.recvAll();
 			//logger.debug("-> {} [{}],{}",source,CommonUtil.toString(recv),recv.length);
+			//logger.debug("-> {} [{}],{}",source,CommonUtil.toString(recv),recv.length);
 
-			/*if(source.equals(FirmUtil.KSNET)){	//KSNET ¼ö½Å ÇÁ·Î¼¼½º
-				
+			if(source.equals(FirmUtil.KSNET)){	//KSNET ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½Î¼ï¿½ï¿½ï¿½
+
 				logger.debug("-> {} [{}]",source,CommonUtil.toString(recv));
-				
+
 				recv = FirmUtil.udecode_3des(firm.server.serverAuthKey.getBytes(),recv);
 				logger.info("-> {} [{}]",source,CommonUtil.toString(recv));
-				
-				
+
+
 				send = new BankProcess(firm).execute(recv);
 				logger.info("-> {} resultCd : [{}]",source,CommonUtil.toString(send,51,4));
 				logger.info("<- {} [{}]",source,CommonUtil.toString(send));
 				send = FirmUtil.uencode_3des(firm.server.serverAuthKey.getBytes(),send);
 				logger.debug("<- {} [{}]",source,CommonUtil.toString(send));
-				
-				
-				
-			}else{								//³»ºÎ¸Á ÇÁ·Î¼¼½º
-				
+
+
+
+			}else{								//ï¿½ï¿½ï¿½Î¸ï¿½ ï¿½ï¿½ï¿½Î¼ï¿½ï¿½ï¿½
+
 				//recv = FirmUtil.udecode_3des(firm.server.encryptKey.getBytes(),recv);
-				
+
 				logger.info("-> {} [{}]",source,CommonUtil.toString(recv));
-				
+
 				send = new InterProcess(firm).execute(new String(recv)).getBytes();
-				
+
 				logger.info("<- {} [{}]",source,CommonUtil.toString(send));
 				//send = FirmUtil.uencode_3des(firm.server.encryptKey.getBytes(),send);
-				
-			}*/
 
-			// ¼ÒÄÏ Åë½ÅÀ¸·Î Æß¹ðÅ·¸¸ »ç¿ëÇÔ. °¡»ó°èÁÂ´Â MARU_VACT_HYPHEN¿¡¼­ »ç¿ë
-			if(source.equals(FirmUtil.HYPHEN)) {
-				logger.info("-> {} [{}]", source, CommonUtil.toString(recv));
-				send = new InterProcess(firm).execute(new String(recv)).getBytes();
-				logger.info("<- {} [{}]", source, CommonUtil.toString(send));
 			}
+
+			// ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ß¹ï¿½Å·ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½. ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Â´ï¿½ MARU_VACT_HYPHENï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½
+//			if(source.equals(FirmUtil.HYPHEN)) {
+//				logger.info("-> {} [{}]", source, CommonUtil.toString(recv));
+//				send = new InterProcess(firm).execute(new String(recv)).getBytes();
+//				logger.info("<- {} [{}]", source, CommonUtil.toString(send));
+//			}
 			
 			socket.send(send);
 			socket.ioClose();
@@ -110,10 +114,7 @@ public class Listener {
 			socket.socketClose();
 		}
 	}
-	
-	
-	
-	
+
 	
 	
 }

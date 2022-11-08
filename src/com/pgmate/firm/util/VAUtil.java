@@ -74,6 +74,8 @@ public class VAUtil {
 			return "404";
 		}else if(bankCode.equals("27") || bankCode.equals("027")){
 			return "0279";
+		}else if(bankCode.equals("89") || bankCode.equals("089")) {
+			return "0012";
 		}else{
 			return "9999";
 		}
@@ -102,6 +104,8 @@ public class VAUtil {
 			return "404";
 		}else if(bankCode.equals("27") || bankCode.equals("027")){
 			return "3500";
+		}else if(bankCode.equals("89") || bankCode.equals("089")) {
+			return "0016";
 		}else{
 			return "9999";
 		}
@@ -130,6 +134,8 @@ public class VAUtil {
 			return "419";
 		}else if(bankCode.equals("27") || bankCode.equals("027")){
 			return "0240";
+		}else if(bankCode.equals("89") || bankCode.equals("089")) {
+			return "1011";
 		}else{
 			return "9999";
 		}
@@ -157,6 +163,8 @@ public class VAUtil {
 			return "663";
 		}else if(bankCode.equals("27") || bankCode.equals("027")){
 			return "9999";
+		}else if(bankCode.equals("89") || bankCode.equals("089")) {
+			return "0151";
 		}else{
 			return "9999";
 		}
@@ -185,6 +193,8 @@ public class VAUtil {
 			return "489";
 		}else if(bankCode.equals("27") || bankCode.equals("027")){
 			return "9999";
+		}else if(bankCode.equals("89") || bankCode.equals("089")) {
+			return "9025";
 		}else{
 			return "9999";
 		}
@@ -209,6 +219,8 @@ public class VAUtil {
 		}else if(bankCode.equals("81") || bankCode.equals("081")){
 			return "404";
 		}else if(bankCode.equals("27") || bankCode.equals("027")){
+			return "0013";
+		}else if(bankCode.equals("89") || bankCode.equals("089")) {
 			return "0013";
 		}else{
 			return "9999";
@@ -236,6 +248,8 @@ public class VAUtil {
 			return "019";
 		}else if(bankCode.equals("81") || bankCode.equals("081")){
 			return "555";
+		}else if(bankCode.equals("89") || bankCode.equals("089")) {
+			return "9011";
 		}else{
 			return "9999";
 		}
@@ -263,6 +277,8 @@ public class VAUtil {
 			return "451";
 		}else if(bankCode.equals("27") || bankCode.equals("027")){
 			return "3606";
+		}else if(bankCode.equals("89") || bankCode.equals("089")) {
+			return "0601";
 		}else{
 			return "9999";
 		}
@@ -290,6 +306,8 @@ public class VAUtil {
 		}else if(bankCode.equals("81") || bankCode.equals("081")){
 			return "451";
 		}else if(bankCode.equals("27") || bankCode.equals("027")){
+			return "9999";
+		}else if(bankCode.equals("89") || bankCode.equals("089")) {
 			return "9999";
 		}else{
 			return "9999";

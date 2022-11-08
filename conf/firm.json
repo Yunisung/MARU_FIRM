@@ -8,13 +8,13 @@
       "newAccount": "1005004107798"
     },
     "099": {
-      "trCd": "",
-      "compCd": "FCS04150",
-      "bankCd": "099",
+      "trCd": "KSBPAY",
+      "compCd": "BKWIN001",
+      "bankCd": "089",
       "account": ""
     },
     "089": {
-      "trCd": "KSNETVR",
+      "trCd": "KSBPAY",
       "compCd": "BKWIN001",
       "bankCd": "089",
       "account": "70110001999557"
@@ -38,7 +38,7 @@
     "timeout": 30000,
     "internalIp": "10.100.",
     "monitorIp": "10.10.47.30",
-    "sendAuthKey": "XHuyz1RWwXKZ0qpS",
+    "sendAuthKey": "vlgm662MRn53EnmA",
     "serverAuthKey": "12345678abcdefgh12345678"
   },
   "daemon": {

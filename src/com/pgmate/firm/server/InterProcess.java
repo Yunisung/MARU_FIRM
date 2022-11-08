@@ -1,35 +1,14 @@
 package com.pgmate.firm.server;
 
-import com.google.gson.Gson;
-import com.pgmate.firm.hyphen.*;
-import com.pgmate.firm.util.FirmUtil;
+import com.pgmate.firm.conf.Firm;
+import com.pgmate.firm.inter.FirmBean;
+import com.pgmate.firm.server.executor.InterExcuter;
+import com.pgmate.firm.server.executor.InterHyphenExcuter;
+import com.pgmate.firm.server.executor.InterKsnetExcuter;
 import com.pgmate.firm.util.HyphenComm;
-import com.pgmate.lib.util.map.SharedMap;
-import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
+import com.pgmate.lib.util.gson.GsonUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.pgmate.firm.conf.BankBean;
-import com.pgmate.firm.conf.Firm;
-import com.pgmate.firm.conf.FirmLoader;
-import com.pgmate.firm.dao.FirmDAO;
-import com.pgmate.firm.dao.FirmMasterDAO;
-import com.pgmate.firm.dao.FirmTrxDAO;
-import com.pgmate.firm.inter.FirmBean;
-import com.pgmate.firm.ksnet.FB0600101Bean;
-import com.pgmate.firm.ksnet.FB0600300Bean;
-import com.pgmate.firm.ksnet.FB0600400Bean;
-import com.pgmate.firm.ksnet.FB0700100Bean;
-import com.pgmate.firm.ksnet.FB0900400Bean;
-import com.pgmate.firm.ksnet.FBHeaderBean;
-import com.pgmate.firm.util.KsnetComm;
-import com.pgmate.lib.util.gson.GsonUtil;
-import com.pgmate.lib.util.lang.CommonUtil;
-
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
-import java.util.List;
 
 /**
  * @author Administrator
@@ -39,11 +18,9 @@ public class InterProcess implements java.io.Serializable{
 
 	private Logger logger = LoggerFactory.getLogger( getClass() );
 	private Firm firm = null;
-	private HyphenComm hyphenComm = null;
+
 	public InterProcess(Firm firm) {
 		this.firm = firm;
-		this.hyphenComm = new HyphenComm(firm.server);
-
 	}
 
 	public String execute(String json){
@@ -51,33 +28,32 @@ public class InterProcess implements java.io.Serializable{
 
 		firmBean = valid(firmBean);
 
+		InterExcuter interExcuter = new InterKsnetExcuter(firm);
+//		InterExcuter interExcuter = new InterHyphenExcuter(firm);
+
 		if(firmBean.resultCd.equals("9999")){
 			return GsonUtil.toJson(firmBean);
 		}else{
 			if(firmBean.msgType.startsWith("0800")){
-				firmBean = proc0800(firmBean);
+				firmBean = interExcuter.proc0800(firmBean);
 			}else if(firmBean.msgType.startsWith("0600300")){
-				//ÀÜ¾×Á¶È¸
-				firmBean = proc0600300(firmBean);
-//				firmBean = procBalance(firmBean);
+				//ï¿½Ü¾ï¿½ï¿½ï¿½È¸
+				firmBean = interExcuter.proc0600300(firmBean);
 			}else if(firmBean.msgType.startsWith("0600400")){
-				//¼º¸íÁ¶È¸
-				firmBean = proc0600400(firmBean);
-//				firmBean = procHolder(firmBean);
+				//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½È¸
+				firmBean = interExcuter.proc0600400(firmBean);
 			}else if(firmBean.msgType.startsWith("0700100")){
-				//Áý°è
-				firmBean = proc0700100(firmBean);
+				//ï¿½ï¿½ï¿½ï¿½
+				firmBean = interExcuter.proc0700100(firmBean);
 			}else if(firmBean.msgType.startsWith("0100100")){
-				//ÀÌÃ¼
-				firmBean = proc0100100(firmBean);
-//				firmBean = procDeposit(firmBean);
+				//ï¿½ï¿½Ã¼
+				firmBean = interExcuter.proc0100100(firmBean);
 			}else if(firmBean.msgType.startsWith("0600101")){
-				//Ã³¸®°á°úÁ¶È¸
-				firmBean = proc0600101(firmBean);
-//				firmBean = procTransfer(firmBean);
+				//Ã³ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½È¸
+				firmBean = interExcuter.proc0600101(firmBean);
 			}else if(firmBean.msgType.startsWith("0900400")){
-				//°¡»ó°èÁÂ Ãâ±ÝÁ¤º¸ µî·Ï
-				firmBean = proc0900400(firmBean);
+				//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½
+				firmBean = interExcuter.proc0900400(firmBean);
 			}
 		}
 
@@ -86,677 +62,18 @@ public class InterProcess implements java.io.Serializable{
 
 	}
 
-
-
-	public FirmBean proc0800(FirmBean firmBean){
-		FirmMasterDAO masterDAO = new FirmMasterDAO();
-
-		long idx = masterDAO.setMaster(firmBean.msgType.substring(0,4), firmBean.msgType.substring(4), firmBean.bankCd, "");
-		return processCheck(idx,firmBean,masterDAO);
-	}
-
-
-	/*
-	 * ÀÜ¾×Á¶È¸
-	 */
-	public FirmBean proc0600300(FirmBean firmBean){
-		logger.info("=================== ÀÜ¾×Á¶È¸ ===================");
-
-		try {
-			FirmMasterDAO masterDAO = new FirmMasterDAO();
-			FB0600300Bean fbBean = new FB0600300Bean();
-			fbBean.setAccount(firmBean.mAccnt);
-			//fbBean.setAccount(firm.bank.get(firmBean.bankCd).account);
-
-			long idx = masterDAO.setMaster(firmBean.msgType.substring(0,4), firmBean.msgType.substring(4), firmBean.bankCd, fbBean.getTransaction());
-			firmBean = processCheck(idx,firmBean,masterDAO);
-			if(firmBean.resultCd.equals("0000")){
-				fbBean = new FB0600300Bean(firmBean.data.getString("resData"));
-				firmBean.data.put("amount", CommonUtil.parseLong(fbBean.getSign()+fbBean.getCurrentAmount()));
-				masterDAO.insertBalance(firmBean.bankCd, fbBean.getAccount(), fbBean.getSign()+fbBean.getCurrentAmount());
-			}
-		}catch (Exception e) {
-			firmBean.resultCd ="XXXX";
-			firmBean.resultMsg ="ÀÜ¾×Á¶È¸ ¿À·ù";
-
-			e.printStackTrace();
-			logger.error("ÀÜ¾×Á¶È¸ Error : [{}]", e.getMessage());
-		}
-
-		logger.info("===================================================");
-
-		return firmBean;
-	}
-
-	/*
-	ÀÜ¾×Á¶È¸ ÇÏÀÌÇÂÀ¸·Î ¸¸µé±â
-	 */
-	public FirmBean procBalance(FirmBean firmBean) {
-		logger.info("=================== ÀÜ¾×Á¶È¸ ===================");
-
-		try {
-			FirmMasterDAO masterDAO = new FirmMasterDAO();
-			BankBean configBean = firm.bank.get(firmBean.bankCd);
-
-			BalanceBean balanceBean = new BalanceBean();
-			balanceBean.setCompCode(configBean.compCd);
-			balanceBean.setBankCode(configBean.bankCd);
-			balanceBean.setAccountNo(configBean.account);
-
-			HyphenBean hyphenBean = new HyphenBean();
-			hyphenBean.setKscode(configBean.kscode);
-			hyphenBean.setEkey(configBean.ekey);
-			hyphenBean.setMsalt(configBean.msalt);
-			hyphenBean.setReqdata(balanceBean);
-			hyphenBean.setSendurl("rfb/retail/inquiry/balance");
-
-			String jsonParams = new Gson().toJson(hyphenBean);
-
-			long idx = masterDAO.setMasterbyHyphen(firmBean.msgType.substring(0,4), firmBean.msgType.substring(4), firmBean.bankCd, hyphenBean.getSendurl(), jsonParams);
-			firmBean = processCheck(idx,firmBean,masterDAO);
-			if(firmBean.resultCd.equals("0000")){
-				String resJson = firmBean.data.getString("resData");
-				balanceBean = (BalanceBean) GsonUtil.fromJson(resJson, BalanceBean.class);
-				String amount = balanceBean.getSign()+balanceBean.getTotalBalance();
-				logger.info("ÀÜ¾×Á¶È¸ ¼º°ø");
-				logger.info("[{}] ÀÇ ÀÜ¾× : [{}]", firmBean.bankCd, amount);
-				firmBean.data.put("amount", CommonUtil.parseLong(amount.trim()));
-				masterDAO.insertBalance(configBean.bankCd, configBean.account, amount.trim());
-			}
-		}catch (Exception e) {
-			firmBean.resultCd ="XXXX";
-			firmBean.resultMsg ="ÀÜ¾×Á¶È¸ ¿À·ù";
-
-			e.printStackTrace();
-			logger.error("ÀÜ¾×Á¶È¸ Error : [{}]", e.getMessage());
-		}
-
-		logger.info("===================================================");
-
-		return firmBean;
-	}
-
-
-	/*
-	 * ¼º¸íÁ¶È¸ ÀºÇàÄÚµå¸¦ 099 ¸¦ »ç¿ëÇÏ¸é KSNET ±×¿Ü´Â °¢ ÀºÇà
-	 * data.bankCd, data.account , data.socialNumber, data.socialCheck
-	 */
-	public FirmBean proc0600400(FirmBean firmBean){
-
-		BankBean configBean = firm.bank.get(firmBean.bankCd);
-
-		FirmMasterDAO masterDAO = new FirmMasterDAO();
-		FB0600400Bean fbBean = new FB0600400Bean();
-
-		fbBean.setTransactionDay(CommonUtil.getCurrentDate("MMdd"));
-		fbBean.setNewBankCode(firmBean.data.getString("bankCd"));
-		fbBean.setAccount(firmBean.data.getString("account"));
-		fbBean.setSocialNumber(firmBean.data.getString("socialNumber"));
-		fbBean.setSocialCheck(firmBean.data.getString("socialCheck"));
-
-		fbBean.setMAccount(configBean.account);
-		fbBean.setName(firmBean.data.getString("holder"));
-
-		if(firmBean.bankCd.equals("099") && firmBean.data.isNullOrSpace("socialCheck")) {
-			String holder = masterDAO.selectAccnt(firmBean.data.getString("bankCd"), firmBean.data.getString("account"));
-			logger.info("INTER ACCNT CHECK: {}",holder);
-			if(!CommonUtil.isNullOrSpace(holder)) {
-				firmBean.data.put("name", holder);
-				firmBean.resultCd ="0000";
-				firmBean.resultMsg = "Á¤»óÁ¶È¸";
-
-				return firmBean;
-			}
-		}
-
-
-		long idx = masterDAO.setMaster(firmBean.msgType.substring(0,4), firmBean.msgType.substring(4), firmBean.bankCd, fbBean.getTransaction());
-		firmBean = processCheck(idx,firmBean,masterDAO);
-		if(firmBean.resultCd.equals("0000")){
-			fbBean = new FB0600400Bean(firmBean.data.getString("resData"));
-			firmBean.data.put("name", fbBean.getName());
-			masterDAO.insertAccnt(firmBean.data.getString("bankCd"), firmBean.data.getString("account"), firmBean.data.getString("name"));
-		}
-
-		return firmBean;
-	}
-
-	/*
-	 * ¼º¸íÁ¶È¸
-	 */
-	public FirmBean procHolder(FirmBean firmBean) {
-		logger.info("======================== Holder ========================");
-
-		try {
-			FirmMasterDAO masterDAO = new FirmMasterDAO();
-			BankBean configBean = firm.bank.get(firmBean.bankCd);
-
-			HolderBean holderBean = new HolderBean();
-			holderBean.setCompCode(configBean.compCd);
-			//PYS : ÀÌ¸§Á¶È¸´Â 099 °íÁ¤
-			holderBean.setBankCode("099");
-			holderBean.setAccountBankCode(firmBean.data.getString("bankCd"));
-			holderBean.setAccountNo(firmBean.data.getString("account"));
-			holderBean.setAgencyYn(firmBean.data.getString("agencyYn"));
-			holderBean.setCompAccountNo(firmBean.data.getString("compAccountNo"));
-			holderBean.setSocialId(firmBean.data.getString("socialId"));
-			holderBean.setAmount(firmBean.data.getString("amount"));
-
-			HyphenBean hyphenBean = new HyphenBean();
-			hyphenBean.setKscode(configBean.kscode);
-			hyphenBean.setEkey(configBean.ekey);
-			hyphenBean.setMsalt(configBean.msalt);
-			hyphenBean.setReqdata(holderBean);
-			hyphenBean.setSendurl("rfb/retail/account/accountname");
-
-			String holderCode = firmBean.data.getString("bankCd");
-			String holderAccount = firmBean.data.getString("account");
-
-			String jsonParams = new Gson().toJson(hyphenBean);
-
-			long idx = masterDAO.setMasterbyHyphen(firmBean.msgType.substring(0,4), firmBean.msgType.substring(4), firmBean.bankCd, hyphenBean.getSendurl(), jsonParams);
-			firmBean = processCheck(idx,firmBean,masterDAO);
-			if(firmBean.resultCd.equals("0000")){
-				String resJson = firmBean.data.getString("resData");
-				holderBean = (HolderBean) GsonUtil.fromJson(resJson, HolderBean.class);
-				String name = holderBean.getAccountName();
-				firmBean.data.put("accountName", CommonUtil.parseLong(name.trim()));
-				masterDAO.insertAccnt(holderCode, holderAccount, name.trim());
-			}
-		}catch (Exception e) {
-
-			firmBean.resultCd ="XXXX";
-			firmBean.resultMsg ="¼º¸íÁ¶È¸ ¿À·ù";
-
-			e.printStackTrace();
-			logger.error("¼º¸íÁ¶È¸Error : [{}]", e.getMessage());
-		}
-
-		logger.info("===================================================");
-
-		return firmBean;
-	}
-
-	/*
-	 * Áý°è
-	 */
-	public FirmBean proc0700100(FirmBean firmBean){
-		FirmMasterDAO masterDAO = new FirmMasterDAO();
-		FB0700100Bean fbBean = new FB0700100Bean();
-		fbBean.setAccount(firm.bank.get(firmBean.bankCd).account);
-		long idx = masterDAO.setMaster(firmBean.msgType.substring(0,4), firmBean.msgType.substring(4), firmBean.bankCd, fbBean.getTransaction());
-		firmBean = processCheck(idx,firmBean,masterDAO);
-		if(firmBean.resultCd.equals("0000")){
-			fbBean = new FB0700100Bean(firmBean.data.getString("resData"));
-
-			firmBean.data.put("reqCount", CommonUtil.parseLong(fbBean.getReqCount()));
-			firmBean.data.put("reqAmount", CommonUtil.parseLong(fbBean.getReqAmount()));
-			firmBean.data.put("sucCount", CommonUtil.parseLong(fbBean.getSuccessCount()));
-			firmBean.data.put("sucAmount", CommonUtil.parseLong(fbBean.getSuccessAmount()));
-			firmBean.data.put("failCount", CommonUtil.parseLong(fbBean.getFailCount()));
-			firmBean.data.put("failAmount", CommonUtil.parseLong(fbBean.getFailAmount()));
-			firmBean.data.put("fee", CommonUtil.parseLong(fbBean.getFee()));
-
-			firmBean.data.put("oReqCount", CommonUtil.parseLong(fbBean.getOtherReqCount()));
-			firmBean.data.put("oReqAmount", CommonUtil.parseLong(fbBean.getOtherReqAmount()));
-			firmBean.data.put("oSucCount", CommonUtil.parseLong(fbBean.getOtherSuccessCount()));
-			firmBean.data.put("oSucAmount", CommonUtil.parseLong(fbBean.getOtherSuccessAmount()));
-			firmBean.data.put("oFailCount", CommonUtil.parseLong(fbBean.getOtherFailCount()));
-			firmBean.data.put("oFailAmount", CommonUtil.parseLong(fbBean.getOtherFailAmount()));
-			firmBean.data.put("oFee", CommonUtil.parseLong(fbBean.getOtherFee()));
-
-		}
-
-		return firmBean;
-	}
-
-
-
-	public FirmBean proc0100100(FirmBean firmBean){
-		// ÀÌÃ¼°¡´É½Ã°£ ¿Ü µ¥ÀÌÅÍ µî·Ï ¸·±â
-		Firm firm = FirmLoader.getConfig();
-		long currentTime = CommonUtil.parseLong(CommonUtil.getCurrentDate("HHmmss"));
-
-		if(firm.daemon.startTime > currentTime || currentTime > firm.daemon.stopTime){
-			firmBean.resultCd ="XXXX";
-			firmBean.resultMsg ="ÀÌÃ¼ °¡´É ½Ã°£ ¾Æ´Ô";
-			return firmBean;
-		}
-
-		FirmTrxDAO trxDAO = new FirmTrxDAO();
-
-		//String sign = 	WooriSign.getSign(firmBean.data.getString("recvAccount"), CommonUtil.getAmountFormat(firmBean.data.getString("amount")), firmBean.data.getString("recvBankCd"), firm.bank.get(firmBean.bankCd).account);
-
-		logger.info("account : {}",firm.bank.get(firmBean.bankCd).account);
-		logger.info("recvBankCd : {}",firmBean.data.getString("recvBankCd"));
-		logger.info("recvAccount : {}",firmBean.data.getString("recvAccount"));
-		logger.info("sender : {}",firmBean.data.getString("sender"));
-		logger.info("amount : {}",CommonUtil.getAmountFormat(firmBean.data.getString("amount")));
-		logger.info("procType : {}",firmBean.data.getString("procType"));
-
-		long idx = trxDAO.insertTrx(firmBean.bankCd, firmBean.data.getLong("amount"), firmBean.data.getString("recvBankCd"), firmBean.data.getString("recvAccount"), firmBean.data.getString("sender"), firmBean.data.getString("recordInfo"), firmBean.data.getString("procType"));
-		if(idx == 0){
-			firmBean.resultCd ="XXXX";
-			firmBean.resultMsg ="ÀÌÃ¼µ¥ÀÌÅÍ µî·Ï½ÇÆÐ";
-		}else{
-			firmBean = processCheck(idx,firmBean,trxDAO);
-		}
-		return firmBean;
-	}
-
-	/**
-	 * ¼Û±Ý ÇÏÀÌÇÂÀ¸·Î ¸¸µé±â
-	 * @param firmBean
-	 * @return
-	 */
-	public FirmBean procDeposit(FirmBean firmBean){
-		// ÀÌÃ¼°¡´É½Ã°£ ¿Ü µ¥ÀÌÅÍ µî·Ï ¸·±â
-		Firm firm = FirmLoader.getConfig();
-		BankBean bankBean = firm.bank.get(firmBean.bankCd);
-
-		long currentTime = CommonUtil.parseLong(CommonUtil.getCurrentDate("HHmmss"));
-
-		if(firm.daemon.startTime > currentTime || currentTime > firm.daemon.stopTime){
-			firmBean.resultCd ="XXXX";
-			firmBean.resultMsg ="ÀÌÃ¼ °¡´É ½Ã°£ ¾Æ´Ô";
-			return firmBean;
-		}
-
-		FirmTrxDAO trxDAO = new FirmTrxDAO(firm.bank);
-
-		//String sign = 	WooriSign.getSign(firmBean.data.getString("recvAccount"), CommonUtil.getAmountFormat(firmBean.data.getString("amount")), firmBean.data.getString("recvBankCd"), firm.bank.get(firmBean.bankCd).account);
-
-		String sender = firmBean.data.getString("sender");
-		if("".equals(sender)) {
-			sender = "(ÁÖ)ºÎ±¹À§³Ê½º";
-		}
-
-		logger.info("account : {}",bankBean.account);
-		logger.info("recvBankCd : {}",firmBean.data.getString("recvBankCd"));
-		logger.info("recvAccount : {}",firmBean.data.getString("recvAccount"));
-		logger.info("sender : {}",sender);
-		logger.info("amount : {}",CommonUtil.getAmountFormat(firmBean.data.getString("amount")));
-		logger.info("procType : {}",firmBean.data.getString("procType"));
-
-		String seqNo = trxDAO.getBankSeq();
-
-		long idx = trxDAO.insertTrx(firmBean.bankCd, firmBean.data.getLong("amount"), firmBean.data.getString("recvBankCd"), firmBean.data.getString("recvAccount"), sender, firmBean.data.getString("recordInfo"), firmBean.data.getString("procType"), seqNo);
-		if(idx == 0){
-			firmBean.resultCd ="XXXX";
-			firmBean.resultMsg ="ÀÌÃ¼µ¥ÀÌÅÍ µî·Ï½ÇÆÐ";
-		}else{
-			//µ¥¸ó ¾È¾²°í Á÷Á¢ Åë½ÅÇÏ±â
-
-			//»óÅÂ°ª I·Î update
-			logger.info("TRX STATUS UPDATE : {}",trxDAO.updateStatus(idx, "I"));
-
-			//Åë½ÅÇÏ±â À§ÇØ Å¬·¡½ºÈ­
-			DepositBean depositBean = new DepositBean();
-			depositBean.setCompCode(bankBean.compCd);
-			depositBean.setBankCode(bankBean.bankCd);
-
-			depositBean.setSeqNo(CommonUtil.nToB(seqNo));
-			depositBean.setOutAccount(bankBean.account);
-			depositBean.setAmount(firmBean.data.getLong("amount"));
-			depositBean.setInBankCode(firmBean.data.getString("recvBankCd"));
-			depositBean.setInAccount(firmBean.data.getString("recvAccount"));
-			depositBean.setInPrintContent(sender);
-
-			HyphenBean hyphenBean = new HyphenBean();
-			hyphenBean.setIndex(idx);
-			hyphenBean.setKscode(bankBean.kscode);
-			hyphenBean.setEkey(bankBean.ekey);
-			hyphenBean.setMsalt(bankBean.msalt);
-			hyphenBean.setSendurl("rfb/retail/deposit");
-			hyphenBean.setReqdata(depositBean);
-
-			//Åë½Å
-			String resData = hyphenComm.connect(hyphenBean);
-
-			//Åë½Å°á°ú Å¬·¡½ºÈ­
-			JSONObject apiRes = new JSONObject();
-			JSONParser jsonParser = new JSONParser();
-			try {
-				apiRes = (JSONObject) jsonParser.parse(resData);
-				String replayCode = apiRes.get("replyCode").toString();
-
-				hyphenBean.setReplyCode(replayCode);
-				hyphenBean.setSuccessYn(apiRes.get("successYn").toString());
-
-				//¿À·ù¸Þ¼¼Áö ¼¼ÆÃ
-				if(!replayCode.equals("0000")) {
-					if(replayCode.startsWith("KS")) {
-						hyphenBean.setSuccessYn(FirmDAO.getCodeDesc("ERR", replayCode));
-					} else {
-						hyphenBean.setSuccessYn(FirmDAO.getCodeDesc(bankBean.bankCd, replayCode));
-					}
-				}
-
-
-				String balance = apiRes.get("sign").toString() + apiRes.get("balance").toString();
-				String fee = apiRes.get("svcCharge").toString();
-				String transferTime = apiRes.get("tradeTime").toString();
-
-				depositBean.setBalance(balance.trim());
-				depositBean.setSvcCharge(fee.trim());
-				depositBean.setTradeTime(transferTime);
-
-			} catch (Exception e) {
-				hyphenBean.setReplyCode("XXXX");
-				hyphenBean.setSuccessYn("X");
-			}
-			hyphenBean.setResdata(resData);
-			logger.info("TRX RESULT {},[{}]",hyphenBean.getSuccessYn(),hyphenBean.getReplyCode());
-
-			//Åë½Å°á°ú update
-			logger.info("TRX RESULT UPDATE : {}",trxDAO.updatebyHyphen(hyphenBean));
-
-			//firmbean Ã¤¿ì±â
-			firmBean.resultCd = hyphenBean.getReplyCode();
-			firmBean.resultMsg =  FirmUtil.changeCharset(hyphenBean.getSuccessYn(), "UTF-8");
-			firmBean.idx = idx;
-			if(firmBean.data == null){
-				firmBean.data = new SharedMap<String,Object>();
-			}
-			firmBean.data.put("recvHolder", sender);
-			firmBean.data.put("balance", depositBean.getBalance());
-			firmBean.data.put("fee", depositBean.getSvcCharge());
-			firmBean.data.put("transferTime", depositBean.getTradeTime());
-
-			if(firmBean.resultCd.equals("0000")){
-				String amount = firmBean.data.getString("balance");
-				logger.info("ÀÜ¾× : [{}]¿ø", amount);
-				new FirmMasterDAO().insertBalance(firm.bank.get(firmBean.bankCd).bankCd, firm.bank.get(firmBean.bankCd).account, amount.trim());
-			}
-
-		}
-		return firmBean;
-	}
-
-
-	/**
-	 * PYS : ÀÌÃ¼°á°úÁ¶È¸ (ÇÏÀÌÇÂ)
-	 * @param firmBean
-	 * @return
-	 */
-	public FirmBean procTransfer(FirmBean firmBean){
-		logger.info("=================== Æß Ã³¸®°á°ú Á¶È¸ ===================");
-
-		FirmTrxDAO firmTrxDAO = new FirmTrxDAO();
-		BankBean configBean = firm.bank.get(firmBean.bankCd);
-
-		logger.info("idx 	  : {}",firmBean.idx);
-		logger.info("bankCd   : {}",firmBean.bankCd);
-		logger.info("orgSeqNo : {}",firmBean.data.getString("orgSeqNo"));
-
-		TransferBean transferBean = new TransferBean();
-		transferBean.setCompCode(configBean.compCd);
-		transferBean.setBankCode(configBean.bankCd);
-		transferBean.setOriSeqNo(firmBean.data.getString("orgSeqNo"));
-		transferBean.setSeqNo(firmTrxDAO.getBankSeq());
-
-		HyphenBean hyphenBean = new HyphenBean();
-		hyphenBean.setKscode(configBean.kscode);
-		hyphenBean.setEkey(configBean.ekey);
-		hyphenBean.setMsalt(configBean.msalt);
-		hyphenBean.setSendurl("rfb/retail/inquiry/transfer");
-		hyphenBean.setReqdata(transferBean);
-
-		HyphenComm hyphenComm = new HyphenComm(firm.server);
-		String resData = hyphenComm.connect(hyphenBean);
-
-		JSONObject apiRes = new JSONObject();
-		JSONParser jsonParser = new JSONParser();
-		try {
-			apiRes = (JSONObject) jsonParser.parse(resData);
-			hyphenBean.setSuccessYn(apiRes.get("successYn").toString());
-			hyphenBean.setReplyCode(apiRes.get("replyCode").toString());
-
-			transferBean.setOutAccountNo(apiRes.get("outAccountNo").toString());
-			transferBean.setInAccountNo(apiRes.get("inAccountNo").toString());
-			transferBean.setAmount(apiRes.get("amount").toString());
-			transferBean.setSvcCharge(apiRes.get("svcCharge").toString());
-			transferBean.setTradeTime(apiRes.get("tradeTime").toString());
-			transferBean.setResultCode(apiRes.get("resultCode").toString());
-			transferBean.setProcBankCode(apiRes.get("procBankCode").toString());
-			transferBean.setPayerNo(apiRes.get("payerNo").toString());
-		} catch (Exception e) {
-			hyphenBean.setSuccessYn("N");
-			hyphenBean.setReplyCode("XXXX");
-		}
-
-		hyphenBean.setResdata(resData);
-
-		String resCode = "";
-		String resMsg = "";
-
-		if(!transferBean.getResultCode().equals("") && !transferBean.getResultCode().equals("0000")) {
-			resCode = transferBean.getResultCode();
-			resMsg = FirmDAO.getCodeDesc(configBean.bankCd, resCode);
-		} else {
-			resCode = hyphenBean.getReplyCode();
-			resMsg = FirmDAO.getCodeDesc("ERR", resCode);
-		}
-
-		logger.info("TRX RESULT CHECK [{}],[{}]",resCode,resMsg);
-		logger.info("TRANSFER CHECK UPDATE : {} ",firmTrxDAO.updateResultCheckbyHyphen(hyphenBean, resCode, resMsg));
-		logger.info("===================================================");
-
-		firmBean.resultCd = resCode;
-		firmBean.resultMsg = resMsg;
-
-		return firmBean;
-	}
-
-
-	/*
-	 * Ã³¸®°á°ú Á¶È¸
-	 */
-	public FirmBean proc0600101(FirmBean firmBean){
-		FirmTrxDAO firmTrxDAO = new FirmTrxDAO();
-		FBHeaderBean headerBean = new FBHeaderBean();
-		String resMsg = "";
-
-		logger.info("=================== Æß Ã³¸®°á°ú Á¶È¸ ===================");
-		logger.info("idx 	  : {}",firmBean.idx);
-		logger.info("bankCd   : {}",firmBean.bankCd);
-		logger.info("orgSeqNo : {}",firmBean.data.getString("orgSeqNo"));
-
-		headerBean.setIndex(firmBean.idx);
-		headerBean.setNewBankCode(firmBean.bankCd);
-
-		BankBean configBean = firm.bank.get(headerBean.getNewBankCode());
-		headerBean.setIdentificationCode(configBean.trCd);
-		headerBean.setCompanyCode(configBean.compCd);
-		headerBean.setSpecCode("0600");
-		headerBean.setClassificationCode("101");
-		headerBean.setFrequency("1");
-		headerBean.setTransactionTime(CommonUtil.getCurrentDate("yyyyMMddHHmmss"));
-		headerBean.setSpecNumber(firmTrxDAO.getBankSeq()) ;
-		headerBean.setInquiryDay(firmTrxDAO.getTranDate(firmBean.data.getString("orgSeqNo")));
-
-		FB0600101Bean fb0600101Bean = new FB0600101Bean();
-		fb0600101Bean.setRootSpecNumber(firmBean.data.getString("orgSeqNo")) ;
-		headerBean.setTransactionIndex(fb0600101Bean.getTransaction());
-
-		logger.info("½Äº°ÄÚµå 	: {}",configBean.trCd);
-		logger.info("¾÷Ã¼ÄÚµå : {}",configBean.compCd);
-		logger.info("Àü¹®ÀÏ·Ã¹øÈ£ : {}",firmBean.data.getString("orgSeqNo"));
-
-		KsnetComm comm	= new KsnetComm(firm.server);
-		FBHeaderBean resHeader = comm.ksnet(headerBean);
-
-		FB0600101Bean fb06001001bean = new FB0600101Bean(resHeader.getTransactionIndex());
-
-		String resCode = "";
-
-		if(!"0000".equals(resHeader.getBankResponseCode())) {
-			resCode = resHeader.getBankResponseCode();
-		}else {
-			resCode = fb06001001bean.getResultCd();
-		}
-
-		resMsg = FirmDAO.getCodeDesc(headerBean.getNewBankCode(), resCode);
-
-		logger.info("TRX RESULT CHECK [{}],[{}]",resCode,resMsg);
-
-		logger.info("TRANSFER CHECK UPDATE : {} ",firmTrxDAO.updateResultCheck(resHeader, resCode, resMsg));
-
-		logger.info("===================================================");
-
-		firmBean.resultCd = resCode;
-		firmBean.resultMsg = resMsg;
-
-		return firmBean;
-	}
-
-	/*
-	 * °¡»ó°èÁÂ Ãâ±ÝÁ¤º¸ µî·Ï
-	 */
-	public FirmBean proc0900400(FirmBean firmBean){
-		FirmTrxDAO firmTrxDAO = new FirmTrxDAO();
-		FBHeaderBean headerBean = new FBHeaderBean();
-		String resMsg = "";
-
-		logger.info("=================== °¡»ó°èÁÂ Ãâ±ÝÁ¤º¸ µî·Ï ===================");
-		logger.info("idx 	  	: {}",firmBean.idx);
-		logger.info("ÀºÇàÄÚµå    	: {}",firmBean.bankCd);
-		logger.info("¾÷Ã¼ÄÚµå    	: {}",firmBean.data.getString("companyCd"));
-		logger.info("°Å·¡±¸ºÐ 	  	: {}",firmBean.data.getString("trxType"));
-		logger.info("°¡»ó°èÁÂ¹øÈ£ 	: {}",firmBean.data.getString("virtualAccount"));
-		logger.info("Ãâ±ÝÀºÇàÄÚµå 	: {}",firmBean.data.getString("withdrawBankCd"));
-		logger.info("Ãâ±Ý°èÁÂ¹øÈ£ 	: {}",firmBean.data.getString("withdrawAccount"));
-
-		//°¡»ó°èÁÂ°¡ ½ÅÇÑÀºÇàÀÏ¶§¸¸ ¼¼ÆÃ
-		if("088".equals(firmBean.bankCd)) {
-			logger.info("°í°´¸í 	  	: {}",firmBean.data.getString("customerName"));
-			logger.info("Æß¹ðÅ· ¾÷Ã¼ÄÚµå	: {}",firmBean.data.getString("firmCompanyCd"));
-			logger.info("ÈÞ´ëÆù¹øÈ£ 	: {}",firmBean.data.getString("phoneNo"));
-			logger.info("½Ç¸í¹øÈ£ 		: {}",firmBean.data.getString("identity"));
-		}
-
-		//°¡»ó°èÁÂ°¡ ³óÇùÀºÇàÀÏ¶§¸¸ ¼¼ÆÃ
-		if("011".equals(firmBean.bankCd) ||  "012".equals(firmBean.bankCd)) {
-			logger.info("°í°´¸í 	  	: {}",firmBean.data.getString("customerName"));
-			logger.info("µî·ÏÀ¯Çü 		: {}",firmBean.data.getString("regType"));
-			logger.info("½Ç¸í¹øÈ£ 		: {}",firmBean.data.getString("identity"));
-		}
-
-		//°¡»ó°èÁÂ°¡ ÇÏ³ªÀºÇàÀÏ¶§¸¸ ¼¼ÆÃ
-		if("081".equals(firmBean.bankCd)) {
-			logger.info("°í°´¸í 	  	: {}",firmBean.data.getString("customerName"));
-		}
-
-		//°¡»ó°èÁÂ°¡ ±¹¹ÎÀºÇàÀÏ¶§¸¸ ¼¼ÆÃ
-		if("004".equals(firmBean.bankCd)) {
-			logger.info("°í°´¸í 	  	: {}",firmBean.data.getString("customerName"));
-		}
-
-		logger.info("=========================================================");
-
-		headerBean.setIndex(firmBean.idx);
-		headerBean.setNewBankCode(firmBean.bankCd);
-		headerBean.setIdentificationCode("");
-		headerBean.setCompanyCode(firmBean.data.getString("companyCd"));
-		headerBean.setSpecCode("0900");
-		headerBean.setClassificationCode("400");
-		headerBean.setFrequency("1");
-		headerBean.setTransactionTime(CommonUtil.getCurrentDate("yyyyMMddHHmmss"));
-		headerBean.setSpecNumber(firmTrxDAO.getBankSeq()) ;
-
-		FB0900400Bean fb0900400Bean = new FB0900400Bean();
-		fb0900400Bean.setTrxType(firmBean.data.getString("trxType"));
-		fb0900400Bean.setVirtualAccount(firmBean.data.getString("virtualAccount"));
-		fb0900400Bean.setWithdrawBankCd(firmBean.data.getString("withdrawBankCd"));
-		fb0900400Bean.setWithdrawAccount(firmBean.data.getString("withdrawAccount"));
-
-
-		//°¡»ó°èÁÂ°¡ ½ÅÇÑÀºÇàÀÏ¶§¸¸ ¼¼ÆÃ
-		if("088".equals(firmBean.bankCd)) {
-			fb0900400Bean.setCustomerName(firmBean.data.getString("customerName"));
-			fb0900400Bean.setFirmCompanyCd(firmBean.data.getString("firmCompanyCd"));
-			fb0900400Bean.setPhoneNo(firmBean.data.getString("phoneNo"));
-			fb0900400Bean.setIdentity(firmBean.data.getString("identity"));
-		}
-
-		//°¡»ó°èÁÂ°¡ ½ÅÇÑ,³óÇù,ÇÏ³ª ÀºÇàÀÏ¶§¸¸ ¼¼ÆÃ
-		if("088".equals(firmBean.bankCd) || "011".equals(firmBean.bankCd) ||
-				"012".equals(firmBean.bankCd) || "081".equals(firmBean.bankCd)) {
-			fb0900400Bean.setIdentity(firmBean.data.getString("identity"));
-		}
-
-		//°¡»ó°èÁÂ°¡ ³óÇùÀºÇàÀÏ¶§¸¸ ¼¼ÆÃ
-		if("011".equals(firmBean.bankCd) || "012".equals(firmBean.bankCd)) {
-			fb0900400Bean.setRegType(firmBean.data.getString("regType"));
-		}
-
-		headerBean.setTransactionIndex(fb0900400Bean.getTransaction());
-
-		KsnetComm comm	= new KsnetComm(firm.server);
-		FBHeaderBean resHeader = comm.ksnet(headerBean);
-
-		String resCode = resHeader.getBankResponseCode();
-
-		resMsg = FirmDAO.getCodeDesc(headerBean.getNewBankCode(), resCode);
-
-		logger.info("°¡»ó°èÁÂ Ãâ±ÝÁ¤º¸ µî·Ï : [{}][{}]",resCode,resMsg);
-		logger.info("===================================================");
-
-		firmBean.resultCd = resCode;
-		firmBean.resultMsg = resMsg;
-
-		return firmBean;
-	}
-
-	public FirmBean processCheck(long idx,FirmBean firmBean,FirmMasterDAO masterDAO){
-		int limit = 40;
-		int count = 1;
-		try{
-			while(count < limit){
-				Thread.sleep(1000);
-				firmBean = masterDAO.checkResult(idx,firmBean);
-				if(!firmBean.resultCd.equals("")){
-					count = limit;
-					break;
-				}
-			}
-		}catch(Exception e){
-
-		}
-		return firmBean;
-	}
-
-
-	public FirmBean processCheck(long idx,FirmBean firmBean,FirmTrxDAO trxDAO){
-		int limit = 70;
-		int count = 1;
-		try{
-			while(count < limit){
-				Thread.sleep(1000);
-				firmBean = trxDAO.checkResult(idx,firmBean);
-				if(!firmBean.resultCd.equals("")){
-					count = limit;
-					break;
-				}
-			}
-		}catch(Exception e){
-
-		}
-		return firmBean;
-	}
-
 	public FirmBean valid(FirmBean firmBean){
 		if(firmBean == null){
-			return formatError(firmBean,"¸Þ¼¼Áö Æ÷¸Ë ¿À·ù");
+			return formatError(firmBean,"ï¿½Þ¼ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½");
 		}else{
 			if(firmBean.msgType.length() !=7){
-				return formatError(firmBean,"msgType ¿À·ù :"+firmBean.msgType);
+				return formatError(firmBean,"msgType ï¿½ï¿½ï¿½ï¿½ :"+firmBean.msgType);
 			}
 			if(firm.bank.get(firmBean.bankCd) == null){
-				return formatError(firmBean,"bankCd ¿À·ù , Áö¿øÇÏÁö ¾Ê´Â ÀºÇàÄÚµåÀÔ´Ï´Ù. "+firmBean.bankCd);
+				return formatError(firmBean,"bankCd ï¿½ï¿½ï¿½ï¿½ , ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ê´ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Úµï¿½ï¿½Ô´Ï´ï¿½. "+firmBean.bankCd);
 			}
 			if(firmBean.userId.equals("")){
-				return formatError(firmBean,"userId ¿À·ù , userId ´Â ÇÊ¼ö°ªÀÔ´Ï´Ù. ");
+				return formatError(firmBean,"userId ï¿½ï¿½ï¿½ï¿½ , userId ï¿½ï¿½ ï¿½Ê¼ï¿½ï¿½ï¿½ï¿½Ô´Ï´ï¿½. ");
 			}
 			firmBean.resultCd = "";
 		}
@@ -769,7 +86,7 @@ public class InterProcess implements java.io.Serializable{
 			firmBean = new FirmBean();
 		}
 		firmBean.resultCd = "9999";
-		firmBean.resultMsg = "¸Þ¼¼Áö Æ÷¸Ë ¿À·ù";
+		firmBean.resultMsg = "ï¿½Þ¼ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½";
 		return firmBean;
 	}
 }

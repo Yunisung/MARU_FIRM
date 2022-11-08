@@ -1,9 +1,6 @@
 package com.pgmate.firm.util;
 
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
+import java.io.*;
 import java.math.BigInteger;
 import java.net.InetSocketAddress;
 import java.net.Socket;
@@ -35,7 +32,7 @@ public class KsnetComm {
 	
 	private SmsGw smsGw = null;
 	
-	//KSNET Á¤º¸ ¿î¿µ : 121.138.30.10  19237, Å×½ºÆ® : 210.181.28.103  19238 KSNET °øÀÎ IP Àü´Þ ¿ä¸Á 
+	//KSNET ï¿½ï¿½ï¿½ï¿½ ï¿½î¿µ : 121.138.30.10  19237, ï¿½×½ï¿½Æ® : 210.181.28.103  19238 KSNET ï¿½ï¿½ï¿½ï¿½ IP ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ 
 	
 	public KsnetComm(ServerBean conf){
 		this.conf = conf;
@@ -43,7 +40,7 @@ public class KsnetComm {
 	}
 	
 	
-	public FBHeaderBean ksnet(FBHeaderBean headerBean){
+	public FBHeaderBean ksnet(FBHeaderBean headerBean) {
 		long time 					= System.currentTimeMillis();
 		
 		FBHeaderBean resHeaderBean 	= null;
@@ -62,22 +59,23 @@ public class KsnetComm {
      	
      	try{
     		socket = new Socket();
-    		message= "¼ÒÄÏ ¿ÀÇÂ ¿À·ù";
+    		message= "ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½";
     		
     		socket.connect(new InetSocketAddress(conf.ksnetIp,conf.ksnetPort));
     		socket.setSoTimeout(conf.timeout);
     		
     		
     		output = socket.getOutputStream();
-    		message= "µ¥ÀÌÅÍ Àü¼Û ½ÇÆÐ";
-    		//key = generateKey();
-    		//request = encrypt(key,reqMsg);
-    		logger.info("-> KSNET [{}]",reqMsg);
+    		message= "ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½";
+//    		key = generateKey();
+//    		request = encrypt(key,reqMsg);
+//    		output.write(request);
+			logger.info("-> KSNET [{}], {}",reqMsg, reqMsg.length());
     		//logger.debug("-> KSNET [{}],{}",CommonUtil.toString(request),request.length);
     		output.write(reqMsg.getBytes());
     		output.flush();
     		
-    		message= "µ¥ÀÌÅÍ ¼ö½Å ¿À·ù";
+    		message= "ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½";
     		input = socket.getInputStream();
     		
     		
@@ -100,7 +98,7 @@ public class KsnetComm {
             bout.close();
     		
             if(response != null){
-            	logger.debug("<- KSNET [{}],{}",CommonUtil.toString(response),response.length);
+//            	logger.debug("<- KSNET [{}],{}",CommonUtil.toString(response),response.length);
             	byte[] resBuf = new byte[response.length-4];
             	System.arraycopy(response, 4, resBuf, 0, response.length-4);
 //            	response  = decrypt(key, resBuf);
@@ -131,7 +129,7 @@ public class KsnetComm {
 			headerBean.setTransactionTime(CommonUtil.getCurrentDate("yyyyMMddHHmmss"));
 			response = (headerBean.getTransaction()+headerBean.getTransactionIndex()).getBytes();
 			if(headerBean.getSpecCode().equals("0100")) {
-				String msgBody = "KSNET Æß¹ðÅ· Ãâ±Ý Àå¾Ö ¹ß»ý [" + message + "] ";
+				String msgBody = "KSNET ï¿½ß¹ï¿½Å· ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ ï¿½ß»ï¿½ [" + message + "] ";
 				smsGw.sendMessage("1", "1", msgBody);
 			}
 			
@@ -142,6 +140,7 @@ public class KsnetComm {
 				if(socket != null){socket.close();}
 			}catch(IOException io){
 			}
+
 			resHeaderBean = new FBHeaderBean(response);
 			resHeaderBean.setIndex(headerBean.getIndex());
 			resHeaderBean.setProcId(headerBean.getProcId());
@@ -150,8 +149,9 @@ public class KsnetComm {
 			
 			logger.info("<- KSNET [{}],{},{}",CommonUtil.toString(response),response.length,(System.currentTimeMillis()-time));
 			
-			//¿©À¯ ÇÊµå¿¡ ÀÀ´äÄÚµå¿¡ ÇØ´çÇÏ´Â ¸Þ¼¼Áö¸¦ ±âÀÔÇÑ´Ù.
-			resHeaderBean.setMessage(FirmDAO.getCodeDesc(resHeaderBean.getNewBankCode(),resHeaderBean.getBankResponseCode()));
+			//ï¿½ï¿½ï¿½ï¿½ ï¿½Êµå¿¡ ï¿½ï¿½ï¿½ï¿½ï¿½Úµå¿¡ ï¿½Ø´ï¿½ï¿½Ï´ï¿½ ï¿½Þ¼ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ñ´ï¿½.
+//			resHeaderBean.setMessage(FirmDAO.getCodeDesc(resHeaderBean.getNewBankCode(),resHeaderBean.getBankResponseCode()));
+			resHeaderBean.setMessage(FirmDAO.getResultMsg(resHeaderBean.getBankResponseCode()));
 		}
 		
 		return resHeaderBean;
@@ -165,7 +165,7 @@ public class KsnetComm {
 		byte[] buf = null;
 		
 		if(req.substring(19,23).equals("0900") && req.substring(23,26).equals("400")){
-			//°¡»ó°èÁÂ Ãâ±ÝÁ¤º¸ µî·Ï½Ã ¼­ºñ½ºÄÚµå 4000
+			//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½Ï½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Úµï¿½ 4000
 			logger.info("ENCRYPT : {}",KsnetComm.REG_SVC_CODE);
 			buf = (KsnetComm.REG_SVC_CODE+conf.sendAuthKey+req).getBytes();
 		}else {
@@ -237,7 +237,7 @@ public class KsnetComm {
 		byte tdata[]	= new  KSBankSeed(kbuf).cbc_encrypt(mbuf) ;
 		return tdata;
 	}
-	
+
 	
 	
 	

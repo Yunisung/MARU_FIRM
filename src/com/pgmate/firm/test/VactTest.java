@@ -7,6 +7,7 @@ import java.io.OutputStream;
 import java.math.BigInteger;
 import java.net.InetSocketAddress;
 import java.net.Socket;
+import java.nio.charset.StandardCharsets;
 import java.security.KeyFactory;
 import java.security.spec.RSAPublicKeySpec;
 
@@ -31,7 +32,7 @@ public class VactTest {
 	private String FCS_SVC_CODE	= "5000";
 	private String SVC_CODE	= "1000";
 	private String serverAuthKey=  "12345678abcdefgh12345678";
-	private String sendAuthKey =  "XHuyz1RWwXKZ0qpS";
+	private String sendAuthKey =  "vlgm662MRn53EnmA";
 	
 	//
 	//가상계좌 입금
@@ -44,13 +45,18 @@ public class VactTest {
 	
 	public static void main(String[] args){
 		VactTest vac = new VactTest();
-		vac.vactCheck();
+//		vac.vactCheck();
 //		vac.vactIn();
 //		vac.vactCancel();
 //		vac.vactNewIn();
-		
+		vac.vactHyphen();
 	}
-	
+
+	public void vactHyphen() {
+		String msg = "KSNETVR  70019   890200300140000120221101141323                                     089             700139750001   0620810000009000000000000000000081    ▒\u05FD▒?▒?▒01            00000000000000000000000000000000000000070110000000481  20221101141323      081081                                          ";
+		comm(msg);
+	}
+
 	public void vactCheck(){
 		String msg = "KSNETVR  TESTBANK040900100100000520210614140026                                     004             10000000000051                                04                      0000000100000  10                    004                                                                                          ";
 		comm(msg);
@@ -188,15 +194,15 @@ public class VactTest {
 		Firm firm  = FirmLoader.getConfig();
 		byte[] response = null;
 		TcpSocket tcp = new TcpSocket();
-		tcp.setSocketProperty("127.0.0.1",19237, 100000);
+		tcp.setSocketProperty("10.100.100.13",10006, 100000);
 		try{
 			System.out.println("=> ["+req+"]");
-			byte[] request = FirmUtil.uencode_3des(firm.server.serverAuthKey.getBytes(),req.getBytes());
+//			byte[] request = FirmUtil.uencode_3des(firm.server.serverAuthKey.getBytes(),req.getBytes());
 			
-			System.out.println("=> ["+new String(request)+"]");
+//			System.out.println("=> ["+new String(request)+"]");
 			tcp.connect();
 			
-			tcp.send(request);
+			tcp.send(req.getBytes("euc-kr"));
 			response = tcp.recvAll();
 			System.out.println("key: "+firm.server.serverAuthKey);
 			response = FirmUtil.udecode_3des(firm.server.serverAuthKey.getBytes(),response);

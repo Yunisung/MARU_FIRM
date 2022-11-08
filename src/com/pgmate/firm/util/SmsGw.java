@@ -103,7 +103,7 @@ public class SmsGw {
 	public void getConfig(String smsCh) {
     	try{
             // 프로퍼티 파일 위치 
-            String messagePropFile = "/home/bkwinners/MARU/MARU_FIRM/conf/messageconf.properties";
+            String messagePropFile = "/var/lib/jenkins/workspace/MARU_FIRM/conf/messageconf.properties";
             
             // 프로퍼티 객체 생성
             Properties props = new Properties();
