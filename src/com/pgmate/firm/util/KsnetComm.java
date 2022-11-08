@@ -32,8 +32,7 @@ public class KsnetComm {
 	
 	private SmsGw smsGw = null;
 	
-	//KSNET ���� � : 121.138.30.10  19237, �׽�Ʈ : 210.181.28.103  19238 KSNET ���� IP ���� ��� 
-	
+
 	public KsnetComm(ServerBean conf){
 		this.conf = conf;
 	
@@ -59,14 +58,14 @@ public class KsnetComm {
      	
      	try{
     		socket = new Socket();
-    		message= "���� ���� ����";
+    		message= "소켓 오픈 오류";
     		
     		socket.connect(new InetSocketAddress(conf.ksnetIp,conf.ksnetPort));
     		socket.setSoTimeout(conf.timeout);
     		
     		
     		output = socket.getOutputStream();
-    		message= "������ ���� ����";
+    		message= "데이터 전송 실패";
 //    		key = generateKey();
 //    		request = encrypt(key,reqMsg);
 //    		output.write(request);
@@ -75,7 +74,7 @@ public class KsnetComm {
     		output.write(reqMsg.getBytes());
     		output.flush();
     		
-    		message= "������ ���� ����";
+    		message= "데이터 수신 오류";
     		input = socket.getInputStream();
     		
     		
@@ -129,7 +128,7 @@ public class KsnetComm {
 			headerBean.setTransactionTime(CommonUtil.getCurrentDate("yyyyMMddHHmmss"));
 			response = (headerBean.getTransaction()+headerBean.getTransactionIndex()).getBytes();
 			if(headerBean.getSpecCode().equals("0100")) {
-				String msgBody = "KSNET �߹�ŷ ��� ��� �߻� [" + message + "] ";
+				String msgBody = "KSNET 펌뱅킹 출금 장애 발생 [" + message + "] ";
 				smsGw.sendMessage("1", "1", msgBody);
 			}
 			
@@ -149,7 +148,7 @@ public class KsnetComm {
 			
 			logger.info("<- KSNET [{}],{},{}",CommonUtil.toString(response),response.length,(System.currentTimeMillis()-time));
 			
-			//���� �ʵ忡 �����ڵ忡 �ش��ϴ� �޼����� �����Ѵ�.
+			//여유 필드에 응답코드에 해당하는 메세지를 기입한다.
 //			resHeaderBean.setMessage(FirmDAO.getCodeDesc(resHeaderBean.getNewBankCode(),resHeaderBean.getBankResponseCode()));
 			resHeaderBean.setMessage(FirmDAO.getResultMsg(resHeaderBean.getBankResponseCode()));
 		}
@@ -165,7 +164,7 @@ public class KsnetComm {
 		byte[] buf = null;
 		
 		if(req.substring(19,23).equals("0900") && req.substring(23,26).equals("400")){
-			//������� ������� ��Ͻ� �����ڵ� 4000
+			//가상계좌 출금정보 등록시 서비스코드 4000
 			logger.info("ENCRYPT : {}",KsnetComm.REG_SVC_CODE);
 			buf = (KsnetComm.REG_SVC_CODE+conf.sendAuthKey+req).getBytes();
 		}else {

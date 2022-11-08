@@ -1,102 +1,75 @@
-/* 
- * Project Name : 
+/*
+ * Project Name :
  * Project      : TrustMate_SPEC
  * File Name    : FB0600400Bean.java
  * Date	        : Jul 15, 2008
  * Version      : 1.0
- * Author       : 
- * Comment      :  
+ * Author       :
+ * Comment      :
  */
 
 package com.pgmate.firm.ksnet;
 
 import com.pgmate.lib.util.lang.CommonUtil;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import java.nio.charset.Charset;
 
 public class FB0600400Bean extends CommBean {
 
-	private Logger logger = LoggerFactory.getLogger( getClass() );
-
 	private String transactionDay 	= "";	//MMDD
-	private String bankCode			= "";	//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
-	private String account			= "";	//ï¿½ï¿½ï¿½Â¹ï¿½È£
-	private String name				= "";	//ï¿½ï¿½ï¿½Â¼ï¿½ï¿½ï¿½
-	private String socialNumber		= "";	//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ö¹Î¹ï¿½È£
-	private String socialCheck      = "";	//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ö¹Î¹ï¿½È£ Ã¼Å© ï¿½ï¿½ï¿½ï¿½ 99:ï¿½Ï¹ï¿½Ã¼Å© 88:ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ä¢Ã¼Å©
-	private String mAccount			= "";   //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ý°ï¿½ ï¿½Ì¿ï¿½ï¿½Ò¶ï¿½ (ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½) ï¿½ï¿½ï¿½ï¿½Â¹ï¿½È£
-	private String newBankCode		= "";	//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Úµï¿½3ï¿½Ú¸ï¿½ 
+	private String bankCode			= "";	//°èÁÂÀºÇà
+	private String account			= "";	//°èÁÂ¹øÈ£
+	private String name				= "";	//°èÁÂ¼º¸í
+	private String socialNumber		= "";	//°èÁÂÀÇ ÁÖ¹Î¹øÈ£
+	private String socialCheck      = "";	//°èÁÂÀÇ ÁÖ¹Î¹øÈ£ Ã¼Å© ¿©ºÎ 99:ÀÏ¹ÝÃ¼Å© 88:µÎÀ½¹ýÄ¢Ã¼Å©
+	private String mAccount			= "";   //»õ¸¶À» ±Ý°í ÀÌ¿ëÇÒ¶§ (ÀºÇà°ú Á÷°è¾à ÀÏ °æ¿ì) ¸ð°èÁÂ¹øÈ£
+	private String newBankCode		= "";	//°èÁÂÀºÇàÄÚµå3ÀÚ¸®
 
-//	private String companySpace 	= "";	//È¸ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ SPACE
-//	private String hangulSpace		= "";	//ï¿½Ñ±Û»ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ SPACE
-//	private String bankSpace		= "";	//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½à¿¹ï¿½ï¿½ SPACE
+//	private String companySpace 	= "";	//È¸»ç»ç¿ëÁ¤º¸ SPACE
+//	private String hangulSpace		= "";	//ÇÑ±Û»ç¿ëÁ¤º¸ SPACE
+//	private String bankSpace		= "";	//Á¢¼ÓÀºÇà¿¹ºñ SPACE
 
-	//PYS: ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ß°ï¿½ï¿½È°ï¿½
-	private String amount			= ""; 	//ï¿½Ý¾ï¿½
-	private String dotcomSpace		= "";	//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½È¸ : ï¿½ì¸®ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½È¸ï¿½ï¿½ 'D'ï¿½ï¿½ï¿½ï¿½, ï¿½ì¸®ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½Ã¼ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
-	private String otherBankSpace	= "";	//ï¿½ï¿½Å¸ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
-	private String nhSpace			= "";	//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Â±ï¿½ï¿½ï¿½
+	//PYS: ÇÏÀÌÇÂÀü¹®¿¡ Ãß°¡µÈ°Í
+	private String amount			= ""; 	//±Ý¾×
+	private String dotcomSpace		= "";	//´åÄÄÅëÀå Á¶È¸ : ¿ì¸®´åÄÄ ÅëÀåÁ¶È¸½Ã 'D'¼¼ÆÃ, ¿ì¸®ÀºÇà °è¾à¾÷Ã¼¿¡ ÇÑÇÔ
+	private String otherBankSpace	= "";	//´çÅ¸ÇàÀÎÁõÀ¯Çü
+	private String nhSpace			= "";	//³óÇù°èÁÂ±¸ºÐ
 
-	private String extra			= "";	//ï¿½ï¿½ï¿½ï¿½(ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½) SPACE
+	private String extra			= "";	//¿¹ºñ(°³º°ºÎ) SPACE
 
-	public FB0600400Bean(){	
+	public FB0600400Bean(){
 	}
-	
+
 	public FB0600400Bean(String transaction){
-		this(transaction.getBytes(Charset.forName("euc-kr")));
+		this(transaction.getBytes());
 	}
-	
+
 	public FB0600400Bean(byte[] transaction){
 		super.rootTransaction = transaction;
 		transactionDay 	= CommonUtil.toString(transaction,0,4).trim();		//MMDD
-		bankCode		= CommonUtil.toString(transaction,4,2).trim();		//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
-		account			= CommonUtil.toString(transaction,6,16).trim();		//ï¿½ï¿½ï¿½Â¹ï¿½È£
-		name			= CommonUtil.toString(transaction,22,22).trim();	//ï¿½ï¿½ï¿½Â¼ï¿½ï¿½ï¿½
-		socialNumber	= CommonUtil.toString(transaction,44,13).trim();	//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ö¹Î¹ï¿½È£
-		socialCheck		= CommonUtil.toString(transaction,57,2).trim();		//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ö¹Î¹ï¿½È£ Ã¼Å© ï¿½ï¿½ï¿½ï¿½ 99:ï¿½Ï¹ï¿½Ã¼Å© 88:ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ä¢Ã¼Å©
-		mAccount		= CommonUtil.toString(transaction,59,20).trim();	//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ý°ï¿½ ï¿½Ì¿ï¿½ï¿½Ò¶ï¿½ (ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½) ï¿½ï¿½ï¿½ï¿½Â¹ï¿½È£
-		newBankCode		= CommonUtil.toString(transaction,79,3).trim();		//ï¿½ï¿½ï¿½ï¿½ï¿½Úµï¿½ 3ï¿½Ú¸ï¿½
-		amount			= CommonUtil.toString(transaction, 82, 13).trim();	//ï¿½Ý¾ï¿½
-		dotcomSpace		= CommonUtil.toString(transaction, 95, 1).trim();//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½È¸
-		otherBankSpace  = CommonUtil.toString(transaction, 96, 1).trim();//ï¿½ï¿½Å¸ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
-		nhSpace			= CommonUtil.toString(transaction, 97, 1).trim();//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Â±ï¿½ï¿½ï¿½
-		extra			= CommonUtil.toString(transaction,98,102).trim();	//ï¿½ï¿½ï¿½ï¿½(ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½) SPACE
-
-//		companySpace 	= CommonUtil.toString(transaction,175,20).trim();	//È¸ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ SPACE
-//		hangulSpace		= CommonUtil.toString(transaction,195,1).trim();	//ï¿½Ñ±Û»ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ SPACE
-//		bankSpace		= CommonUtil.toString(transaction,196,4).trim();	//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½à¿¹ï¿½ï¿½ SPACE
-
-		log();
+		bankCode		= CommonUtil.toString(transaction,4,2).trim();		//°èÁÂÀºÇà
+		account			= CommonUtil.toString(transaction,6,16).trim();		//°èÁÂ¹øÈ£
+		name			= CommonUtil.toString(transaction,22,22).trim();	//°èÁÂ¼º¸í
+		socialNumber	= CommonUtil.toString(transaction,44,13).trim();	//°èÁÂÀÇ ÁÖ¹Î¹øÈ£
+		socialCheck		= CommonUtil.toString(transaction,57,2).trim();		//°èÁÂÀÇ ÁÖ¹Î¹øÈ£ Ã¼Å© ¿©ºÎ 99:ÀÏ¹ÝÃ¼Å© 88:µÎÀ½¹ýÄ¢Ã¼Å©
+		mAccount		= CommonUtil.toString(transaction,59,20).trim();	//»õ¸¶À» ±Ý°í ÀÌ¿ëÇÒ¶§ (ÀºÇà°ú Á÷°è¾à ÀÏ °æ¿ì) ¸ð°èÁÂ¹øÈ£
+		newBankCode		= CommonUtil.toString(transaction,79,3).trim();		//ÀºÇàÄÚµå 3ÀÚ¸®
+		amount			= CommonUtil.toString(transaction, 82, 13).trim();	//±Ý¾×
+		dotcomSpace		= CommonUtil.toString(transaction, 95, 1).trim();//´åÄÄÅëÀåÁ¶È¸
+		otherBankSpace  = CommonUtil.toString(transaction, 96, 1).trim();//´çÅ¸ÇàÀÎÁõÀ¯Çü
+		nhSpace			= CommonUtil.toString(transaction, 97, 1).trim();//³óÇù°èÁÂ±¸ºÐ
+		extra			= CommonUtil.toString(transaction,98,102).trim();	//¿¹ºñ(°³º°ºÎ) SPACE
+//		companySpace 	= CommonUtil.toString(transaction,175,20).trim();	//È¸»ç»ç¿ëÁ¤º¸ SPACE
+//		hangulSpace		= CommonUtil.toString(transaction,195,1).trim();	//ÇÑ±Û»ç¿ëÁ¤º¸ SPACE
+//		bankSpace		= CommonUtil.toString(transaction,196,4).trim();	//Á¢¼ÓÀºÇà¿¹ºñ SPACE
 	}
 
-	public void log() {
-		logger.info("=================== ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½È¸ ï¿½ï¿½ï¿½ ===================");
-		logger.info("transactionDay : {}", transactionDay);
-		logger.info("bankCode : {}", bankCode);
-		logger.info("account : {}", account);
-		logger.info("name : {}", name);
-		logger.info("socialNumber : {}", socialNumber);
-		logger.info("socialCheck : {}", socialCheck);
-		logger.info("mAccount : {}", mAccount);
-		logger.info("newBankCode : {}", newBankCode);
-		logger.info("amount : {}", amount);
-		logger.info("dotcomSpace : {}", dotcomSpace);
-		logger.info("otherBankSpace : {}", otherBankSpace);
-		logger.info("nhSpace : {}", nhSpace);
-		logger.info("extra : {}", extra);
-
-	}
-	
 	public String getTransaction(){
 		StringBuffer transaction = new StringBuffer();
 		transaction.append(CommonUtil.zerofill(transactionDay,4));
 		transaction.append(CommonUtil.byteFiller(bankCode,2));
 		transaction.append(CommonUtil.byteFiller(account,16));
 		transaction.append(CommonUtil.byteFiller(name,22));
-		transaction.append(CommonUtil.byteFiller(socialNumber,13));
-		transaction.append(CommonUtil.byteFiller(socialCheck,2));
+		transaction.append(CommonUtil.zerofill(socialNumber,13));
+		transaction.append(CommonUtil.zerofill(socialCheck,2));
 		transaction.append(CommonUtil.byteFiller(mAccount,20));
 		transaction.append(CommonUtil.byteFiller(newBankCode,3));
 		transaction.append(CommonUtil.byteFiller(dotcomSpace, 1));
@@ -106,7 +79,7 @@ public class FB0600400Bean extends CommBean {
 //		transaction.append(CommonUtil.byteFiller(companySpace,20));
 //		transaction.append(CommonUtil.byteFiller(hangulSpace,1));
 //		transaction.append(CommonUtil.zerofill(bankSpace,4));
-		
+
 		return transaction.toString();
 	}
 
@@ -217,13 +190,13 @@ public class FB0600400Bean extends CommBean {
 	public String getNhSpace() { return nhSpace; }
 
 	public void setNhSpace(String nh) { this.nhSpace = nh; }
-	
-	
-	
-	
-	
-	
-	
-	
-	
+
+
+
+
+
+
+
+
+
 }

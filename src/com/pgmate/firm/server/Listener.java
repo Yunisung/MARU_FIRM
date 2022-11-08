@@ -67,7 +67,8 @@ public class Listener {
 			//logger.debug("-> {} [{}],{}",source,CommonUtil.toString(recv),recv.length);
 			//logger.debug("-> {} [{}],{}",source,CommonUtil.toString(recv),recv.length);
 
-			if(source.equals(FirmUtil.KSNET)){	//KSNET ���� ���μ���
+			if(source.equals(FirmUtil.KSNET)){
+				//KSNET ���� ���μ���
 
 				logger.debug("-> {} [{}]",source,CommonUtil.toString(recv));
 
@@ -83,8 +84,8 @@ public class Listener {
 
 
 
-			}else{								//���θ� ���μ���
-
+			}else{
+				//내부망 프로세스
 				//recv = FirmUtil.udecode_3des(firm.server.encryptKey.getBytes(),recv);
 
 				logger.info("-> {} [{}]",source,CommonUtil.toString(recv));
@@ -95,13 +96,6 @@ public class Listener {
 				//send = FirmUtil.uencode_3des(firm.server.encryptKey.getBytes(),send);
 
 			}
-
-			// ���� ������� �߹�ŷ�� �����. ������´� MARU_VACT_HYPHEN���� ���
-//			if(source.equals(FirmUtil.HYPHEN)) {
-//				logger.info("-> {} [{}]", source, CommonUtil.toString(recv));
-//				send = new InterProcess(firm).execute(new String(recv)).getBytes();
-//				logger.info("<- {} [{}]", source, CommonUtil.toString(send));
-//			}
 			
 			socket.send(send);
 			socket.ioClose();

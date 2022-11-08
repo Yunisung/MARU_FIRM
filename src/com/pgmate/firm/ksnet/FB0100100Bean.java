@@ -5,58 +5,58 @@ import com.pgmate.lib.util.lang.CommonUtil;
 
 public class FB0100100Bean extends CommBean {
 
-	private String mAccount 		= "";	//ï¿½ï¿½Ý°ï¿½ï¿½Â¹ï¿½È£(ï¿½ï¿½ï¿½ï¿½ï¿½)
-	private String mAccountPassword	= "";	//ï¿½ï¿½ï¿½ï¿½ï¿½Ð¹ï¿½È£(ï¿½ï¿½ï¿½ï¿½Âºï¿½ï¿½)
-	private String sign				= "";	//ï¿½ï¿½ï¿½ï¿½ï¿½È£(ï¿½ï¿½ï¿½ï¿½Î¿ï¿½ï¿½ï¿½ï¿½ï¿½)
-	private String amount			= "";	//ï¿½ï¿½Ý±Ý¾ï¿½(ï¿½ï¿½Ã¼ï¿½Ý¾ï¿½)
-	private String remainAmountSign	= "";	//ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ü¾×ºï¿½È£(+/-)
-	private String remainAmount		= "";	//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ü¾ï¿½(ï¿½ï¿½ï¿½ï¿½ï¿½Ü¾ï¿½)
-	private String receiveBankCode	= "";	//ï¿½Ô±ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Úµï¿½
-	private String receiveAccount	= "";	//ï¿½Ô±Ý°ï¿½ï¿½ï¿½
-	private String commission		= "";	//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
-	private String trasferTime		= "";	//ï¿½ï¿½Ã¼ï¿½Ã°ï¿½(HHMMSS)
-	private String senderName		= "";	//ï¿½Ô±ï¿½ï¿½Î¼ï¿½ï¿½ï¿½
+	private String mAccount 		= "";	//Ãâ±Ý°èÁÂ¹øÈ£(¸ð°èÁÂ)
+	private String mAccountPassword	= "";	//ÅëÀåºñ¹Ð¹øÈ£(¸ð°èÁÂºñ¹ø)
+	private String sign				= "";	//º¹±âºÎÈ£(ÀºÇàºÎ¿©°ø½Ä)
+	private String amount			= "";	//Ãâ±Ý±Ý¾×(ÀÌÃ¼±Ý¾×)
+	private String remainAmountSign	= "";	//Ãâ±ÝÈÄ ÀÜ¾×ºÎÈ£(+/-)
+	private String remainAmount		= "";	//Ãâ±ÝÈÄÀÜ¾×(¿øÀåÀÜ¾×)
+	private String receiveBankCode	= "";	//ÀÔ±ÝÀºÇàÄÚµå
+	private String receiveAccount	= "";	//ÀÔ±Ý°èÁÂ
+	private String commission		= "";	//¼ö¼ö·á
+	private String trasferTime		= "";	//ÀÌÃ¼½Ã°¢(HHMMSS)
+	private String senderName		= "";	//ÀÔ±ÝÀÎ¼º¸í
 	private String cmsCode			= "";	//CMS CODE(SPACE)
-	private String socialNumber		= "";	//ï¿½Ö¹Î¹ï¿½È£(ï¿½ï¿½ï¿½ï¿½Ö¹Î¹ï¿½È£)
-	private String ATMCode			= "";	//ï¿½Úµï¿½ï¿½ï¿½Ã¼ï¿½ï¿½ï¿½ï¿½
-	private String receiverName		= "";	//Å¸ï¿½ï¿½ï¿½ï¿½Ã¼ï¿½ï¿½ ï¿½ï¿½Ý°ï¿½ï¿½Â¿ï¿½ ï¿½Ô±Ý°ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ö¸ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½Öµï¿½ï¿½ï¿½ ï¿½Ô±ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ö¸ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½Ô·ï¿½(ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½)
-	private String receiveNewBankCode= "";	//ï¿½Ô±ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Úµå¸¦ 3ï¿½Ú¸ï¿½ï¿½ï¿½ ï¿½ß°ï¿½
+	private String socialNumber		= "";	//ÁÖ¹Î¹øÈ£(°í°´ÁÖ¹Î¹øÈ£)
+	private String ATMCode			= "";	//ÀÚµ¿ÀÌÃ¼±¸ºÐ
+	private String receiverName		= "";	//Å¸ÇàÀÌÃ¼½Ã Ãâ±Ý°èÁÂ¿¡ ÀÔ±Ý°èÁÂÀÇ ¿¹±ÝÁÖ¸í Á¤º¸¸¦ Ãâ·ÂÇÒ ¼ö ÀÖµµ·Ï ÀÔ±Ý °èÁÂ ¿¹±ÝÁÖ¸í Á¤º¸ ÀÔ·Â(Á¦ÀÏÀºÇà)
+	private String receiveNewBankCode= "";	//ÀÔ±ÝÀºÇàÄÚµå¸¦ 3ÀÚ¸®·Î Ãß°¡
 
-	//PYS : ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ß°ï¿½ï¿½È°ï¿½
-	private String salary			= "";	//ï¿½Þ¿ï¿½
+	//PYS : ÇÏÀÌÇÂÀü¹®¿¡ Ãß°¡µÈ°Í
+	private String salary			= "";	//±Þ¿©
 
-	private String extra			= "";	//ï¿½ï¿½ï¿½ñ¿µ¿ï¿½
-	
+	private String extra			= "";	//¿¹ºñ¿µ¿ª
+
 	public FB0100100Bean(){
-		
+
 	}
-	
+
 	public FB0100100Bean(String transaction){
 		this(transaction.getBytes());
 	}
 
 	public FB0100100Bean(byte[] transaction){
 		this.rootTransaction = transaction;
-		mAccount 			= CommonUtil.toString(transaction,0,15).trim();	//ï¿½ï¿½Ý°ï¿½ï¿½Â¹ï¿½È£(ï¿½ï¿½ï¿½ï¿½ï¿½)
-		mAccountPassword	= CommonUtil.toString(transaction,15,8).trim();	//ï¿½ï¿½ï¿½ï¿½ï¿½Ð¹ï¿½È£(ï¿½ï¿½ï¿½ï¿½Âºï¿½ï¿½)
-		sign				= CommonUtil.toString(transaction,23,6).trim();	//ï¿½ï¿½ï¿½ï¿½ï¿½È£(ï¿½ï¿½ï¿½ï¿½Î¿ï¿½ï¿½ï¿½ï¿½ï¿½)
-		amount				= CommonUtil.toString(transaction,29,13).trim();//ï¿½ï¿½Ý±Ý¾ï¿½(ï¿½ï¿½Ã¼ï¿½Ý¾ï¿½)
-		remainAmountSign	= CommonUtil.toString(transaction,42,1).trim();	//ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ü¾×ºï¿½È£(+/-)
-		remainAmount		= CommonUtil.toString(transaction,43,13).trim();//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ü¾ï¿½(ï¿½ï¿½ï¿½ï¿½ï¿½Ü¾ï¿½)
-		receiveBankCode		= CommonUtil.toString(transaction,56,2).trim();	//ï¿½Ô±ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Úµï¿½
-		receiveAccount		= CommonUtil.toString(transaction,58,15).trim();//ï¿½Ô±Ý°ï¿½ï¿½ï¿½
-		commission			= CommonUtil.toString(transaction,73,9).trim();	//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
-		trasferTime			= CommonUtil.toString(transaction,82,6).trim();	//ï¿½ï¿½Ã¼ï¿½Ã°ï¿½(HHMMSS)
-		senderName			= CommonUtil.toString(transaction,88,20).trim();//ï¿½Ô±ï¿½ï¿½Î¼ï¿½ï¿½ï¿½
+		mAccount 			= CommonUtil.toString(transaction,0,15).trim();	//Ãâ±Ý°èÁÂ¹øÈ£(¸ð°èÁÂ)
+		mAccountPassword	= CommonUtil.toString(transaction,15,8).trim();	//ÅëÀåºñ¹Ð¹øÈ£(¸ð°èÁÂºñ¹ø)
+		sign				= CommonUtil.toString(transaction,23,6).trim();	//º¹±âºÎÈ£(ÀºÇàºÎ¿©°ø½Ä)
+		amount				= CommonUtil.toString(transaction,29,13).trim();//Ãâ±Ý±Ý¾×(ÀÌÃ¼±Ý¾×)
+		remainAmountSign	= CommonUtil.toString(transaction,42,1).trim();	//Ãâ±ÝÈÄ ÀÜ¾×ºÎÈ£(+/-)
+		remainAmount		= CommonUtil.toString(transaction,43,13).trim();//Ãâ±ÝÈÄÀÜ¾×(¿øÀåÀÜ¾×)
+		receiveBankCode		= CommonUtil.toString(transaction,56,2).trim();	//ÀÔ±ÝÀºÇàÄÚµå
+		receiveAccount		= CommonUtil.toString(transaction,58,15).trim();//ÀÔ±Ý°èÁÂ
+		commission			= CommonUtil.toString(transaction,73,9).trim();	//¼ö¼ö·á
+		trasferTime			= CommonUtil.toString(transaction,82,6).trim();	//ÀÌÃ¼½Ã°¢(HHMMSS)
+		senderName			= CommonUtil.toString(transaction,88,20).trim();//ÀÔ±ÝÀÎ¼º¸í
 		cmsCode				= CommonUtil.toString(transaction,108,16).trim();//CMS CODE(SPACE)
-		socialNumber		= CommonUtil.toString(transaction,124,13).trim();//ï¿½Ö¹Î¹ï¿½È£(ï¿½ï¿½ï¿½ï¿½Ö¹Î¹ï¿½È£)
-		ATMCode				= CommonUtil.toString(transaction,137,2).trim();//ï¿½Úµï¿½ï¿½ï¿½Ã¼ï¿½ï¿½ï¿½ï¿½
-		receiverName		= CommonUtil.toString(transaction,139,20).trim();//ï¿½ï¿½Ã¼ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
-		receiveNewBankCode	= CommonUtil.toString(transaction,159,3).trim();//ï¿½Ô±ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Úµï¿½3
-		salary				= CommonUtil.toString(transaction, 162, 1).trim();//ï¿½Þ¿ï¿½ï¿½ï¿½ï¿½ï¿½
-		extra				= CommonUtil.toString(transaction,163,37).trim();//ï¿½ï¿½ï¿½ï¿½
+		socialNumber		= CommonUtil.toString(transaction,124,13).trim();//ÁÖ¹Î¹øÈ£(°í°´ÁÖ¹Î¹øÈ£)
+		ATMCode				= CommonUtil.toString(transaction,137,2).trim();//ÀÚµ¿ÀÌÃ¼±¸ºÐ
+		receiverName		= CommonUtil.toString(transaction,139,20).trim();//¾÷Ã¼ÅëÀåÀû¿ä
+		receiveNewBankCode	= CommonUtil.toString(transaction,159,3).trim();//ÀÔ±ÝÀºÇàÄÚµå3
+		salary				= CommonUtil.toString(transaction, 162, 1).trim();//±Þ¿©±¸ºÐ
+		extra				= CommonUtil.toString(transaction,163,37).trim();//¿¹ºñ
 	}
-	
+
 	public String getTransaction(){
 		StringBuffer transaction = new StringBuffer();
 		transaction.append(CommonUtil.byteFiller(mAccount,15));
@@ -74,10 +74,10 @@ public class FB0100100Bean extends CommBean {
 		transaction.append(CommonUtil.byteFiller(socialNumber,13));
 		transaction.append(CommonUtil.byteFiller(ATMCode,2));
 		transaction.append(CommonUtil.byteFiller(receiverName,20));
-		transaction.append(CommonUtil.byteFiller(receiveNewBankCode,3));
-		transaction.append(CommonUtil.byteFiller(salary,1));
+		transaction.append(CommonUtil.zerofill(receiveNewBankCode,3));
+		transaction.append(CommonUtil.zerofill(salary,1));
 		transaction.append(CommonUtil.byteFiller(extra,37));
-		
+
 		return transaction.toString();
 	}
 
@@ -128,7 +128,7 @@ public class FB0100100Bean extends CommBean {
 	public void setRemainAmount(String remainAmount) {
 		this.remainAmount = remainAmount;
 	}
-	
+
 	public String getReceiveBankCode() {
 		return receiveBankCode;
 	}
@@ -216,10 +216,10 @@ public class FB0100100Bean extends CommBean {
 	public void setReceiveNewBankCode(String receiveNewBankCode) {
 		this.receiveNewBankCode = receiveNewBankCode;
 	}
-	
+
 	public String getSalary() { return salary; }
 
 	public void setSalary(String salary) { this.salary = salary; }
-	
-	
+
+
 }

@@ -37,22 +37,22 @@ public class InterProcess implements java.io.Serializable{
 			if(firmBean.msgType.startsWith("0800")){
 				firmBean = interExcuter.proc0800(firmBean);
 			}else if(firmBean.msgType.startsWith("0600300")){
-				//ï¿½Ü¾ï¿½ï¿½ï¿½È¸
+				//ÀÜ¾×Á¶È¸
 				firmBean = interExcuter.proc0600300(firmBean);
 			}else if(firmBean.msgType.startsWith("0600400")){
-				//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½È¸
+				//¼º¸íÁ¶È¸
 				firmBean = interExcuter.proc0600400(firmBean);
 			}else if(firmBean.msgType.startsWith("0700100")){
-				//ï¿½ï¿½ï¿½ï¿½
+				//Áý°è
 				firmBean = interExcuter.proc0700100(firmBean);
 			}else if(firmBean.msgType.startsWith("0100100")){
-				//ï¿½ï¿½Ã¼
+				//ÀÌÃ¼
 				firmBean = interExcuter.proc0100100(firmBean);
 			}else if(firmBean.msgType.startsWith("0600101")){
-				//Ã³ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½È¸
+				//Ã³¸®°á°úÁ¶È¸
 				firmBean = interExcuter.proc0600101(firmBean);
 			}else if(firmBean.msgType.startsWith("0900400")){
-				//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½
+				//°¡»ó°èÁÂ Ãâ±ÝÁ¤º¸ µî·Ï
 				firmBean = interExcuter.proc0900400(firmBean);
 			}
 		}
@@ -64,16 +64,16 @@ public class InterProcess implements java.io.Serializable{
 
 	public FirmBean valid(FirmBean firmBean){
 		if(firmBean == null){
-			return formatError(firmBean,"ï¿½Þ¼ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½");
+			return formatError(firmBean,"¸Þ¼¼Áö Æ÷¸Ë ¿À·ù");
 		}else{
 			if(firmBean.msgType.length() !=7){
-				return formatError(firmBean,"msgType ï¿½ï¿½ï¿½ï¿½ :"+firmBean.msgType);
+				return formatError(firmBean,"msgType ¿À·ù :"+firmBean.msgType);
 			}
 			if(firm.bank.get(firmBean.bankCd) == null){
-				return formatError(firmBean,"bankCd ï¿½ï¿½ï¿½ï¿½ , ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ê´ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Úµï¿½ï¿½Ô´Ï´ï¿½. "+firmBean.bankCd);
+				return formatError(firmBean,"bankCd ¿À·ù , Áö¿øÇÏÁö ¾Ê´Â ÀºÇàÄÚµåÀÔ´Ï´Ù. "+firmBean.bankCd);
 			}
 			if(firmBean.userId.equals("")){
-				return formatError(firmBean,"userId ï¿½ï¿½ï¿½ï¿½ , userId ï¿½ï¿½ ï¿½Ê¼ï¿½ï¿½ï¿½ï¿½Ô´Ï´ï¿½. ");
+				return formatError(firmBean,"userId ¿À·ù , userId ´Â ÇÊ¼ö°ªÀÔ´Ï´Ù. ");
 			}
 			firmBean.resultCd = "";
 		}
@@ -86,7 +86,7 @@ public class InterProcess implements java.io.Serializable{
 			firmBean = new FirmBean();
 		}
 		firmBean.resultCd = "9999";
-		firmBean.resultMsg = "ï¿½Þ¼ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½";
+		firmBean.resultMsg = "¸Þ¼¼Áö Æ÷¸Ë ¿À·ù";
 		return firmBean;
 	}
 }
