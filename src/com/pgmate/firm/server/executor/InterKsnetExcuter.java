@@ -343,7 +343,7 @@ public class InterKsnetExcuter implements InterExcuter {
         headerBean.setNewBankCode(firmBean.bankCd);
 
         //가상계좌용 식별코드 : KSNETVR
-        headerBean.setIdentificationCode("KSNETVR");
+//        headerBean.setIdentificationCode("KSNETVR");
 
         headerBean.setCompanyCode(firmBean.data.getString("companyCd"));
         headerBean.setSpecCode("0900");
