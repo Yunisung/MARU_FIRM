@@ -26,7 +26,7 @@ public class KsnetComm {
 
 	private static final Logger logger 	= (Logger) LoggerFactory.getLogger(com.pgmate.firm.util.KsnetComm.class);
 	private ServerBean conf 		= null;
-	private static String SVC_CODE	= "1000";
+	private static String SVC_CODE	= "6000";
 	private static String REG_SVC_CODE	= "4000";
 	private static String FCS_SVC_CODE	= "5000";
 	
@@ -97,7 +97,7 @@ public class KsnetComm {
             bout.close();
     		
             if(response != null){
-//            	logger.debug("<- KSNET [{}],{}",CommonUtil.toString(response),response.length);
+            	logger.debug("<- KSNET [{}],{}",CommonUtil.toString(response),response.length);
             	byte[] resBuf = new byte[response.length-4];
             	System.arraycopy(response, 4, resBuf, 0, response.length-4);
             	response  = decrypt(key, resBuf);
