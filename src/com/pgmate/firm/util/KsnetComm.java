@@ -66,12 +66,12 @@ public class KsnetComm {
     		
     		output = socket.getOutputStream();
     		message= "데이터 전송 실패";
-//    		key = generateKey();
-//    		request = encrypt(key,reqMsg);
-//    		output.write(request);
+    		key = generateKey();
+    		request = encrypt(key,reqMsg);
+    		output.write(request);
 			logger.info("-> KSNET [{}], {}",reqMsg, reqMsg.length());
     		//logger.debug("-> KSNET [{}],{}",CommonUtil.toString(request),request.length);
-    		output.write(reqMsg.getBytes());
+//    		output.write(reqMsg.getBytes());
     		output.flush();
     		
     		message= "데이터 수신 오류";
@@ -100,7 +100,7 @@ public class KsnetComm {
 //            	logger.debug("<- KSNET [{}],{}",CommonUtil.toString(response),response.length);
             	byte[] resBuf = new byte[response.length-4];
             	System.arraycopy(response, 4, resBuf, 0, response.length-4);
-//            	response  = decrypt(key, resBuf);
+            	response  = decrypt(key, resBuf);
             }else{
             	logger.info("<- KSNET [null]");
             }
