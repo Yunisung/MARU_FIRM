@@ -11,7 +11,7 @@ public class FB0200300Bean extends CommBean {
 	private String bankCode				= "";	//은행코드
 	private String amount				= "";	//금액
 	private String remainAmount			= "";	//잔액
-	private String giroCode				= "";	//입금점지로코드
+	private String giroCode				= "";	//입금지점코드
 	private String name					= "";	//성명
 	private String supyoNumber			= "";	//수표번호
 	private String cash					= "";	//현금(현금+당좌수표)
@@ -51,7 +51,7 @@ public class FB0200300Bean extends CommBean {
 		transactionNumber	= CommonUtil.toString(transaction,146,6).trim();	//통장거래 일련번호
 		newBankCode			= CommonUtil.toString(transaction,152,3).trim();	//입금은행코드 3자리
 		branchCode			= CommonUtil.toString(transaction,155,7).trim();	//입금지점코드 7자리 
-		extra				= CommonUtil.toString(transaction,162,transaction.length-162).trim();	//예비
+		extra				= CommonUtil.toString(transaction,162,38).trim();	//예비
 	}
 	
 	public String getTransaction(){

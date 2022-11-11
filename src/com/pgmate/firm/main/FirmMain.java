@@ -1,12 +1,16 @@
 package com.pgmate.firm.main;
 
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 
+import com.pgmate.firm.dao.FirmDAO;
 import com.pgmate.firm.hyphen.BalanceBean;
 import com.pgmate.firm.hyphen.HyphenBaseBean;
 import com.pgmate.firm.hyphen.HyphenBean;
+import com.pgmate.firm.util.FirmUtil;
 import com.pgmate.firm.util.HyphenComm;
 import com.pgmate.lib.util.gson.GsonUtil;
+import com.pgmate.lib.util.lang.CommonUtil;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.slf4j.Logger;
@@ -27,7 +31,7 @@ public class FirmMain{
 	private Firm firm = null;
 	private KsnetComm comm			= null;
 	private HyphenComm hyphenComm 	= null;
-	
+
 	public FirmMain(Firm firm) {
 		this.firm = firm;
 		comm = new KsnetComm(firm.server);
@@ -64,7 +68,40 @@ public class FirmMain{
 	}
 
 	/**
-	 * PYS: 하이픈에 맞게 새로 생성
+	 * PYS : �����¿� �°� ���� ����
+	 */
+	public void firmTrx() {
+		FirmTrxDAO firmTrxDAO = new FirmTrxDAO(firm.bank);
+		List<HyphenBean> list = firmTrxDAO.selectbyHyphen();
+		for(int i=0;i<list.size();i++){
+			logger.info("TRX TRANSFER : {}/{}",(i+1),list.size());
+			HyphenBean hyphenBean = (HyphenBean)list.get(i);
+			logger.info("TRX STATUS UPDATE : {} : {}",(i+1),firmTrxDAO.updateStatus(hyphenBean.getIndex(), "I"));
+			//FBHeaderBean resHeader = comm.ksnet(headerBean);
+			String resData = hyphenComm.connect(hyphenBean);
+
+			JSONObject apiRes = new JSONObject();
+			JSONParser jsonParser = new JSONParser();
+			try {
+				apiRes = (JSONObject) jsonParser.parse(resData);
+				String replayCode = apiRes.get("replyCode").toString();
+				String enReplayCode = CommonUtil.nToB(FirmUtil.changeCharset(replayCode,"MS949"));
+				hyphenBean.setSuccessYn(apiRes.get("successYn").toString());
+				hyphenBean.setReplyCode(enReplayCode);
+			} catch (Exception e) {
+				hyphenBean.setSuccessYn("N");
+				hyphenBean.setReplyCode("XXXX");
+			}
+
+			hyphenBean.setResdata(resData);
+
+			logger.info("TRX RESULT {},[{}]",hyphenBean.getSuccessYn(),hyphenBean.getReplyCode());
+			logger.info("TRX RESULT UPDATE : {} : {}",(i+1),firmTrxDAO.updatebyHyphen(hyphenBean));
+		}
+	}
+
+	/**
+	 * PYS: �����¿� �°� ���� ����
 	 */
 	public void firmMaster() {
 		FirmMasterDAO firmMasterDAO = new FirmMasterDAO(firm.bank);
@@ -83,14 +120,28 @@ public class FirmMain{
 				apiRes = (JSONObject) jsonParser.parse(resData);
 				hyphenBean.setSuccessYn(apiRes.get("successYn").toString());
 				hyphenBean.setReplyCode(apiRes.get("replyCode").toString());
+				String replayCode = apiRes.get("replyCode").toString();
+
+				if(!hyphenBean.getReplyCode().equals("0000")) {
+					String resultMsg = "";
+
+					if(hyphenBean.getReplyCode().startsWith("KS")) {
+						resultMsg = FirmDAO.getCodeDesc("ERR", hyphenBean.getReplyCode());
+					} else {
+						resultMsg = FirmDAO.getCodeDesc("039", hyphenBean.getReplyCode());
+					}
+
+					hyphenBean.setSuccessYn(FirmUtil.changeCharset(resultMsg, "UTF-8"));
+
+				}
 			} catch (Exception e) {
-				hyphenBean.setSuccessYn("N");
+				hyphenBean.setSuccessYn("X");
 				hyphenBean.setReplyCode("XXXX");
 			}
 
 			hyphenBean.setResdata(resData);
 
-			//logger.info("MASTER RESULT {},[{}]",resHeader.getBankResponseCode(),resHeader.getMessage());
+			logger.info("MASTER RESULT {},[{}]",hyphenBean.getReplyCode(), hyphenBean.getSuccessYn());
 			logger.info("MASTER RESULT UPDATE : {} : {}",(i+1),firmMasterDAO.updatebyHyphen(hyphenBean));
 		}
 	}

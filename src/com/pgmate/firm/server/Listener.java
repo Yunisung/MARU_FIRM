@@ -27,18 +27,23 @@ public class Listener {
 		this.firm = firm;
 		socket = new TcpSocket(receiveSocket);
 		clientIp = socket.getClientIp().replaceAll("[/]", "");
+
+		logger.info("Connect Client IP : [{}]", clientIp);
+
 		if(!firm.server.monitorIp.equals("") && clientIp.indexOf(firm.server.monitorIp) > -1){
 			source = FirmUtil.MONITOR;
 			socket.socketClose();
 		}else if(!firm.server.internalIp.equals("") && clientIp.indexOf(firm.server.internalIp) > -1){
 			source = FirmUtil.INTERNAL;
 		}else if(clientIp.indexOf("1.212.11.242") > -1 || clientIp.indexOf("175.209.131.216") > -1 ||
-				clientIp.indexOf("127.0.0.1") > -1 || clientIp.indexOf("10.100.200.10") > -1){
+				clientIp.indexOf("127.0.0.1") > -1 || clientIp.indexOf("10.100.200.10") > -1 ||
+				clientIp.indexOf("192.168.") > -1){
 			source = FirmUtil.INTERNAL;
 		}else{
 			source = FirmUtil.KSNET;
 		}
-
+		
+		
 		if(!source.equals(FirmUtil.MONITOR)){
 			process();
 		}
@@ -52,7 +57,7 @@ public class Listener {
 			logger.debug("-> {},{}",source,clientIp);
 			recv = socket.recvAll();
 			//logger.debug("-> {} [{}],{}",source,CommonUtil.toString(recv),recv.length);
-			if(source.equals(FirmUtil.KSNET)){	//KSNET ¼ö½Å ÇÁ·Î¼¼½º
+			if(source.equals(FirmUtil.KSNET)){	//KSNET ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½Î¼ï¿½ï¿½ï¿½
 				
 				logger.debug("-> {} [{}]",source,CommonUtil.toString(recv));
 				
@@ -68,7 +73,7 @@ public class Listener {
 				
 				
 				
-			}else{								//³»ºÎ¸Á ÇÁ·Î¼¼½º
+			}else{								//ï¿½ï¿½ï¿½Î¸ï¿½ ï¿½ï¿½ï¿½Î¼ï¿½ï¿½ï¿½
 				
 				//recv = FirmUtil.udecode_3des(firm.server.encryptKey.getBytes(),recv);
 				

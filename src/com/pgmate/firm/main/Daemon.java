@@ -38,6 +38,9 @@ public class Daemon extends Thread{
 						//main.transMaster();
 						main.firmMaster();
 						main.wireTransfer();
+//						main.firmMaster();
+						//main.firmTrx();
+
 					}
 				
 					Thread.sleep(firm.daemon.interval);

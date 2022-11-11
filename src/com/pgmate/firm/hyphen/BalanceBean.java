@@ -15,7 +15,7 @@ public class BalanceBean extends HyphenBaseBean{
 
     public BalanceBean() {
     }
-    
+
     public BalanceBean(String seqNo, String accountNo) {
         this.seqNo = seqNo;
         this.accountNo = accountNo;

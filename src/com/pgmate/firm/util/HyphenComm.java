@@ -10,9 +10,8 @@ import org.json.simple.parser.JSONParser;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.BufferedReader;
-import java.io.DataOutputStream;
-import java.io.InputStreamReader;
+import java.io.*;
+import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLConnection;
 
@@ -36,29 +35,40 @@ public class HyphenComm {
         StringBuffer stringBuffer = new StringBuffer();
 
         String jsonParams = new Gson().toJson(bean);
-        logger.info("Hyphen ReqData : " + jsonParams);
-
         String urlAddress = defaultURL + bean.getSendurl();
         logger.info("SEND-URL : " + urlAddress);
+
         try {
             URL url = new URL(urlAddress);
             String postData = "JSONData="+jsonParams;
-            System.out.println(postData);
+            logger.info("request : {} ", postData);
 
-            URLConnection conn = url.openConnection();
+            byte[] postDataBytes = postData.toString().getBytes("euc-kr");
+
+            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+            conn.setRequestProperty("Content-Type", "application/x-www-form-urlencoded;charset=euc-kr");
+            conn.setRequestProperty("Accept-Encoding", "html/text");
+            conn.setUseCaches(false);
+            conn.setDoInput(true);
             conn.setDoOutput(true);
-            conn.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
-            DataOutputStream dos = new DataOutputStream(conn.getOutputStream());
-            dos.writeBytes(postData);
-            BufferedReader bf = new BufferedReader(new InputStreamReader(conn.getInputStream()));
-            String line;
+            conn.setConnectTimeout(30000);
+            conn.setReadTimeout(30000);
+            conn.setRequestMethod("POST");
+            conn.setRequestProperty("Content-Length", String.valueOf(postDataBytes.length));
+            conn.getOutputStream().write(postDataBytes);
+            conn.getOutputStream().flush();
+            conn.getOutputStream().close();
 
-            while ((line = bf.readLine()) != null) {
-                System.out.println(line);
-                stringBuffer.append(line);
+            BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(conn.getInputStream(), "UTF-8"), conn.getContentLength());
+            String inputLine;
+
+            while ((inputLine = bufferedReader.readLine()) != null)  {
+                stringBuffer.append(inputLine);
             }
+            bufferedReader.close();
 
-            apiRes = (JSONObject) jsonParser.parse(stringBuffer.toString());
+            String result = stringBuffer.toString();
+            logger.info("response : " + result);
 
         } catch (Exception e) {
             logger.info(e.getMessage().toString());

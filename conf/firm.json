@@ -9,36 +9,40 @@
     },
     "099": {
       "trCd": "",
-      "compCd": "BGWINNER",
+      "compCd": "FCS04150",
       "bankCd": "099",
-      "account": "",
-      "ekey": "E3F93E5201969E953066C7911F6AC8BB",
-      "kscode": "6596",
-      "msalt": "MA01"
+      "account": ""
+    },
+    "089": {
+      "trCd": "KSBPAY",
+      "compCd": "BKWIN001",
+      "bankCd": "089",
+      "account": "70110001999557"
     },
     "039": {
       "trCd": "",
       "compCd": "BGWINNER",
       "bankCd": "039",
-      "account": "8003344299939",
+//      "account": "8003344299939",
+      "account": "8003344291839",
       "ekey": "E3F93E5201969E953066C7911F6AC8BB",
       "kscode": "6596",
       "msalt": "MA01"
     }
   },
   "server": {
-    "serverIp": "127.0.0.1",
+    "serverIp": "10.100.200.10",
     "serverPort": 10006,
-    "ksnetIp": "121.138.30.10",
-    "ksnetPort": 19237,
+    "ksnetIp": "127.0.0.1",
+    "ksnetPort": 27701,
     "timeout": 30000,
-    "internalIp": "192.168.",
+    "internalIp": "10.100.",
     "monitorIp": "10.10.47.30",
     "sendAuthKey": "XHuyz1RWwXKZ0qpS",
     "serverAuthKey": "12345678abcdefgh12345678"
   },
   "daemon": {
-    "interval": 3000,
+    "interval": 1000,
     "log": false,
     "stopTime": 230000,
     "startTime": 60000

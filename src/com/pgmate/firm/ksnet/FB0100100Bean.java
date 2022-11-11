@@ -20,7 +20,11 @@ public class FB0100100Bean extends CommBean {
 	private String socialNumber		= "";	//주민번호(고객주민번호)
 	private String ATMCode			= "";	//자동이체구분
 	private String receiverName		= "";	//타행이체시 출금계좌에 입금계좌의 예금주명 정보를 출력할 수 있도록 입금 계좌 예금주명 정보 입력(제일은행)
-	private String receiveNewBankCode= "";	//입금은행코드를 3자리로 추가 
+	private String receiveNewBankCode= "";	//입금은행코드를 3자리로 추가
+
+	//PYS : 하이픈전문에 추가된것
+	private String salary			= "";	//급여
+
 	private String extra			= "";	//예비영역
 	
 	public FB0100100Bean(){
@@ -47,9 +51,10 @@ public class FB0100100Bean extends CommBean {
 		cmsCode				= CommonUtil.toString(transaction,108,16).trim();//CMS CODE(SPACE)
 		socialNumber		= CommonUtil.toString(transaction,124,13).trim();//주민번호(고객주민번호)
 		ATMCode				= CommonUtil.toString(transaction,137,2).trim();//자동이체구분
-		receiverName		= CommonUtil.toString(transaction,139,20).trim();//자동이체구분
-		receiveNewBankCode	= CommonUtil.toString(transaction,159,3).trim();//자동이체구분
-		extra				= CommonUtil.toString(transaction,162,transaction.length-162).trim();//자동이체구분
+		receiverName		= CommonUtil.toString(transaction,139,20).trim();//업체통장적요
+		receiveNewBankCode	= CommonUtil.toString(transaction,159,3).trim();//입금은행코드3
+		salary				= CommonUtil.toString(transaction, 162, 1).trim();//급여구분
+		extra				= CommonUtil.toString(transaction,163,37).trim();//예비
 	}
 	
 	public String getTransaction(){
@@ -70,7 +75,8 @@ public class FB0100100Bean extends CommBean {
 		transaction.append(CommonUtil.byteFiller(ATMCode,2));
 		transaction.append(CommonUtil.byteFiller(receiverName,20));
 		transaction.append(CommonUtil.zerofill(receiveNewBankCode,3));
-		transaction.append(CommonUtil.byteFiller(extra,38));
+		transaction.append(CommonUtil.zerofill(salary,1));
+		transaction.append(CommonUtil.byteFiller(extra,37));
 		
 		return transaction.toString();
 	}
@@ -211,7 +217,9 @@ public class FB0100100Bean extends CommBean {
 		this.receiveNewBankCode = receiveNewBankCode;
 	}
 	
-	
+	public String getSalary() { return salary; }
+
+	public void setSalary(String salary) { this.salary = salary; }
 	
 	
 }

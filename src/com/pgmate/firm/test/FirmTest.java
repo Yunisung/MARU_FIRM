@@ -24,7 +24,7 @@ public class FirmTest {
         JSONParser jsonParser = new JSONParser();
 
         BalanceBean balanceBean = new BalanceBean();
-        balanceBean.setCompCode("BGWINNER");
+        balanceBean.setCompCode("BKWIN001");
         balanceBean.setBankCode("039");
         balanceBean.setSeqNo("000001");
         balanceBean.setAccountNo("8003344299939");

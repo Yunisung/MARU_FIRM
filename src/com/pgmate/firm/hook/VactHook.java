@@ -38,18 +38,18 @@ public class VactHook extends Thread {
 	private SharedMap<String,Object> trxMap = null;
 	private VactDAO vactDAO 	= null;
 
-	
+
 	public VactHook(SharedMap<String,Object> trxMap, VactDAO vactDAO) {
 		this.trxMap = trxMap;
 		this.vactDAO 	= new VactDAO();
-		
+
 	}
-	
-	
+
+
 	public void run(){
-		
+
 		logger.info("hookType: {}, hookAddr:{}",trxMap.getString("hookType"),trxMap.getString("hookAddr"));
-	
+
 		VactHookBean hook = new VactHookBean();
 		hook.vactId		= trxMap.getString("vactId");
 		hook.retry		= trxMap.getInt("hookRetry");
@@ -71,27 +71,27 @@ public class VactHook extends Thread {
 		hook.udf1		= trxMap.getString("udf1");
 		hook.udf2		= trxMap.getString("udf2");
 		hook.stlDay		= trxMap.getString("stlDay");
-		
+
 		hook.stlFee		= trxMap.getLong("stlFee");
 		hook.stlFeeVat	= trxMap.getLong("stlFeeVat");
 		hook.stlAmount	= hook.amount - hook.stlFee - hook.stlFeeVat;
-		
+
 		String payLoad = GsonUtil.toJson(hook);
 		String hookStatus = "";
 		String hookResponse = "";
-		
+
 		long time = System.currentTimeMillis();
 		URL url = null;
 		HttpURLConnection conn = null;
 		try {
 			logger.info("WEBHOOK START");
 			logger.info("vactId       : {}",trxMap.getString("vactId"));
-			
-			
+
+
 			if(trxMap.getString("hookType").startsWith("HTTP")){
 //				String targetUrl 	= trxMap.getString("hookType")+"://"+trxMap.getString("hookAddr").trim();
 //				logger.info("vact hook target http : {}",targetUrl);
-//				
+//
 //				String contentType = "application/x-www-form-urlencoded";
 //				UrlClient client = new UrlClient(targetUrl, "POST", contentType);
 //				client.setTimeout(30000,30000);
@@ -103,8 +103,8 @@ public class VactHook extends Thread {
 //				}else{
 //					hookStatus = "전송실패";
 //				}
-				
-				
+
+
 				disableSslVerification();
 				String targetUrl 	= trxMap.getString("hookType")+"://"+trxMap.getString("hookAddr").trim();
 				logger.info("vact hook target http : {}",targetUrl);
@@ -123,7 +123,7 @@ public class VactHook extends Thread {
 				os.close();
 				StringBuilder sb = new StringBuilder();
 				BufferedReader in = null;
-				
+
 				in = new BufferedReader(new InputStreamReader(conn.getInputStream()));
 				String recv = "";
 				while ((recv = in.readLine()) != null) {
@@ -132,7 +132,7 @@ public class VactHook extends Thread {
 				in.close();
 				hookResponse =sb.toString();
 				hookResponse = CommonUtil.cut(hookResponse, 100)+","+conn.getResponseCode();
-				
+
 				if(hookResponse.indexOf("OK") > -1 || hookResponse.indexOf("result=0000") > -1 || conn.getResponseCode() == 200){
 					hookStatus = "전송완료";
 				}else{
@@ -141,7 +141,7 @@ public class VactHook extends Thread {
 			}else if(trxMap.getString("hookType").startsWith("TCP")){
 				String[] target 	= CommonUtil.split(trxMap.getString("hookAddr"),":",true);
 				logger.info("target tcp : {}:{}",target[0],target[1]);
-				
+
 				TcpSocket tcp = new TcpSocket();
 				tcp.setSocketProperty(target[0], CommonUtil.parseInt(target[1]), 30000);
 				hookResponse = tcp.sendRecv(CommonUtil.zerofill(payLoad.getBytes().length,4)+payLoad);
@@ -153,7 +153,7 @@ public class VactHook extends Thread {
 			}else{
 				throw new Exception("hookType 구분없음,"+trxMap.getString("hookType"));
 			}
-			
+
 		} catch(Exception e) {
 			logger.info("HOOK REQUEST ERROR =["+e.getMessage()+"]");
 			hookStatus = "전송장애";
@@ -162,7 +162,7 @@ public class VactHook extends Thread {
 			logger.info("HOOK RESPONSE : [{}]",CommonUtil.cut(hookResponse,110)+"]");
 			logger.info("HOOK Elasped Time : [{}]",(System.currentTimeMillis()-time)/1000);
 			vactDAO.updateVactTrx(trxMap.getString("vactId"),hookStatus,hookResponse);
-		}	
+		}
 	}
 
 	private static void disableSslVerification() {
@@ -171,27 +171,27 @@ public class VactHook extends Thread {
 			// Create a trust manager that does not validate certificate chains
 			TrustManager[] trustAllCerts = new TrustManager[] {new X509TrustManager() {
 				public java.security.cert.X509Certificate[] getAcceptedIssuers() {
-				return null;
+					return null;
 				}
 				public void checkClientTrusted(X509Certificate[] certs, String authType) {
 				}
 				public void checkServerTrusted(X509Certificate[] certs, String authType) {
 				}
-				}
+			}
 			};
-		
+
 			// Install the all-trusting trust manager
 			SSLContext sc = SSLContext.getInstance("SSL");
 			sc.init(null, trustAllCerts, new java.security.SecureRandom());
 			HttpsURLConnection.setDefaultSSLSocketFactory(sc.getSocketFactory());
-			
+
 			// Create all-trusting host name verifier
 			HostnameVerifier allHostsValid = new HostnameVerifier() {
-			    public boolean verify(String hostname, SSLSession session) {
-			        return true;
-			    }
+				public boolean verify(String hostname, SSLSession session) {
+					return true;
+				}
 			};
-			
+
 			// Install the all-trusting host verifier
 			HttpsURLConnection.setDefaultHostnameVerifier(allHostsValid);
 		} catch (NoSuchAlgorithmException e) {
@@ -201,6 +201,6 @@ public class VactHook extends Thread {
 		}
 	}
 
-	
+
 
 }

@@ -236,13 +236,13 @@ public class FirmClient {
 			int read_retry_count = 0;
 			while(true) {
 				int n = input.read(buf);
-			    if ( n > 0 ) { bcount += n; bout.write(buf,0,n); }
-			    else if (n == -1) break;
-			    else  { // n == 0
-			if (++read_retry_count >= 5)
-			  throw new IOException("inputstream-read-retry-count(5) exceed !");
-			    }
-			    if(input.available() == 0){ break; }
+				if ( n > 0 ) { bcount += n; bout.write(buf,0,n); }
+				else if (n == -1) break;
+				else  { // n == 0
+					if (++read_retry_count >= 5)
+						throw new IOException("inputstream-read-retry-count(5) exceed !");
+				}
+				if(input.available() == 0){ break; }
 			}
 			bout.flush();
 			byte[] res = bout.toByteArray();
@@ -304,5 +304,11 @@ public class FirmClient {
 		client.holderFCS("004", "012211411610","김련리","730211","99"); //FCS용 테스트 계좌 . 850611 , 달나라가자
 	*/
 	}
-	
+
+
+
+
+
+
+
 }

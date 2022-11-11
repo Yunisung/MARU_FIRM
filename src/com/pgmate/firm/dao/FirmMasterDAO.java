@@ -6,14 +6,8 @@ import java.sql.ResultSet;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.google.gson.JsonArray;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
 import com.pgmate.firm.conf.BankBean;
-import com.pgmate.firm.hyphen.BalanceBean;
-import com.pgmate.firm.hyphen.HolderBean;
-import com.pgmate.firm.hyphen.HyphenBaseBean;
-import com.pgmate.firm.hyphen.HyphenBean;
+import com.pgmate.firm.hyphen.*;
 import com.pgmate.firm.inter.FirmBean;
 import com.pgmate.firm.ksnet.FBHeaderBean;
 import com.pgmate.lib.util.db.DBFactory;
@@ -22,7 +16,7 @@ import com.pgmate.lib.util.gson.GsonUtil;
 import com.pgmate.lib.util.lang.CommonUtil;
 import com.pgmate.lib.util.map.SharedMap;
 
-import org.json.simple.*;
+import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -77,7 +71,7 @@ public class FirmMasterDAO {
 		}
 		return result;
 	}
-	
+
 	public long setMaster(String msgCd,String jobGb,String bankCd,String reqData){
 		String query = "INSERT INTO PG_FIRM_MASTER (bankCd,msgCd,jobGb,seqNo,sendDate,sendTime,procGb,reqData) "
 				+" VALUES (?,?,?,FN_BANKSEQ(), DATE_FORMAT(now(), '%Y%m%d'), DATE_FORMAT(now(), '%H%i%s'),'R',?)";
@@ -137,11 +131,11 @@ public class FirmMasterDAO {
 				if(firmBean.data == null){
 					firmBean.data = new SharedMap<String,Object>();
 				}
-				firmBean.data.put("resData", rset.getString("resData"));	
+				firmBean.data.put("resData", rset.getString("resData"));
 			}
 		}catch(Exception e){
 			logger.info("DB Error : {} , {} , [{}]",Thread.currentThread().getStackTrace()[1].getMethodName(),e.getMessage(),query);
-		}finally{ 
+		}finally{
 			db.close(conn,pstmt,rset);
 		}
 		return firmBean;
@@ -149,10 +143,10 @@ public class FirmMasterDAO {
 	
 	
 	public boolean insert0800100(String bankCd,String seqNo){
-		
+
 		String query = "INSERT INTO PG_FIRM_MASTER (bankCd,msgCd,jobGb,seqNo,sendDate,sendTime,procGb) "
 				+" VALUES (?,'0800','100',?, DATE_FORMAT(now(), '%Y%m%d'), DATE_FORMAT(now(), '%H%i%s'),'R')";
-		
+
 		DBManager db 	= null;
 		PreparedStatement pstmt	= null;
 		Connection conn			= null;
@@ -215,7 +209,7 @@ public class FirmMasterDAO {
 	}
 
 	/**
-	 * PYS : ï¿½ï¿½ï¿½ï¿½ï¿½Â¿ï¿½ PG_FIRM_MASTERï¿½ï¿½ï¿½ï¿½
+	 * PYS : ÇÏÀÌÇÂ¿ë PG_FIRM_MASTER¼¼ÆÃ
 	 * @return
 	 */
 	public List<HyphenBean> selectbyHyphen() {
@@ -239,35 +233,41 @@ public class FirmMasterDAO {
 				BankBean configBean = map.get(rset.getString("bankCd"));
 
 				if(configBean != null) {
+
+					HyphenBaseBean baseBean = null;
+
 					HyphenBean hyphenBean = new HyphenBean();
 					hyphenBean.setIndex(rset.getLong("idx"));
 					hyphenBean.setKscode(configBean.kscode);
 					hyphenBean.setEkey(configBean.ekey);
 					hyphenBean.setMsalt(configBean.msalt);
 					hyphenBean.setSendurl(rset.getString("sendUrl"));
-					
-                    HyphenBaseBean baseBean = null;
-                    if(rset.getString("sendUrl").equals("rfb/retail/inquiry/balance")) {
-                        baseBean = new BalanceBean(rset.getString("seqNo"), configBean.account);
-                        baseBean.setCompCode(configBean.compCd);
-                        baseBean.setBankCode(configBean.bankCd);
-                        
-                        hyphenBean.setReqdata(baseBean);
-                    } else if(rset.getString("sendUrl").equals("rfb/retail/account/accountname")) {
-                    	String reqJson = rset.getString("reqData");
-                    	
-                    	JSONParser parser = new JSONParser();
-                    	JSONObject jsonobj = (JSONObject) parser.parse(reqJson);
-                    	String reqData = jsonobj.get("reqdata").toString();
-                    	reqData = reqData.substring(1, reqData.length()-1);
-                    	HolderBean holderBean = (HolderBean) GsonUtil.fromJson(reqData, HolderBean.class);
-                    	holderBean.setSeqNo(rset.getString("seqNo"));
-                    	
-                    	hyphenBean.setReqdata(holderBean);
-                    }
+
+					if(rset.getString("sendUrl").equals("rfb/retail/inquiry/balance")) {
+						baseBean = new BalanceBean(rset.getString("seqNo"), configBean.account);
+						baseBean.setCompCode(configBean.compCd);
+						baseBean.setBankCode(configBean.bankCd);
+
+						hyphenBean.setReqdata(baseBean);
+					} else if(rset.getString("sendUrl").equals("rfb/retail/account/accountname")) {
+						String reqJson = rset.getString("reqData");
+
+						JSONParser parser = new JSONParser();
+						JSONObject jsonobj = (JSONObject) parser.parse(reqJson);
+						String reqData = jsonobj.get("reqdata").toString();
+						reqData = reqData.substring(1, reqData.length()-1);
+						HolderBean holderBean = (HolderBean) GsonUtil.fromJson(reqData, HolderBean.class);
+						holderBean.setSeqNo(rset.getString("seqNo"));
+
+						hyphenBean.setReqdata(holderBean);
+					}
+
+
+					hyphenBean.setReqdata(baseBean);
+
 					list.add(hyphenBean);
 				} else {
-					logger.info("ï¿½Ø´ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Úµå¿¡ ï¿½Ø´ï¿½ï¿½Ï´ï¿½ configï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ï´ï¿½. : [{}]", rset.getString("bankCd"));
+					logger.info("ÇØ´çÀºÇàÄÚµå¿¡ ÇØ´çÇÏ´Â config°ªÀÌ ¾ø½À´Ï´Ù. : [{}]", rset.getString("bankCd"));
 				}
 			}
 		}catch(Exception e){
@@ -277,7 +277,7 @@ public class FirmMasterDAO {
 		}
 		return list;
 	}
-	
+
 	public List<FBHeaderBean> select(){
 		
 		String query = " SELECT idx,bankCd,msgCd,jobGb,seqNo,sendDate,sendTime,searchDate,searchNo,bankSeqNo,filler,reqData FROM PG_FIRM_MASTER WHERE sendDate = DATE_FORMAT(now(), '%Y%m%d') AND procGb='R' AND filler IS null ORDER BY idx ASC";
@@ -316,7 +316,7 @@ public class FirmMasterDAO {
 					headerBean.setExtra(CommonUtil.nToB(rset.getString("filler")));
 					headerBean.setTransactionIndex(CommonUtil.byteFiller(CommonUtil.nToB(rset.getString("reqData")), 200)); // 200?
 					list.add(headerBean);
-				}					
+				}
 			}
 		}catch(Exception e){
 			logger.info("DB Error : {} , {} , [{}]",Thread.currentThread().getStackTrace()[1].getMethodName(),e.getMessage(),query);
@@ -572,9 +572,9 @@ public class FirmMasterDAO {
 	}
 	
 	public String selectAccnt(String bankCd,String accntNo){
-		
-		String query = " SELECT accntHolder FROM PG_FIRM_ACCNT WHERE bankCd = ? AND account = ? AND accntYn='È®ï¿½ï¿½' and regDay > DATE_FORMAT(NOW()- INTERVAL 3 MONTH,'%Y%m%d')";
-		
+
+		String query = " SELECT accntHolder FROM PG_FIRM_ACCNT WHERE bankCd = ? AND account = ? AND accntYn='È®ÀÎ' and regDay > DATE_FORMAT(NOW()- INTERVAL 3 MONTH,'%Y%m%d')";
+
 		DBManager db 	= null;
 		PreparedStatement pstmt	= null;
 		Connection conn			= null;

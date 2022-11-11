@@ -13,19 +13,19 @@ import com.pgmate.lib.util.db.DBManager;
 import com.pgmate.lib.util.lang.CommonUtil;
 
 public class FirmErrDAO {
-	
+
 	private final static Logger logger = (Logger) LoggerFactory.getLogger(com.pgmate.firm.dao.FirmErrDAO.class);
-	
+
 	public FirmErrDAO() {
-		
+
 	}
-	
+
 	public boolean insertFirmErr(long index, FBHeaderBean fbHeaderBean, FB0400100Bean fb0400100Bean){
-		
+
 		String query = "INSERT INTO PG_FIRM_ERR (bankCd,	recvDate,	recvTime,	seqNo,	sendAccount,	recvBankCd,	recvAccount,	"
 				+ " amount,	successAmount,	failAmount,	divCount,	divNo,	noticeAmount,	resultCd,	procGb,	stlId, resultMsg,regDay)"
 				+ " VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,'Y',?,(SELECT message from PG_FIRM_CODE where bankcd='ERR' and code=?) ,?)";
-		
+
 		DBManager db 	= null;
 		PreparedStatement pstmt	= null;
 		Connection conn			= null;
@@ -53,9 +53,9 @@ public class FirmErrDAO {
 			pstmt.setString(idx++, fb0400100Bean.getErrorCode());
 			pstmt.setString(idx++, CommonUtil.getCurrentDate("yyyyMMdd"));
 			result = pstmt.executeUpdate();
-			
+
 			conn.commit();
-			
+
 		}catch(Exception e){
 			logger.info("DB Error : {} , {} , [{}]",Thread.currentThread().getStackTrace()[1].getMethodName(),e.getMessage(),query);
 		}finally{
@@ -63,17 +63,17 @@ public class FirmErrDAO {
 			db.close(conn);
 		}
 		if(result > 0){
-			
+
 			if(index > 0){
 				FirmTrxDAO money = new FirmTrxDAO();
-				
+
 				//boolean success = money.deletetWallet(trnId);
 				//logger.debug("타행이체 거래 삭제 처리 :trnid : {} , {}",trnId,success);
-				
+
 				//success = money.updateWalletOut(trnId, "지급실패", fb0400100Bean.getErrorCode(), SeqDAO.getCodeDesc(fbHeaderBean.getNewBankCode(),fb0400100Bean.getErrorCode())+"[타행불능]");
 				//logger.debug("타행이체 WALLETOUT UDPATE :trnid : {} , {}",trnId,success);
 			}
-			
+
 			return true;
 		}else{
 			return false;
