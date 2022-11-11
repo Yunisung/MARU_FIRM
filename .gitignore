@@ -1,2 +1,10 @@
 classes/
 lib/MARU_firm.jar
+logs/
+.classpath
+
+### IntelliJ IDEA ###
+.idea
+*.iws
+*.iml
+*.ipr

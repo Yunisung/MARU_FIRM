@@ -362,7 +362,8 @@ public class BankProcess implements Serializable {
 		SharedMap<String,Object> vactMap = vactDAO.getAccount(fbBean.getVirtualAccount(),fbBean.getTransactionType()) ;
 		
 		//해당입금 거래가 가상계좌 대행서비스 거래인지 확인
-		String vactUserId = vactDAO.getVaUserId(fbBean.getVirtualAccount());
+		//PYS : 필요없는 로직 관련로직 삭제진행
+		//String vactUserId = vactDAO.getVaUserId(fbBean.getVirtualAccount());
 		
 		String resultCd = "0000";
 		String resultMsg = "정상";
@@ -422,8 +423,34 @@ public class BankProcess implements Serializable {
 								}
 							}
 						}
-						
+
 						if(resultCd.equals("0000")){
+							SharedMap<String,Object> vactLimitData = vactDAO.getVactLimitData(fbBean.getVirtualAccount());
+
+							//가상계좌 1회한도 체크
+							if(vactLimitData.getLong("limitOnce") > 0 && vactLimitData.getLong("limitOnce") < amount){
+								resultCd = "0022";
+								resultMsg = "가상계좌 1회 한도초과";
+
+								logger.info("가상계좌 1회 한도초과 : [{}][{}][{}][{}]",  fbBean.getVirtualAccount(), vactLimitData.getString("mchtId"), vactLimitData.getLong("limitOnce"), amount);
+							}
+
+							//가상계좌 1일한도 체크
+							if(vactLimitData.getDouble("limitDay") > 0 ){
+								long vactDaySum = vactDAO.getVactDaySum(CommonUtil.getCurrentDate("yyyyMMdd"), vactLimitData.getString("mchtId"));
+
+								if(vactLimitData.getDouble("limitDay") < vactDaySum + amount){
+									resultCd = "0022";
+									resultMsg = "가맹점 1일 한도초과";
+
+									logger.info("가맹점 1일 한도초과 : [{}][{}][{}][{}][{}]",  fbBean.getVirtualAccount(), vactLimitData.getString("mchtId"), vactLimitData.getLong("limitDay"), vactDaySum, amount);
+								}
+							}
+						}
+
+						//아래로직은 가상계좌 대행서비스 할때 적용할것. 현재는 위에껄로 적용
+
+						/*if(resultCd.equals("0000")){
 							if(!"".equals(vactUserId)) {
 								String ptnId = "";
 								//가상계좌 대행서비스 입금거래 건의 경우 3분이내에 동일한 가상계좌번호로 입금 시 입금 실패처리 
@@ -459,13 +486,13 @@ public class BankProcess implements Serializable {
 								}
 								
 								logger.info("가상계좌 대행서비스 입금 금액체크 : [{}][{}][{}][{}][{}][{}]", fbBean.getVirtualAccount(), ptnId, vactUserId, amount, depositLimit.getLong("depositMinAmt"), depositLimit.getLong("depositMaxAmt"));
-								/*
+								*//*
 								 * }else { resultCd = VAUtil.vaResponseCode("9",headerBean.getNewBankCode());
 								 * resultMsg = "3분이내 거래 발생";
 								 * 
 								 * logger.info("가상계좌 대행서비스 입금 3분이내 거래 : [{}][{}][{}][{}]",
 								 * fbBean.getVirtualAccount(), vactUserId, amount, dupleCnt); }
-								 */
+								 *//*
 							}else {
 								SharedMap<String,Object> vactLimitData = vactDAO.getVactLimitData(fbBean.getVirtualAccount());
 								
@@ -489,7 +516,7 @@ public class BankProcess implements Serializable {
 									}
 								}
 							}
-						}
+						}*/
 					}
 				}
 			}

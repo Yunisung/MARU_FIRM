@@ -28,10 +28,10 @@ import org.slf4j.LoggerFactory;
 public class FirmMasterDAO {
 	private final static Logger logger = (Logger) LoggerFactory.getLogger(com.pgmate.firm.dao.FirmMasterDAO.class);
 	private SharedMap<String,BankBean> map = null;
-	
+
 	public FirmMasterDAO(){
 	}
-	
+
 	public FirmMasterDAO(SharedMap<String,BankBean> map) {
 		this.map = map;
 	}
@@ -75,18 +75,18 @@ public class FirmMasterDAO {
 	public long setMaster(String msgCd,String jobGb,String bankCd,String reqData){
 		String query = "INSERT INTO PG_FIRM_MASTER (bankCd,msgCd,jobGb,seqNo,sendDate,sendTime,procGb,reqData) "
 				+" VALUES (?,?,?,FN_BANKSEQ(), DATE_FORMAT(now(), '%Y%m%d'), DATE_FORMAT(now(), '%H%i%s'),'R',?)";
-		
+
 		DBManager db 			= null;
 		PreparedStatement pstmt	= null;
 		Connection conn			= null;
 		ResultSet rset 			= null;
 		long result				= 0;
-		
+
 		try{
 			db 		= DBFactory.getInstance();
 			conn	= db.getConnection();
 			pstmt	= conn.prepareStatement(query);
-			
+
 			pstmt.setString(1,bankCd);
 			pstmt.setString(2,msgCd);
 			pstmt.setString(3,jobGb);
@@ -97,7 +97,7 @@ public class FirmMasterDAO {
 				result = rset.getLong(1);
 			}
 			conn.commit();
-			
+
 		}catch(Exception e){
 			logger.info("DB Error : {} , {} , [{}]",Thread.currentThread().getStackTrace()[1].getMethodName(),e.getMessage(),query);
 		}finally{
@@ -106,24 +106,62 @@ public class FirmMasterDAO {
 		}
 		return result;
 	}
-	
-	
+
+	// 응답처리후 insert: 로그성으로 처리 결과값 저장
+	// procGb: R(요청), I(대기), N(기타에러), X(장애), Y(정상처리)
+	public long setMasterForResponse(String msgCd,String jobGb,String bankCd,String reqData,String procGb){
+		String query = "INSERT INTO PG_FIRM_MASTER (bankCd,msgCd,jobGb,seqNo,sendDate,sendTime,reqData,procGb) "
+				+" VALUES (?,?,?,FN_BANKSEQ(), DATE_FORMAT(now(), '%Y%m%d'), DATE_FORMAT(now(), '%H%i%s'),?,?)";
+
+		DBManager db 			= null;
+		PreparedStatement pstmt	= null;
+		Connection conn			= null;
+		ResultSet rset 			= null;
+		long result				= 0;
+
+		try{
+			db 		= DBFactory.getInstance();
+			conn	= db.getConnection();
+			pstmt	= conn.prepareStatement(query);
+
+			pstmt.setString(1,bankCd);
+			pstmt.setString(2,msgCd);
+			pstmt.setString(3,jobGb);
+			pstmt.setString(4,reqData);
+			pstmt.setString(5,procGb);
+			result = pstmt.executeUpdate();
+			rset		= pstmt.executeQuery("SELECT LAST_INSERT_ID() ");
+			while(rset.next()){
+				result = rset.getLong(1);
+			}
+			conn.commit();
+
+		}catch(Exception e){
+			logger.info("DB Error : {} , {} , [{}]",Thread.currentThread().getStackTrace()[1].getMethodName(),e.getMessage(),query);
+		}finally{
+			db.close(pstmt);
+			db.close(conn);
+		}
+		return result;
+	}
+
+
 	public FirmBean checkResult(long idx,FirmBean firmBean){
 		String query = " SELECT resultCd,resultMsg,resData FROM PG_FIRM_MASTER WHERE idx =?  AND procGb in ('N','Y') ";
-		
+
 		DBManager db 	= null;
 		PreparedStatement pstmt	= null;
 		Connection conn			= null;
 		ResultSet rset			= null;
-		
-		
+
+
 		try{
 			db 		= DBFactory.getInstance();
 			conn	= db.getConnection();
 			pstmt	= conn.prepareStatement(query);
 			pstmt.setLong(1, idx);
 			rset 	= pstmt.executeQuery();
-			
+
 			while(rset.next()){
 				firmBean.resultCd = rset.getString("resultCd");
 				firmBean.resultMsg = rset.getString("resultMsg");
@@ -140,8 +178,8 @@ public class FirmMasterDAO {
 		}
 		return firmBean;
 	}
-	
-	
+
+
 	public boolean insert0800100(String bankCd,String seqNo){
 
 		String query = "INSERT INTO PG_FIRM_MASTER (bankCd,msgCd,jobGb,seqNo,sendDate,sendTime,procGb) "
@@ -155,13 +193,13 @@ public class FirmMasterDAO {
 			db 		= DBFactory.getInstance();
 			conn	= db.getConnection();
 			pstmt	= conn.prepareStatement(query);
-			
+
 			pstmt.setString(1,bankCd);
 			pstmt.setString(2,seqNo);
 			result = pstmt.executeUpdate();
-			
+
 			conn.commit();
-			
+
 		}catch(Exception e){
 			logger.info("DB Error : {} , {} , [{}]",Thread.currentThread().getStackTrace()[1].getMethodName(),e.getMessage(),query);
 		}finally{
@@ -174,12 +212,12 @@ public class FirmMasterDAO {
 			return false;
 		}
 	}
-	
+
 	public boolean insert0800300(String bankCd,String seqNo){
-		
+
 		String query = "INSERT INTO PG_FIRM_MASTER (bankCd,msgCd,jobGb,seqNo,sendDate,sendTime,procGb) "
 				+" VALUES (?,'0800','300',?, DATE_FORMAT(now(), '%Y%m%d'), DATE_FORMAT(now(), '%H%i%s'),'R')";
-		
+
 		DBManager db 	= null;
 		PreparedStatement pstmt	= null;
 		Connection conn			= null;
@@ -188,13 +226,13 @@ public class FirmMasterDAO {
 			db 		= DBFactory.getInstance();
 			conn	= db.getConnection();
 			pstmt	= conn.prepareStatement(query);
-			
+
 			pstmt.setString(1,bankCd);
 			pstmt.setString(2,seqNo);
 			result = pstmt.executeUpdate();
-			
+
 			conn.commit();
-			
+
 		}catch(Exception e){
 			logger.info("DB Error : {} , {} , [{}]",Thread.currentThread().getStackTrace()[1].getMethodName(),e.getMessage(),query);
 		}finally{
@@ -279,33 +317,33 @@ public class FirmMasterDAO {
 	}
 
 	public List<FBHeaderBean> select(){
-		
+
 		String query = " SELECT idx,bankCd,msgCd,jobGb,seqNo,sendDate,sendTime,searchDate,searchNo,bankSeqNo,filler,reqData FROM PG_FIRM_MASTER WHERE sendDate = DATE_FORMAT(now(), '%Y%m%d') AND procGb='R' AND filler IS null ORDER BY idx ASC";
-		
+
 		DBManager db 	= null;
 		PreparedStatement pstmt	= null;
 		Connection conn			= null;
 		ResultSet rset			= null;
-		
+
 		List<FBHeaderBean> list = new ArrayList<FBHeaderBean>();
-		
-		
+
+
 		try{
 			db 		= DBFactory.getInstance();
 			conn	= db.getConnection();
 			pstmt	= conn.prepareStatement(query);
 			rset 	= pstmt.executeQuery();
-			
+
 			while(rset.next()){
 				FBHeaderBean headerBean = new FBHeaderBean();
 				headerBean.setIndex(rset.getLong("idx"));
 				headerBean.setNewBankCode(rset.getString("bankCd"));
 				BankBean configBean = map.get(headerBean.getNewBankCode());
-				
+
 				if(configBean != null) {
 					headerBean.setIdentificationCode(configBean.trCd);
 					headerBean.setCompanyCode(configBean.compCd);
-					
+
 					headerBean.setSpecCode(rset.getString("msgCd"));
 					headerBean.setClassificationCode(rset.getString("jobGb"));
 					headerBean.setSpecNumber(rset.getString("seqNo"));
@@ -325,11 +363,11 @@ public class FirmMasterDAO {
 		}
 		return list;
 	}
-	
+
 	public boolean updateStatus(long idx,String status){
-		
+
 		String query = "UPDATE PG_FIRM_MASTER SET procGb =? WHERE idx =?";
-		
+
 		DBManager db 	= null;
 		PreparedStatement pstmt	= null;
 		Connection conn			= null;
@@ -341,9 +379,9 @@ public class FirmMasterDAO {
 			pstmt.setString(1,status);
 			pstmt.setLong(2,idx);
 			result = pstmt.executeUpdate();
-			
+
 			conn.commit();
-			
+
 		}catch(Exception e){
 			logger.info("DB Error : {} , {} , [{}]",Thread.currentThread().getStackTrace()[1].getMethodName(),e.getMessage(),query);
 			logger.info("UPDATE PG_FIRM_MASTER SET procGb='{}' WHERE idx ={};",status,idx);
@@ -402,9 +440,9 @@ public class FirmMasterDAO {
 	}
 
 	public boolean update(FBHeaderBean headerBean){
-		
+
 		String query = "UPDATE PG_FIRM_MASTER SET procGb =? , recvDate=?, recvTime=?, resultCd=?, resultMsg=?, resData=? , modDt = now() WHERE idx =?";
-		
+
 		DBManager db 	= null;
 		PreparedStatement pstmt	= null;
 		Connection conn			= null;
@@ -420,18 +458,18 @@ public class FirmMasterDAO {
 			}else{
 				pstmt.setString(1,"N");
 			}
-			
+
 			pstmt.setString(2,headerBean.getTransactionTime().substring(0,8));
 			pstmt.setString(3,headerBean.getTransactionTime().substring(8,14));
 			pstmt.setString(4,headerBean.getBankResponseCode());
 			pstmt.setString(5,headerBean.getMessage());
 			pstmt.setString(6,headerBean.getTransactionIndex());
 			pstmt.setLong(7,headerBean.getIndex());
-			
+
 			result = pstmt.executeUpdate();
-			
+
 			conn.commit();
-			
+
 		}catch(Exception e){
 			logger.info("DB Error : {} , {} , [{}]",Thread.currentThread().getStackTrace()[1].getMethodName(),e.getMessage(),query);
 		}finally{
@@ -444,7 +482,7 @@ public class FirmMasterDAO {
 			return false;
 		}
 	}
-	
+
 	public boolean insert(FBHeaderBean headerBean,String reqData){
 		String query = "INSERT INTO PG_FIRM_MASTER (bankCd,msgCd,JobGb,seqNo,sendDate,sendTime,recvDate,recvTime,resultCd,"
 				+" resultMsg,searchDate,searchNo,bankSeqNo,filler,reqData,resData,procGb) "
@@ -457,7 +495,7 @@ public class FirmMasterDAO {
 			db 		= DBFactory.getInstance();
 			conn	= db.getConnection();
 			pstmt	= conn.prepareStatement(query);
-			
+
 			int idx = 1;
 			pstmt.setString(idx++,headerBean.getNewBankCode());
 			pstmt.setString(idx++,headerBean.getSpecCode());
@@ -465,7 +503,7 @@ public class FirmMasterDAO {
 			pstmt.setString(idx++,headerBean.getSpecNumber());
 			pstmt.setString(idx++,headerBean.getTransactionTime().substring(0,8));
 			pstmt.setString(idx++,headerBean.getTransactionTime().substring(8,14));
-			
+
 			pstmt.setString(idx++,headerBean.getBankResponseCode());
 			pstmt.setString(idx++,headerBean.getMessage());
 			pstmt.setString(idx++,headerBean.getInquiryDay());
@@ -481,11 +519,11 @@ public class FirmMasterDAO {
 			}else{
 				pstmt.setString(idx++,"N");
 			}
-			
+
 			result = pstmt.executeUpdate();
-			
+
 			conn.commit();
-			
+
 		}catch(Exception e){
 			logger.info("DB Error : {} , {} , [{}]",Thread.currentThread().getStackTrace()[1].getMethodName(),e.getMessage(),query);
 		}finally{
@@ -498,7 +536,7 @@ public class FirmMasterDAO {
 			return false;
 		}
 	}
-	
+
 	public boolean insertBalance(String bankCd,String accntNo,String balance){
 		String query = "INSERT INTO PG_FIRM_BLC (bankCd,account, REGDAY, REGDATE, AMOUNT)"
 				+" VALUES (?,?, DATE_FORMAT(now(), '%Y%m%d'), NOW(), ?)";
@@ -510,17 +548,17 @@ public class FirmMasterDAO {
 			db 		= DBFactory.getInstance();
 			conn	= db.getConnection();
 			pstmt	= conn.prepareStatement(query);
-			
-			
+
+
 			int idx = 1;
 			pstmt.setString(idx++,bankCd);
 			pstmt.setString(idx++,accntNo);
 			pstmt.setLong(idx++,CommonUtil.parseLong(balance));
-			
+
 			result = pstmt.executeUpdate();
-			
+
 			conn.commit();
-			
+
 		}catch(Exception e){
 			logger.info("DB Error : {} , {} , [{}]",Thread.currentThread().getStackTrace()[1].getMethodName(),e.getMessage(),query);
 		}finally{
@@ -533,11 +571,11 @@ public class FirmMasterDAO {
 			return false;
 		}
 	}
-	
+
 	public boolean insertAccnt(String bankCd,String account,String accntHolder){
 		String query = "INSERT INTO PG_FIRM_ACCNT (bankCd,account,accntHolder,accntYn,regId,regDay)"
 				+" VALUES (?,?,?,?,'SYSTEM',?)";
-		
+
 		DBManager db 	= null;
 		PreparedStatement pstmt	= null;
 		Connection conn			= null;
@@ -546,18 +584,18 @@ public class FirmMasterDAO {
 			db 		= DBFactory.getInstance();
 			conn	= db.getConnection();
 			pstmt	= conn.prepareStatement(query);
-			
+
 			int idx = 1;
 			pstmt.setString(idx++, bankCd);
 			pstmt.setString(idx++, account);
 			pstmt.setString(idx++, accntHolder);
-			pstmt.setString(idx++, "확占쏙옙");
+			pstmt.setString(idx++, "확인");
 			pstmt.setString(idx++, CommonUtil.getCurrentDate("yyyyMMdd"));
-			
+
 			result = pstmt.executeUpdate();
-			
+
 			conn.commit();
-			
+
 		}catch(Exception e){
 			logger.info("DB Error : {} , {} , [{}]",Thread.currentThread().getStackTrace()[1].getMethodName(),e.getMessage(),query);
 		}finally{
@@ -570,7 +608,7 @@ public class FirmMasterDAO {
 			return false;
 		}
 	}
-	
+
 	public String selectAccnt(String bankCd,String accntNo){
 
 		String query = " SELECT accntHolder FROM PG_FIRM_ACCNT WHERE bankCd = ? AND account = ? AND accntYn='확인' and regDay > DATE_FORMAT(NOW()- INTERVAL 3 MONTH,'%Y%m%d')";
@@ -579,19 +617,19 @@ public class FirmMasterDAO {
 		PreparedStatement pstmt	= null;
 		Connection conn			= null;
 		ResultSet rset			= null;
-		
+
 		String holder = "";
-		
+
 		try{
 			db 		= DBFactory.getInstance();
 			conn	= db.getConnection();
 			pstmt	= conn.prepareStatement(query);
-			
+
 			pstmt.setString(1, bankCd);
 			pstmt.setString(2, accntNo);
-			
+
 			rset 	= pstmt.executeQuery();
-			
+
 			while(rset.next()){
 				holder = CommonUtil.nToB(rset.getString("accntHolder"));
 			}
@@ -602,8 +640,8 @@ public class FirmMasterDAO {
 		}
 		return holder;
 	}
-	
-	
-	
+
+
+
 
 }

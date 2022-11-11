@@ -8,16 +8,16 @@
       "newAccount": "1005004107798"
     },
     "099": {
-      "trCd": "",
-      "compCd": "FCS04150",
-      "bankCd": "099",
+      "trCd": "KSBPAY",
+      "compCd": "BKWIN001",
+      "bankCd": "089",
       "account": ""
     },
     "089": {
       "trCd": "KSNETVR",
       "compCd": "BKWIN001",
       "bankCd": "089",
-      "account": "70110001999557"
+      "account": "70022000000008"
     },
     "039": {
       "trCd": "",
@@ -33,12 +33,14 @@
   "server": {
     "serverIp": "10.100.200.10",
     "serverPort": 10006,
-    "ksnetIp": "127.0.0.1",
+    "ksnetIp": "10.100.200.10",
     "ksnetPort": 27701,
+//    "ksnetIp": "210.181.28.134",
+//    "ksnetPort": 19238,
     "timeout": 30000,
     "internalIp": "10.100.",
     "monitorIp": "10.10.47.30",
-    "sendAuthKey": "XHuyz1RWwXKZ0qpS",
+    "sendAuthKey": "vlgm662MRn53EnmA",
     "serverAuthKey": "12345678abcdefgh12345678"
   },
   "daemon": {

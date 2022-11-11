@@ -19,66 +19,67 @@ import com.pgmate.lib.util.gson.GsonUtil;
 public class FirmClient {
 
 	private static Logger logger = LoggerFactory.getLogger( com.pgmate.firm.client.FirmClient.class );
-	private static String host 	= "127.0.0.1";
+	private static String host 	= "10.100.200.10";
 	private static int port 	= 10006;
 	private static int timeout  = 40000;
-	
+
 
 	public FirmClient() {
 	}
-	
-	
-	
+
+
+
 	public void testCall(String bankCd){
 		logger.info("테스트콜");
 		FirmBean firmBean = new FirmBean();
 		firmBean.bankCd 	= bankCd;
 		firmBean.msgType 	= "0800800";
 		firmBean.userId		= "SYSTEM";
-	
+
 		firmBean = comm(firmBean);
 		logger.info("응답:{},{}",firmBean.resultCd,firmBean.resultMsg);
 		logger.info("idx:{},{}",firmBean.idx,firmBean.data.get("resData"));
 	}
-	
+
 	public void open(String bankCd){
 		logger.info("업무개시");
 		FirmBean firmBean = new FirmBean();
 		firmBean.bankCd 	= bankCd;
 		firmBean.msgType 	= "0800100";
 		firmBean.userId		= "SYSTEM";
-	
+
 		firmBean = comm(firmBean);
 		logger.info("응답:{},{}",firmBean.resultCd,firmBean.resultMsg);
 		logger.info("idx:{},{}",firmBean.idx,firmBean.data.get("resData"));
 	}
-	
+
 	public void close(String bankCd){
 		logger.info("업무종료");
 		FirmBean firmBean = new FirmBean();
 		firmBean.bankCd 	= bankCd;
 		firmBean.msgType 	= "0800300";
 		firmBean.userId		= "SYSTEM";
-	
+
 		firmBean = comm(firmBean);
 		logger.info("응답:{},{}",firmBean.resultCd,firmBean.resultMsg);
 		logger.info("idx:{},{}",firmBean.idx,firmBean.data.get("resData"));
 	}
-	
-	
+
+
 	public void balance(String bankCd){
 		logger.info("모계좌잔액조회");
 		FirmBean firmBean = new FirmBean();
 		firmBean.bankCd 	= bankCd;
 		firmBean.msgType 	= "0600300";
 		firmBean.userId		= "SYSTEM";
-	
+		firmBean.mAccnt     = "70110001999557";
+
 		firmBean = comm(firmBean);
 		logger.info("응답:{},{}",firmBean.resultCd,firmBean.resultMsg);
 		logger.info("idx:{},{}",firmBean.idx,firmBean.data.get("resData"));
 		logger.info("data : {}",GsonUtil.toJson(firmBean.data));
 	}
-	
+
 	/**
 	 * 잔액조회
 	 * @param bankCd
@@ -91,17 +92,17 @@ public class FirmClient {
 		firmBean.bankCd 	= bankCd;
 		firmBean.msgType 	= "0600300";
 		firmBean.userId		= "SYSTEM";
-		
+
 		firmBean.data.put("mAccnt",accntNo);
 		firmBean.data.put("compCd",compCd);
-		
+
 		firmBean = comm(firmBean);
 		logger.info("응답:{},{}",firmBean.resultCd,firmBean.resultMsg);
 		logger.info("idx:{},{}",firmBean.idx,firmBean.data.get("resData"));
 		logger.info("name : {}",firmBean.data.getString("name"));
 		return firmBean;
 	}
-	
+
 	/**
 	 * 은행통한 예금주조회
 	 * @param bankCd
@@ -121,9 +122,9 @@ public class FirmClient {
 		logger.info("idx:{},{}",firmBean.idx,firmBean.data.get("resData"));
 		logger.info("name : {}",firmBean.data.getString("name"));
 	}
-	
 
-	
+
+
 	/**
 	 * fcsCheck : (6)	신원확인번호 체크 : 계좌번호+신원확인번호 일치 여부 체크시 ‘99’ 세팅
 	 * 예금주명+신원확인번호 일치 여부 체크시 ‘77’ 세팅 (실명 인증)
@@ -149,8 +150,8 @@ public class FirmClient {
 		logger.info("idx:{},{}",firmBean.idx,firmBean.data.get("resData"));
 		logger.info("name : {}",firmBean.data.getString("name"));
 	}
-	
-	
+
+
 	/**
 	 * FCS 예금주조회
 	 * @param bankCd
@@ -160,7 +161,7 @@ public class FirmClient {
 	public void holder(String userBankCd,String userAccount){
 		logger.info("예금주조회");
 		FirmBean firmBean = new FirmBean();
-		firmBean.bankCd 	= "020";
+		firmBean.bankCd 	= "089";
 		firmBean.msgType 	= "0600400";
 		firmBean.userId		= "SYSTEM";
 		firmBean.data.put("bankCd", userBankCd);
@@ -170,8 +171,8 @@ public class FirmClient {
 		logger.info("idx:{},{}",firmBean.idx,firmBean.data.get("resData"));
 		logger.info("name : {}",firmBean.data.getString("name"));
 	}
-	
-	
+
+
 	/**
 	 * 집계
 	 * @param bankCd
@@ -186,11 +187,11 @@ public class FirmClient {
 		logger.info("응답:{},{}",firmBean.resultCd,firmBean.resultMsg);
 		logger.info("idx:{},{}",firmBean.idx,firmBean.data.get("resData"));
 		logger.info("data : {}",GsonUtil.toJson(firmBean.data));
-		
-		
+
+
 	}
-	
-	
+
+
 	public void trasfer(String bankCd, String recvBankCd,String recvAccount,long amount){
 		FirmBean firmBean = new FirmBean();
 		firmBean.bankCd 	= bankCd;
@@ -201,19 +202,19 @@ public class FirmClient {
 		firmBean.data.put("recvAccount",recvAccount);
 		firmBean.data.put("recordInfo","");
 		firmBean.data.put("sender", "(주)케이원피에스");
-	
+
 		firmBean = comm(firmBean);
 		logger.info("응답:{},{}",firmBean.resultCd,firmBean.resultMsg);
 		logger.info("idx:{},{}",firmBean.idx,firmBean.data.getLong("balance"));
 		logger.info("data : {}",GsonUtil.toJson(firmBean.data));
-		
-		
+
+
 	}
-	
-	
-	
+
+
+
 	public FirmBean comm(FirmBean firmBean){
-		
+
 		Socket socket = null;
 		OutputStream output = null;
 		InputStream input = null;
@@ -223,13 +224,13 @@ public class FirmClient {
 		try{
 			socket = new Socket(host, port);
 			socket.setSoTimeout(timeout);
-			
+
 			output = socket.getOutputStream();
 			output.write(reqJson.getBytes());
 			output.flush();
-			
+
 			input = socket.getInputStream();
-		
+
 			ByteArrayOutputStream bout = new ByteArrayOutputStream();
 			int bcount = 0;
 			byte[] buf = new byte[2048];
@@ -247,32 +248,41 @@ public class FirmClient {
 			bout.flush();
 			byte[] res = bout.toByteArray();
 			bout.close();
-			
+
 			firmBean = (FirmBean)GsonUtil.fromJson(new String(res), FirmBean.class);
-			
+
 		}catch(Exception e){
 			firmBean.resultCd = "XXXX";
 			firmBean.resultMsg = "펌뱅킹 시스템과의 통신장애 :"+e.getMessage();
 		}finally{
 			logger.info("-> FIRM : [{}]",reqJson);
 			logger.info("<- FIRM : [{}],{}",resJson,(System.currentTimeMillis()-time));
-			
+
 			try{
 				if(input != null){ input.close();}
 				if(output != null){ output.close();}
 				if(socket != null){ socket.close();}
 			}catch(Exception ex){
-				
+
 			}
 		}
-		
+
 		return firmBean;
-		
+
 	}
-	
-	
+
+
 	public static void main(String[] args){
 		FirmClient client = new FirmClient();
+
+		//###########부국 테스트 #################
+
+//		client.balance("089");
+		client.holder("088", "110487944164");
+
+
+
+		//#####################################
 		//client.open("020");
 		//client.testCall("020");
 		//client.balance("020");
@@ -281,21 +291,21 @@ public class FirmClient {
 		//client.trasfer("020","020", "27939792518629", 3000);
 		//client.trasfer("020","088", "100001312970", 120000);//타행이체불능명세
 		//client.trasfer("020","020", "1002735519320", 100);//가상계좌거래내역
-		
-		
+
+
 		//logger.info("계좌조회");
 		//client.holderFCS("088", "110311129095");
 		//client.holderFCS("020", "");
-		client.balance("039","2070079982702","SDS00268"); //FCS용 테스트 계좌 . 850611 , 달나라가자
+//		client.balance("039","2070079982702","SDS00268"); //FCS용 테스트 계좌 . 850611 , 달나라가자
 		/*
 		logger.info("계좌 + 신원확인번호 ");
 		client.holderFCS("011", "24202211712","","850611","77"); //FCS용 테스트 계좌 . 850611 , 달나라가자
 		logger.info("계좌 + 예금주 + 신원확인번호 ");
 		client.holderFCS("011", "24202211712","달나라가자","850611","99"); //FCS용 테스트 계좌 . 850611 , 달나라가자
-		
-		
+
+
 		logger.info("----------\n");
-		
+
 		logger.info("계좌조회");
 		client.holderFCS("004", "012211411610"); //FCS용 테스트 계좌 .730211 , 김련리
 		logger.info("계좌 + 신원확인번호 ");

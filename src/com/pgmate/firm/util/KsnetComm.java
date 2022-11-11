@@ -1,9 +1,6 @@
 package com.pgmate.firm.util;
 
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
+import java.io.*;
 import java.math.BigInteger;
 import java.net.InetSocketAddress;
 import java.net.Socket;
@@ -43,7 +40,7 @@ public class KsnetComm {
 	}
 	
 	
-	public FBHeaderBean ksnet(FBHeaderBean headerBean){
+	public FBHeaderBean ksnet(FBHeaderBean headerBean) {
 		long time 					= System.currentTimeMillis();
 		
 		FBHeaderBean resHeaderBean 	= null;
@@ -72,7 +69,8 @@ public class KsnetComm {
     		message= "데이터 전송 실패";
 //    		key = generateKey();
 //    		request = encrypt(key,reqMsg);
-    		logger.info("-> KSNET [{}]",reqMsg);
+//    		output.write(request);
+			logger.info("-> KSNET [{}], {}",reqMsg, reqMsg.length());
     		//logger.debug("-> KSNET [{}],{}",CommonUtil.toString(request),request.length);
     		output.write(reqMsg.getBytes());
     		output.flush();
@@ -100,7 +98,7 @@ public class KsnetComm {
             bout.close();
     		
             if(response != null){
-            	logger.debug("<- KSNET [{}],{}",CommonUtil.toString(response),response.length);
+//            	logger.debug("<- KSNET [{}],{}",CommonUtil.toString(response),response.length);
             	byte[] resBuf = new byte[response.length-4];
             	System.arraycopy(response, 4, resBuf, 0, response.length-4);
 //            	response  = decrypt(key, resBuf);
@@ -142,6 +140,7 @@ public class KsnetComm {
 				if(socket != null){socket.close();}
 			}catch(IOException io){
 			}
+
 			resHeaderBean = new FBHeaderBean(response);
 			resHeaderBean.setIndex(headerBean.getIndex());
 			resHeaderBean.setProcId(headerBean.getProcId());
@@ -151,7 +150,8 @@ public class KsnetComm {
 			logger.info("<- KSNET [{}],{},{}",CommonUtil.toString(response),response.length,(System.currentTimeMillis()-time));
 			
 			//여유 필드에 응답코드에 해당하는 메세지를 기입한다.
-			resHeaderBean.setMessage(FirmDAO.getCodeDesc(resHeaderBean.getNewBankCode(),resHeaderBean.getBankResponseCode()));
+//			resHeaderBean.setMessage(FirmDAO.getCodeDesc(resHeaderBean.getNewBankCode(),resHeaderBean.getBankResponseCode()));
+			resHeaderBean.setMessage(FirmDAO.getResultMsg(resHeaderBean.getBankResponseCode()));
 		}
 		
 		return resHeaderBean;
@@ -237,7 +237,7 @@ public class KsnetComm {
 		byte tdata[]	= new  KSBankSeed(kbuf).cbc_encrypt(mbuf) ;
 		return tdata;
 	}
-	
+
 	
 	
 	
