@@ -38,7 +38,7 @@
     "timeout": 30000,
     "internalIp": "10.100.",
     "monitorIp": "10.10.47.30",
-    "sendAuthKey": "vlgm662MRn53EnmA",
+    "sendAuthKey": "A6Mn3nAJkwj9iddL",
     "serverAuthKey": "12345678abcdefgh12345678"
   },
   "daemon": {
