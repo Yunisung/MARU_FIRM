@@ -10,6 +10,8 @@ import com.pgmate.firm.conf.BankBean;
 import com.pgmate.firm.hyphen.*;
 import com.pgmate.firm.inter.FirmBean;
 import com.pgmate.firm.ksnet.FBHeaderBean;
+import com.pgmate.lib.dao.DAO;
+import com.pgmate.lib.dao.RecordSet;
 import com.pgmate.lib.util.db.DBFactory;
 import com.pgmate.lib.util.db.DBManager;
 import com.pgmate.lib.util.gson.GsonUtil;
@@ -56,6 +58,42 @@ public class FirmMasterDAO {
 			pstmt.setString(3,jobGb);
 			pstmt.setString(4,sendUrl);
 			pstmt.setString(5,reqData);
+			result = pstmt.executeUpdate();
+			rset		= pstmt.executeQuery("SELECT LAST_INSERT_ID() ");
+			while(rset.next()){
+				result = rset.getLong(1);
+			}
+			conn.commit();
+
+		}catch(Exception e){
+			logger.info("DB Error : {} , {} , [{}]",Thread.currentThread().getStackTrace()[1].getMethodName(),e.getMessage(),query);
+		}finally{
+			db.close(pstmt);
+			db.close(conn);
+		}
+		return result;
+	}
+
+	public long setMasterAddSearchDate(String msgCd, String jobGb, String bankCd,String reqData) {
+		String query = "INSERT INTO PG_FIRM_MASTER (bankCd,msgCd,jobGb,seqNo,sendDate,sendTime,procGb,reqData, searchDate) "
+				+" VALUES (?,?,?,FN_BANKSEQ(), DATE_FORMAT(now(), '%Y%m%d'), DATE_FORMAT(now(), '%H%i%s'),'R',?, ?)";
+
+		DBManager db 			= null;
+		PreparedStatement pstmt	= null;
+		Connection conn			= null;
+		ResultSet rset 			= null;
+		long result				= 0;
+
+		try{
+			db 		= DBFactory.getInstance();
+			conn	= db.getConnection();
+			pstmt	= conn.prepareStatement(query);
+
+			pstmt.setString(1,bankCd);
+			pstmt.setString(2,msgCd);
+			pstmt.setString(3,jobGb);
+			pstmt.setString(4,reqData);
+			pstmt.setString(5,CommonUtil.getCurrentDate("yyyyMMdd"));
 			result = pstmt.executeUpdate();
 			rset		= pstmt.executeQuery("SELECT LAST_INSERT_ID() ");
 			while(rset.next()){

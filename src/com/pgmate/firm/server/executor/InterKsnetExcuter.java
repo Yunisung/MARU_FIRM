@@ -10,6 +10,7 @@ import com.pgmate.firm.inter.FirmBean;
 import com.pgmate.firm.ksnet.*;
 import com.pgmate.firm.util.KsnetComm;
 import com.pgmate.lib.util.lang.CommonUtil;
+import com.pgmate.lib.util.map.SharedMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -268,7 +269,7 @@ public class InterKsnetExcuter implements InterExcuter {
             FB0600101Bean fbBean = new FB0600101Bean();
             fbBean.setRootSpecNumber(firmBean.data.getString("orgSeqNo")) ;
 
-            long idx = masterDAO.setMaster(firmBean.msgType.substring(0,4), firmBean.msgType.substring(4), firmBean.bankCd, fbBean.getTransaction());
+            long idx = masterDAO.setMasterAddSearchDate(firmBean.msgType.substring(0,4), firmBean.msgType.substring(4), firmBean.bankCd, fbBean.getTransaction());
             firmBean = processCheck(idx,firmBean,masterDAO);
             if(firmBean.resultCd.equals("0000")){
                 // 아무것도 하지 않음
