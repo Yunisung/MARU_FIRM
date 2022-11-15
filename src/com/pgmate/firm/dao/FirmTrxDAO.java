@@ -646,7 +646,7 @@ public class FirmTrxDAO {
 
 			while(rset.next()){
 				firmBean.resultCd = rset.getString("resultCd");
-				firmBean.resultMsg = rset.getString("resultMsg");
+				firmBean.resultMsg = rset.getString("resultMsg").trim();
 				firmBean.idx  = idx;
 				if(firmBean.data == null){
 					firmBean.data = new SharedMap<String,Object>();
