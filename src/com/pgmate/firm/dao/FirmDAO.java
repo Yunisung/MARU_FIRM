@@ -109,4 +109,35 @@ public class FirmDAO{
 
 		return result;
 	}
+
+	public static String getVactResultMsg(String code){
+		if(code.equals("XXXX")){
+			return "통신장애";
+		}
+		String query = " SELECT message FROM PG_VACT_CODE WHERE `code` = ?";
+
+		DBManager db 			= null;
+		PreparedStatement pstmt	= null;
+		Connection conn			= null;
+		ResultSet rset			= null;
+		String result			= "";
+
+		try{
+			db 		= DBFactory.getInstance();
+			conn	= db.getConnection();
+			pstmt	= conn.prepareStatement(query);
+			pstmt.setString(1,code);
+			rset 	= pstmt.executeQuery();
+
+			while(rset.next()){
+				result = CommonUtil.nToB(rset.getString("message"));
+			}
+		}catch(Exception e){
+			logger.info("DB Error : {} , {} , [{}]",Thread.currentThread().getStackTrace()[1].getMethodName(),e.getMessage(),query);
+		}finally{
+			db.close(conn,pstmt,rset);
+		}
+
+		return result;
+	}
 }
