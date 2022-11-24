@@ -44,7 +44,7 @@
   "daemon": {
     "interval": 1000,
     "log": false,
-    "stopTime": 230000,
-    "startTime": 60000
+    "stopTime": 233000,
+    "startTime": 3000
   }
 }
