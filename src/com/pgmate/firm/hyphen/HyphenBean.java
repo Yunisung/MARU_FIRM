@@ -16,7 +16,7 @@ public class HyphenBean {
     protected String replyCode;
     protected String successYn;
 
-    //230104_PYS : FCSìš©íŒŒë¼ë¯¸í„° ì¶”ê°€
+    //230104_PYS : FCS¿ëÆÄ¶ó¹ÌÅÍ Ãß°¡
     private String auth_key;
     protected String reply;
     protected String reply_msg;

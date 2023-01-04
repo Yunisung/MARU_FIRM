@@ -2,16 +2,16 @@ package com.pgmate.firm.hyphen;
 
 public class FcsBean extends HyphenBaseBean{
     //Request Parameter
-    private String fcs_cd;      // [í•„ìˆ˜]ê³„ì¢Œì¸ì¦ ì—…ì²´ì½”ë“œ
-    private String bank_cd;     // [í•„ìˆ˜]ê³„ì¢Œì€í–‰
-    private String acct_no;     // [í•„ìˆ˜]ê³„ì¢Œë²ˆí˜¸
-    private String acct_nm;     // ì˜ˆê¸ˆì£¼ëª…
-    private String id_no;       // ì‹ ì›í™•ì¸ë²ˆí˜¸
-    private String amount;      // ê¸ˆì•¡
-    private String seq_no;      // [í•„ìˆ˜]ì¼ë ¨ë²ˆí˜¸
+    private String fcs_cd;      // [ÇÊ¼ö]°èÁÂÀÎÁõ ¾÷Ã¼ÄÚµå
+    private String bank_cd;     // [ÇÊ¼ö]°èÁÂÀºÇà
+    private String acct_no;     // [ÇÊ¼ö]°èÁÂ¹øÈ£
+    private String acct_nm;     // ¿¹±İÁÖ¸í
+    private String id_no;       // ½Å¿øÈ®ÀÎ¹øÈ£
+    private String amount;      // ±İ¾×
+    private String seq_no;      // [ÇÊ¼ö]ÀÏ·Ã¹øÈ£
 
     //Response Parameter
-    private String name;        //ì¡°íšŒëœ ê³„ì¢Œì£¼
+    private String name;        //Á¶È¸µÈ °èÁÂÁÖ
 
     public FcsBean() {
 
