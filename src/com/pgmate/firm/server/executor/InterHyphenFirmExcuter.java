@@ -30,6 +30,10 @@ public class InterHyphenFirmExcuter implements InterExcuter {
         this.hyphenComm = hyphenComm;
     }
 
+    public InterHyphenFirmExcuter(Firm firm) {
+        this.firm = firm;
+    }
+
     @Override
     public FirmBean proc0800(FirmBean firmBean){
         throw new UnsupportedOperationException();
@@ -101,7 +105,7 @@ public class InterHyphenFirmExcuter implements InterExcuter {
             FirmMasterDAO masterDAO = new FirmMasterDAO();
             BankBean configBean = firm.bank.get(firmBean.bankCd);
 
-            HolderBean holderBean = new HolderBean();
+            /*HolderBean holderBean = new HolderBean();
             holderBean.setCompCode(configBean.compCd);
             //PYS : 이름조회는 099 고정
             holderBean.setBankCode("099");
@@ -117,7 +121,22 @@ public class InterHyphenFirmExcuter implements InterExcuter {
             hyphenBean.setEkey(configBean.ekey);
             hyphenBean.setMsalt(configBean.msalt);
             hyphenBean.setReqdata(holderBean);
-            hyphenBean.setSendurl("rfb/retail/account/accountname");
+            hyphenBean.setSendurl("rfb/retail/account/accountname");*/
+
+
+            //230104_PYS : PCS 로직 추가, 기존로직 주석
+            FcsBean fcsBean = new FcsBean();
+            fcsBean.setFcs_cd(configBean.fcs_cd);
+            fcsBean.setBank_cd(firmBean.data.getString("bankCd"));
+            fcsBean.setAcct_no(firmBean.data.getString("account"));
+            fcsBean.setId_no(firmBean.data.getString("socialNumber"));
+
+            HyphenBean hyphenBean = new HyphenBean();
+            hyphenBean.setAuth_key(configBean.auth_key);
+            hyphenBean.setReqdata(fcsBean);
+            hyphenBean.setSendurl("ksnet/auth/account");
+
+
 
             String holderCode = firmBean.data.getString("bankCd");
             String holderAccount = firmBean.data.getString("account");
@@ -128,9 +147,16 @@ public class InterHyphenFirmExcuter implements InterExcuter {
             firmBean = processCheck(idx,firmBean,masterDAO);
             if(firmBean.resultCd.equals("0000")){
                 String resJson = firmBean.data.getString("resData");
-                holderBean = (HolderBean) GsonUtil.fromJson(resJson, HolderBean.class);
-                String name = holderBean.getAccountName();
-                firmBean.data.put("accountName", CommonUtil.parseLong(name.trim()));
+                logger.info("====하이픈에서 보내온 결과값 ====");
+                logger.info(resJson);
+                logger.info("========================");
+
+                /*holderBean = (HolderBean) GsonUtil.fromJson(resJson, HolderBean.class);
+                String name = holderBean.getAccountName();*/
+                
+                fcsBean = (FcsBean) GsonUtil.fromJson(resJson, FcsBean.class);
+                String name = fcsBean.getName();
+                firmBean.data.put("accountName", name.trim());
                 masterDAO.insertAccnt(holderCode, holderAccount, name.trim());
             }
         }catch (Exception e) {
@@ -316,7 +342,7 @@ public class InterHyphenFirmExcuter implements InterExcuter {
         hyphenBean.setSendurl("rfb/retail/inquiry/transfer");
         hyphenBean.setReqdata(transferBean);
 
-        HyphenComm hyphenComm = new HyphenComm(firm.server);
+        HyphenComm hyphenComm = new HyphenComm();
         String resData = hyphenComm.connect(hyphenBean);
 
         JSONObject apiRes = new JSONObject();

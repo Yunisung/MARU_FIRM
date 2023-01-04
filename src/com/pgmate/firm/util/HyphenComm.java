@@ -17,15 +17,14 @@ import java.net.URLConnection;
 
 public class HyphenComm {
     private static final Logger logger = LoggerFactory.getLogger(com.pgmate.firm.util.HyphenComm.class);
-    private ServerBean conf = null;
     private SmsGw smsGw = null;
 
     //개발
-//    private static final String defaultURL = "https://cmsapitest.ksnet.co.kr/ksnet/";
+    private static final String defaultURL = "https://cmsarstest.ksnet.co.kr/";
     //운영
-    private static final String defaultURL = "https://cmsapi.ksnet.co.kr/ksnet/";
+//    private static final String defaultURL = "https://cmsars.ksnet.co.kr/";
 
-    public HyphenComm(ServerBean conf) { this.conf = conf;}
+    public HyphenComm() { }
 
     public String connect(HyphenBean bean) {
         FBHeaderBean resHeaderBean = null;
@@ -43,11 +42,10 @@ public class HyphenComm {
             String postData = "JSONData="+jsonParams;
             logger.info("request : {} ", postData);
 
-            byte[] postDataBytes = postData.toString().getBytes("euc-kr");
+            byte[] postDataBytes = postData.getBytes("utf-8");
 
             HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-            conn.setRequestProperty("Content-Type", "application/x-www-form-urlencoded;charset=euc-kr");
-            conn.setRequestProperty("Accept-Encoding", "html/text");
+            conn.setRequestProperty("Content-Type", "application/x-www-form-urlencoded;charset=utf-8");
             conn.setUseCaches(false);
             conn.setDoInput(true);
             conn.setDoOutput(true);

@@ -61,13 +61,14 @@ public class InterProcessTest {
         firmBean.msgType 	= "0600400";
         firmBean.userId		= "SYSTEM";
         firmBean.data.put("bankCd", "088");
-        firmBean.data.put("account", "70022000000008");
+        firmBean.data.put("account", "110487944164");
+        firmBean.data.put("socialNumber", "");
 
         String reqJson = GsonUtil.toJson(firmBean);
         logger.info("reqJson: {} ", reqJson);
-//        String send = interProcess.execute(reqJson);
-//        logger.info("<- {} [{}]", FirmUtil.KSNET, CommonUtil.toString(send));
-        comm(firmBean);
+        String send = interProcess.execute(reqJson);
+        logger.info("<- {} [{}]", FirmUtil.HYPHEN, CommonUtil.toString(send));
+//        comm(firmBean);
     }
 
     @Test

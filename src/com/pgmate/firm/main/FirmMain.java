@@ -35,7 +35,7 @@ public class FirmMain{
 	public FirmMain(Firm firm) {
 		this.firm = firm;
 		comm = new KsnetComm(firm.server);
-		hyphenComm = new HyphenComm(firm.server);
+		hyphenComm = new HyphenComm();
 	}
 
 
@@ -103,7 +103,7 @@ public class FirmMain{
 	/**
 	 * PYS: 하이픈에 맞게 새로 생성
 	 */
-	public void firmMaster() {
+	public void HyphenfirmMaster() {
 		FirmMasterDAO firmMasterDAO = new FirmMasterDAO(firm.bank);
 		List<HyphenBean> list = firmMasterDAO.selectbyHyphen();
 		for(int i=0;i<list.size();i++){
@@ -118,22 +118,33 @@ public class FirmMain{
 			JSONParser jsonParser = new JSONParser();
 			try {
 				apiRes = (JSONObject) jsonParser.parse(resData);
-				hyphenBean.setSuccessYn(apiRes.get("successYn").toString());
-				hyphenBean.setReplyCode(apiRes.get("replyCode").toString());
-				String replayCode = apiRes.get("replyCode").toString();
 
-				if(!hyphenBean.getReplyCode().equals("0000")) {
-					String resultMsg = "";
+				//230104_PYS : FCS용
+				if(hyphenBean.getSendurl().equals("ksnet/auth/account")) {
+					hyphenBean.setReply(apiRes.get("reply").toString());
+					hyphenBean.setReply_msg(apiRes.get("reply_msg").toString());
 
-					if(hyphenBean.getReplyCode().startsWith("KS")) {
-						resultMsg = FirmDAO.getCodeDesc("ERR", hyphenBean.getReplyCode());
-					} else {
-						resultMsg = FirmDAO.getCodeDesc("039", hyphenBean.getReplyCode());
+					hyphenBean.setSuccessYn(apiRes.get("reply_msg").toString());
+					hyphenBean.setReplyCode(apiRes.get("reply").toString());
+				}else {
+					hyphenBean.setSuccessYn(apiRes.get("successYn").toString());
+					hyphenBean.setReplyCode(apiRes.get("replyCode").toString());
+					String replayCode = apiRes.get("replyCode").toString();
+
+					if(!hyphenBean.getReplyCode().equals("0000")) {
+						String resultMsg = "";
+
+						if(hyphenBean.getReplyCode().startsWith("KS")) {
+							resultMsg = FirmDAO.getCodeDesc("ERR", hyphenBean.getReplyCode());
+						} else {
+							resultMsg = FirmDAO.getCodeDesc("039", hyphenBean.getReplyCode());
+						}
+
+						hyphenBean.setSuccessYn(FirmUtil.changeCharset(resultMsg, "UTF-8"));
+
 					}
-
-					hyphenBean.setSuccessYn(FirmUtil.changeCharset(resultMsg, "UTF-8"));
-
 				}
+
 			} catch (Exception e) {
 				hyphenBean.setSuccessYn("X");
 				hyphenBean.setReplyCode("XXXX");
