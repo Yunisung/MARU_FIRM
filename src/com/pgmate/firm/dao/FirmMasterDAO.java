@@ -40,7 +40,7 @@ public class FirmMasterDAO {
 
 	public long setMasterbyHyphen(String msgCd,String jobGb,String bankCd, String sendUrl,String reqData){
 		String query = "INSERT INTO PG_FIRM_MASTER (bankCd,msgCd,jobGb,seqNo,sendDate,sendTime,procGb, sendUrl,reqData) "
-				+" VALUES (?,?,?,FN_BANKSEQ(), DATE_FORMAT(now(), '%Y%m%d'), DATE_FORMAT(now(), '%H%i%s'),'R',?,?)";
+				+" VALUES (?,?,?,FN_BANKSEQ(), DATE_FORMAT(now(), '%Y%m%d'), DATE_FORMAT(now(), '%H%i%s'),'H',?,?)";
 
 		DBManager db 			= null;
 		PreparedStatement pstmt	= null;
@@ -289,7 +289,7 @@ public class FirmMasterDAO {
 	 * @return
 	 */
 	public List<HyphenBean> selectbyHyphen() {
-		String query = " SELECT idx,bankCd,msgCd,jobGb,seqNo,sendDate,sendTime,searchDate,searchNo,bankSeqNo,filler,sendUrl,reqData FROM PG_FIRM_MASTER WHERE sendDate = DATE_FORMAT(now(), '%Y%m%d') AND procGb='R' AND filler IS null ORDER BY idx ASC";
+		String query = " SELECT idx,bankCd,msgCd,jobGb,seqNo,sendDate,sendTime,searchDate,searchNo,bankSeqNo,filler,sendUrl,reqData FROM PG_FIRM_MASTER WHERE sendDate = DATE_FORMAT(now(), '%Y%m%d') AND procGb='H' AND filler IS null ORDER BY idx ASC";
 
 		DBManager db 	= null;
 		PreparedStatement pstmt	= null;
@@ -314,18 +314,23 @@ public class FirmMasterDAO {
 
 					HyphenBean hyphenBean = new HyphenBean();
 					hyphenBean.setIndex(rset.getLong("idx"));
-					hyphenBean.setKscode(configBean.kscode);
-					hyphenBean.setEkey(configBean.ekey);
-					hyphenBean.setMsalt(configBean.msalt);
 					hyphenBean.setSendurl(rset.getString("sendUrl"));
 
 					if(rset.getString("sendUrl").equals("rfb/retail/inquiry/balance")) {
+						hyphenBean.setKscode(configBean.kscode);
+						hyphenBean.setEkey(configBean.ekey);
+						hyphenBean.setMsalt(configBean.msalt);
+
 						baseBean = new BalanceBean(rset.getString("seqNo"), configBean.account);
 						baseBean.setCompCode(configBean.compCd);
 						baseBean.setBankCode(configBean.bankCd);
 
 						hyphenBean.setReqdata(baseBean);
 					} else if(rset.getString("sendUrl").equals("rfb/retail/account/accountname")) {
+						hyphenBean.setKscode(configBean.kscode);
+						hyphenBean.setEkey(configBean.ekey);
+						hyphenBean.setMsalt(configBean.msalt);
+
 						String reqJson = rset.getString("reqData");
 
 						JSONParser parser = new JSONParser();
@@ -336,6 +341,18 @@ public class FirmMasterDAO {
 						holderBean.setSeqNo(rset.getString("seqNo"));
 
 						hyphenBean.setReqdata(holderBean);
+					} else if(rset.getString("sendUrl").equals("ksnet/auth/account")) {
+						hyphenBean.setAuth_key(configBean.auth_key);
+
+						String reqJson = rset.getString("reqData");
+						JSONParser parser = new JSONParser();
+						JSONObject jsonobj = (JSONObject) parser.parse(reqJson);
+						String reqData = jsonobj.get("reqdata").toString();
+						reqData = reqData.substring(1, reqData.length()-1);
+
+						FcsBean fcsBean = (FcsBean) GsonUtil.fromJson(reqData, FcsBean.class);
+						fcsBean.setSeq_no(rset.getString("seqNo"));
+						hyphenBean.setReqdata(fcsBean);
 					}
 
 

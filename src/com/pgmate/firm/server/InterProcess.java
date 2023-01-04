@@ -4,6 +4,7 @@ import com.pgmate.firm.conf.Firm;
 import com.pgmate.firm.inter.FirmBean;
 import com.pgmate.firm.server.executor.InterExcuter;
 import com.pgmate.firm.server.executor.InterHyphenExcuter;
+import com.pgmate.firm.server.executor.InterHyphenFirmExcuter;
 import com.pgmate.firm.server.executor.InterKsnetExcuter;
 import com.pgmate.firm.util.HyphenComm;
 import com.pgmate.lib.util.gson.GsonUtil;
@@ -30,6 +31,7 @@ public class InterProcess implements java.io.Serializable{
 
 		InterExcuter interExcuter = new InterKsnetExcuter(firm);
 //		InterExcuter interExcuter = new InterHyphenExcuter(firm);
+		InterExcuter interHyphenFirmExcuter = new InterHyphenFirmExcuter(firm);
 
 		if(firmBean.resultCd.equals("9999")){
 			return GsonUtil.toJson(firmBean);
@@ -41,7 +43,8 @@ public class InterProcess implements java.io.Serializable{
 				firmBean = interExcuter.proc0600300(firmBean);
 			}else if(firmBean.msgType.startsWith("0600400")){
 				//성명조회
-				firmBean = interExcuter.proc0600400(firmBean);
+//				firmBean = interExcuter.proc0600400(firmBean);
+				firmBean = interHyphenFirmExcuter.proc0600400(firmBean);
 			}else if(firmBean.msgType.startsWith("0700100")){
 				//집계
 				firmBean = interExcuter.proc0700100(firmBean);

@@ -37,8 +37,8 @@ public class Daemon extends Thread{
 						FirmMain main = new FirmMain(firm);
 						main.transMaster();
 						main.wireTransfer();
-//						main.firmMaster();
-//						main.firmTrx();
+						main.HyphenfirmMaster();
+						//main.firmTrx();
 
 					}
 				

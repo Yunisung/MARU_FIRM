@@ -15,6 +15,10 @@ public class BankBean {
 	public String ekey		= "";
 	public String msalt 	= "";
 	public String kscode	= "";
+
+	//230104_PYS : 계좌인증때문에 추가
+	public String auth_key	= "";
+	public String fcs_cd = "";
 	
 	public BankBean() {
 		// TODO Auto-generated constructor stub
