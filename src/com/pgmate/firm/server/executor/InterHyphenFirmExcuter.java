@@ -147,9 +147,6 @@ public class InterHyphenFirmExcuter implements InterExcuter {
             firmBean = processCheck(idx,firmBean,masterDAO);
             if(firmBean.resultCd.equals("0000")){
                 String resJson = firmBean.data.getString("resData");
-                logger.info("====하이픈에서 보내온 결과값 ====");
-                logger.info(resJson);
-                logger.info("========================");
 
                 /*holderBean = (HolderBean) GsonUtil.fromJson(resJson, HolderBean.class);
                 String name = holderBean.getAccountName();*/
@@ -157,7 +154,25 @@ public class InterHyphenFirmExcuter implements InterExcuter {
                 fcsBean = (FcsBean) GsonUtil.fromJson(resJson, FcsBean.class);
                 String name = fcsBean.getName();
                 firmBean.data.put("accountName", name.trim());
+
+                //조회 성공하면 PG_FIRM_ACCNT에 INSERT
                 masterDAO.insertAccnt(holderCode, holderAccount, name.trim());
+            } else {
+                //230105_PYS : 하이픈에서 에러값 이상할때 DB에서 resultMsg 세팅
+                if(CommonUtil.isNullOrSpace(firmBean.resultCd)) {
+                    //resultCd가 없을때
+                    firmBean.resultCd = "XXXX";
+                    firmBean.resultMsg = "성명조회 오류. 결과코드 없음";
+                } else {
+                    //resultCd가 있을때
+                    if(CommonUtil.isNullOrSpace(firmBean.resultMsg)) {
+                        //resultMsg가 없을때
+                        firmBean.resultMsg = masterDAO.getFcsErrorMsg(firmBean.resultCd);
+                    } else {
+                        //resultMsg가 있을때
+                        logger.info("FCS ERROR [{}][{}]", firmBean.resultCd, firmBean.resultMsg);
+                    }
+                }
             }
         }catch (Exception e) {
 
