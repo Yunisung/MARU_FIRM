@@ -696,6 +696,36 @@ public class FirmMasterDAO {
 		return holder;
 	}
 
+	public String getFcsErrorMsg(String resultCd){
+
+		String query = " SELECT codeName FROM PG_CODE WHERE alias = 'FCS' AND code = ? ";
+
+		DBManager db 	= null;
+		PreparedStatement pstmt	= null;
+		Connection conn			= null;
+		ResultSet rset			= null;
+
+		String errorMsg = "";
+
+		try{
+			db 		= DBFactory.getInstance();
+			conn	= db.getConnection();
+			pstmt	= conn.prepareStatement(query);
+
+			pstmt.setString(1, resultCd);
+
+			rset 	= pstmt.executeQuery();
+
+			while(rset.next()){
+				errorMsg = CommonUtil.nToB(rset.getString("codeName"));
+			}
+		}catch(Exception e){
+			logger.info("DB Error : {} , {} , [{}]",Thread.currentThread().getStackTrace()[1].getMethodName(),e.getMessage(),query);
+		}finally{
+			db.close(conn,pstmt,rset);
+		}
+		return errorMsg;
+	}
 
 
 
