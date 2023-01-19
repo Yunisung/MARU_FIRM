@@ -272,10 +272,15 @@ public class InterKsnetExcuter implements InterExcuter {
             long idx = masterDAO.setMasterAddSearchDate(firmBean.msgType.substring(0,4), firmBean.msgType.substring(4), firmBean.bankCd, fbBean.getTransaction());
             firmBean = processCheck(idx,firmBean,masterDAO);
 
-            //PYS : 개별부의 응답코드를 리턴해주는걸로 변경
-            fbBean = new FB0600101Bean(firmBean.data.getString("resData"));
-            firmBean.resultCd = fbBean.getResultCd();
-            firmBean.resultMsg = FirmDAO.getResultMsg(firmBean.resultCd);
+            //OSC: 처리결과없음 (은행에 아예 거래내역이 존재하지 않음)
+            if("KS10".equals(firmBean.resultCd)) {
+                // 아무것도 하지 않음
+            } else {
+                //PYS : 개별부의 응답코드를 리턴해주는걸로 변경
+                fbBean = new FB0600101Bean(firmBean.data.getString("resData"));
+                firmBean.resultCd = fbBean.getResultCd();
+                firmBean.resultMsg = FirmDAO.getResultMsg(firmBean.resultCd);
+            }
 
             if(firmBean.resultCd.equals("0000")){
                 // 아무것도 하지 않음
