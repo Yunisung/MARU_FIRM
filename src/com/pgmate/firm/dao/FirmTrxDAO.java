@@ -596,6 +596,8 @@ public class FirmTrxDAO {
 				sendMemo = "모계좌";
 			}else if("WT".equals(procType)) {
 				sendMemo = "월렛";
+			}else if("AT".equals(procType)) {
+				sendMemo = "1원인증";
 			}
 
 			if("".equals(sender)) {
