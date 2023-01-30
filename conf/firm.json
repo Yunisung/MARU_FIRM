@@ -8,8 +8,10 @@
       "newAccount": "1005004107798"
     },
     "099": {
-      "auth_key": "1BXUrNzJ0uaw051nS8Nq",
-      "fcs_cd": "FCS06888"
+      "trCd": "KSBPAY",
+      "compCd": "BKWIN001",
+      "bankCd": "089",
+      "account": ""
     },
     "089": {
       "trCd": "KSBPAY",
@@ -42,7 +44,7 @@
   "daemon": {
     "interval": 1000,
     "log": false,
-    "stopTime": 233000,
+    "stopTime": 232500,
     "startTime": 3000
   }
 }
