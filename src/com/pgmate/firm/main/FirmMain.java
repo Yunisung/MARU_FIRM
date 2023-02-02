@@ -126,6 +126,12 @@ public class FirmMain{
 
 					hyphenBean.setSuccessYn(apiRes.get("reply_msg").toString());
 					hyphenBean.setReplyCode(apiRes.get("reply").toString());
+				}else if(hyphenBean.getSendurl().equals("ksnet/auth/ars")) {
+					hyphenBean.setReply(apiRes.get("reply").toString());
+					hyphenBean.setReply_msg(apiRes.get("reply_msg").toString());
+
+					hyphenBean.setSuccessYn(apiRes.get("reply_msg").toString());
+					hyphenBean.setReplyCode(apiRes.get("reply").toString());
 				}else {
 					hyphenBean.setSuccessYn(apiRes.get("successYn").toString());
 					hyphenBean.setReplyCode(apiRes.get("replyCode").toString());
@@ -146,6 +152,7 @@ public class FirmMain{
 				}
 
 			} catch (Exception e) {
+				logger.info("Hyphen Firm Master Error : [{}]", e.getMessage());
 				hyphenBean.setSuccessYn("X");
 				hyphenBean.setReplyCode("XXXX");
 			}

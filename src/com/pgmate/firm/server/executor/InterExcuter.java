@@ -49,4 +49,10 @@ public interface InterExcuter {
      */
     FirmBean proc0900400(FirmBean firmBean);
 
+    /**
+     * ARS¿Œ¡ı
+     * @param firmBean
+     * @return
+     */
+    FirmBean procArsAuth(FirmBean firmBean);
 }

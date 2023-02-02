@@ -413,7 +413,6 @@ public class InterHyphenFirmExcuter implements InterExcuter {
         throw new UnsupportedOperationException();
     }
 
-
     public FirmBean processCheck(long idx,FirmBean firmBean,FirmMasterDAO masterDAO){
         int limit = 40;
         int count = 1;
@@ -431,6 +430,71 @@ public class InterHyphenFirmExcuter implements InterExcuter {
         }
         return firmBean;
     }
+
+    @Override
+    public FirmBean procArsAuth(FirmBean firmBean) {
+        try {
+            FirmMasterDAO masterDAO = new FirmMasterDAO();
+            BankBean configBean = firm.bank.get(firmBean.bankCd);
+
+            ArsBean arsBean = new ArsBean();
+            arsBean.setCompcode(configBean.compCd);
+            arsBean.setPhoneno(firmBean.data.getString("phoneNo"));
+            arsBean.setService("0001");
+            arsBean.setSvc_type("03");
+            arsBean.setUsedrecord("N");
+            arsBean.setAuthno(firmBean.data.getString("authNo"));
+            arsBean.setFiller1("출금계좌 등록 가상계좌 서비스가 일반거래 외에 보이스 피싱, 코인거래등 불법을 목적으로 사용 될 경우 모든 법적책임이 본인에게 있다는점을 인지 하여 등록바랍니다. 계속 진행");
+
+            HyphenBean hyphenBean = new HyphenBean();
+            hyphenBean.setAuth_key(configBean.auth_key);
+            hyphenBean.setReqdata(arsBean);
+            hyphenBean.setSendurl("ksnet/auth/ars");
+
+            String jsonParams = new Gson().toJson(hyphenBean);
+
+            long idx = masterDAO.setMasterbyHyphen(firmBean.msgType.substring(0,4), firmBean.msgType.substring(4), firmBean.bankCd, hyphenBean.getSendurl(), jsonParams);
+            firmBean = processCheck(idx,firmBean,masterDAO);
+            if(firmBean.resultCd.equals("0000")){
+                String resJson = firmBean.data.getString("resData");
+
+                arsBean = (ArsBean) GsonUtil.fromJson(resJson, ArsBean.class);
+                String trace_no = arsBean.getTrace_no();
+                String record = arsBean.getRecord();
+                firmBean.data.put("traceNo", trace_no);
+                firmBean.data.put("record", record);
+
+                logger.info("ARS인증: [{}]", arsBean.toString());
+            } else {
+                if(CommonUtil.isNullOrSpace(firmBean.resultCd)) {
+                    //resultCd가 없을때
+                    firmBean.resultCd = "XXXX";
+                    firmBean.resultMsg = "ARS인증 오류. 결과코드 없음";
+                } else {
+                    //resultCd가 있을때
+                    if(CommonUtil.isNullOrSpace(firmBean.resultMsg)) {
+                        //resultMsg가 없을때
+                        firmBean.resultMsg = masterDAO.getArsErrorMsg(firmBean.resultCd);
+                    } else {
+                        //resultMsg가 있을때
+                        logger.info("ARS ERROR [{}][{}]", firmBean.resultCd, firmBean.resultMsg);
+                    }
+                }
+            }
+        }catch (Exception e) {
+
+            firmBean.resultCd ="XXXX";
+            firmBean.resultMsg ="ARS 오류";
+
+            e.printStackTrace();
+            logger.error("ARS인증 Error : [{}]", e.getMessage());
+        }
+
+        logger.info("===================================================");
+
+        return firmBean;
+    }
+
 
 
     

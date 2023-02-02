@@ -49,8 +49,8 @@ public class HyphenComm {
             conn.setUseCaches(false);
             conn.setDoInput(true);
             conn.setDoOutput(true);
-            conn.setConnectTimeout(30000);
-            conn.setReadTimeout(30000);
+            conn.setConnectTimeout(60000);
+            conn.setReadTimeout(60000);
             conn.setRequestMethod("POST");
             conn.setRequestProperty("Content-Length", String.valueOf(postDataBytes.length));
             conn.getOutputStream().write(postDataBytes);

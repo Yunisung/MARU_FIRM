@@ -353,6 +353,17 @@ public class FirmMasterDAO {
 						FcsBean fcsBean = (FcsBean) GsonUtil.fromJson(reqData, FcsBean.class);
 						fcsBean.setSeq_no(rset.getString("seqNo"));
 						hyphenBean.setReqdata(fcsBean);
+					} else if(rset.getString("sendUrl").equals("ksnet/auth/ars")) {
+						hyphenBean.setAuth_key(configBean.auth_key);
+
+						String reqJson = rset.getString("reqData");
+						JSONParser parser = new JSONParser();
+						JSONObject jsonobj = (JSONObject) parser.parse(reqJson);
+						String reqData = jsonobj.get("reqdata").toString();
+						reqData = reqData.substring(1, reqData.length()-1);
+
+						ArsBean arsBean = (ArsBean) GsonUtil.fromJson(reqData, ArsBean.class);
+						hyphenBean.setReqdata(arsBean);
 					}
 
 
@@ -727,6 +738,35 @@ public class FirmMasterDAO {
 		return errorMsg;
 	}
 
+	public String getArsErrorMsg(String resultCd){
 
+		String query = " SELECT codeName FROM PG_CODE WHERE alias = 'ARS' AND code = ? ";
+
+		DBManager db 	= null;
+		PreparedStatement pstmt	= null;
+		Connection conn			= null;
+		ResultSet rset			= null;
+
+		String errorMsg = "";
+
+		try{
+			db 		= DBFactory.getInstance();
+			conn	= db.getConnection();
+			pstmt	= conn.prepareStatement(query);
+
+			pstmt.setString(1, resultCd);
+
+			rset 	= pstmt.executeQuery();
+
+			while(rset.next()){
+				errorMsg = CommonUtil.nToB(rset.getString("codeName"));
+			}
+		}catch(Exception e){
+			logger.info("DB Error : {} , {} , [{}]",Thread.currentThread().getStackTrace()[1].getMethodName(),e.getMessage(),query);
+		}finally{
+			db.close(conn,pstmt,rset);
+		}
+		return errorMsg;
+	}
 
 }
