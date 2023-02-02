@@ -2,17 +2,17 @@ package com.pgmate.firm.hyphen;
 
 public class ArsBean extends HyphenBaseBean{
     //Request Parameter
-    private String compcode;        //ARSì—…ì²´ì½”ë“œ
-    private String phoneno;         //íœ´ëŒ€í°ë²ˆí˜¸
-    private String service;         //ì„œë¹„ìŠ¤ë¶„ë¥˜
-    private String svc_type;        //ê¸°ëŠ¥ë¶„ë¥˜
-    private String usedrecord;      //ë…¹ì·¨íŒŒì¼ì‚¬ìš©ì—¬ë¶€
-    private String authno;          //ì‚¬ìš©ìê°€ ì…ë ¥í•  ì¸ì¦ë²ˆí˜¸
-    private String filler1;         //ì¸ì¦ì‚¬ìš© ëª©ì 
+    private String compcode;        //ARS¾÷Ã¼ÄÚµå
+    private String phoneno;         //ÈŞ´ëÆù¹øÈ£
+    private String service;         //¼­ºñ½ººĞ·ù
+    private String svc_type;        //±â´ÉºĞ·ù
+    private String usedrecord;      //³ìÃëÆÄÀÏ»ç¿ë¿©ºÎ
+    private String authno;          //»ç¿ëÀÚ°¡ ÀÔ·ÂÇÒ ÀÎÁõ¹øÈ£
+    private String filler1;         //ÀÎÁõ»ç¿ë ¸ñÀû
 
     //Response Parameter
-    private String record;          //ë…¹ì·¨ë‚´ìš©
-    private String trace_no;        //ì²˜ë¦¬ì¼ë ¨ë²ˆí˜¸
+    private String record;          //³ìÃë³»¿ë
+    private String trace_no;        //Ã³¸®ÀÏ·Ã¹øÈ£
 
     public ArsBean() {
 
