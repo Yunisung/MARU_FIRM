@@ -420,6 +420,11 @@ public class InterKsnetExcuter implements InterExcuter {
         return firmBean;
     }
 
+    @Override
+    public FirmBean procArsAuth(FirmBean firmBean) {
+        return null;
+    }
+
     /**
      * 가상계좌 출금정보 등록
      * firm.json 에 아래와 같이 세팅되어야 동작함. 현재는 KSBPAY로 구성되어 있음
