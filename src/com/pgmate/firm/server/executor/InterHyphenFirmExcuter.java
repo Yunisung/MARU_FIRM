@@ -459,7 +459,7 @@ public class InterHyphenFirmExcuter implements InterExcuter {
             if(idx > 0) {
                 firmBean.resultCd = "0000";
                 firmBean.resultMsg = "ARS 요청이 성공하였습니다.";
-                firmBean.data.put("firmIdx", idx);
+                firmBean.data.put("firmIdx", String.valueOf(idx));
             } else {
                 firmBean.resultCd = "XXXX";
                 firmBean.resultMsg = "ARS 요청실패.";
