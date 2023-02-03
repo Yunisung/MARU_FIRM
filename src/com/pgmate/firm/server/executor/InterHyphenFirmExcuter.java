@@ -454,7 +454,18 @@ public class InterHyphenFirmExcuter implements InterExcuter {
             String jsonParams = new Gson().toJson(hyphenBean);
 
             long idx = masterDAO.setMasterbyHyphen(firmBean.msgType.substring(0,4), firmBean.msgType.substring(4), firmBean.bankCd, hyphenBean.getSendurl(), jsonParams);
-            firmBean = processCheck(idx,firmBean,masterDAO);
+
+            //230203_PYS : 등록만 하고 정상처리
+            if(idx > 0) {
+                firmBean.resultCd = "0000";
+                firmBean.resultMsg = "ARS 요청이 성공하였습니다.";
+                firmBean.data.put("firmIdx", idx);
+            } else {
+                firmBean.resultCd = "XXXX";
+                firmBean.resultMsg = "ARS 요청실패.";
+            }
+
+            /*firmBean = processCheck(idx,firmBean,masterDAO);
             if(firmBean.resultCd.equals("0000")){
                 String resJson = firmBean.data.getString("resData");
 
@@ -480,7 +491,7 @@ public class InterHyphenFirmExcuter implements InterExcuter {
                         logger.info("ARS ERROR [{}][{}]", firmBean.resultCd, firmBean.resultMsg);
                     }
                 }
-            }
+            }*/
         }catch (Exception e) {
 
             firmBean.resultCd ="XXXX";
