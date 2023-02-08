@@ -52,16 +52,15 @@ public class HyphenComm {
             conn.setConnectTimeout(60000);
             conn.setReadTimeout(60000);
             conn.setRequestMethod("POST");
-            conn.setRequestProperty("Content-Length", String.valueOf(postDataBytes.length));
             conn.getOutputStream().write(postDataBytes);
             conn.getOutputStream().flush();
             conn.getOutputStream().close();
 
-            BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(conn.getInputStream(), "UTF-8"), conn.getContentLength());
+            BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(conn.getInputStream(), "UTF-8"));
             String inputLine;
 
             while ((inputLine = bufferedReader.readLine()) != null)  {
-                stringBuffer.append(inputLine);
+                stringBuffer.append(inputLine.replace("\\", ""));
             }
             bufferedReader.close();
 
