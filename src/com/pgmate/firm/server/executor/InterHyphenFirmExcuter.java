@@ -442,7 +442,7 @@ public class InterHyphenFirmExcuter implements InterExcuter {
             arsBean.setPhoneno(firmBean.data.getString("phoneNo"));
             arsBean.setService("0001");
             arsBean.setSvc_type("03");
-            arsBean.setUsedrecord("N");
+            arsBean.setUsedrecord("Y");
             arsBean.setAuthno(firmBean.data.getString("authNo"));
             arsBean.setFiller1("출금계좌 등록 가상계좌 서비스가 일반거래 외에 보이스 피싱, 코인거래등 불법을 목적으로 사용 될 경우 모든 법적책임이 본인에게 있다는점을 인지 하여 등록바랍니다. 계속 진행");
 
