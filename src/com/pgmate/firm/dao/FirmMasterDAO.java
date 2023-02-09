@@ -74,6 +74,42 @@ public class FirmMasterDAO {
 		return result;
 	}
 
+	public long setArsbyHyphen(String msgCd,String jobGb,String bankCd, String sendUrl,String reqData){
+		String query = "INSERT INTO PG_FIRM_ARS (bankCd,msgCd,jobGb,seqNo,sendDate,sendTime,procGb, sendUrl,reqData) "
+				+" VALUES (?,?,?,FN_BANKSEQ(), DATE_FORMAT(now(), '%Y%m%d'), DATE_FORMAT(now(), '%H%i%s'),'H',?,?)";
+
+		DBManager db 			= null;
+		PreparedStatement pstmt	= null;
+		Connection conn			= null;
+		ResultSet rset 			= null;
+		long result				= 0;
+
+		try{
+			db 		= DBFactory.getInstance();
+			conn	= db.getConnection();
+			pstmt	= conn.prepareStatement(query);
+
+			pstmt.setString(1,bankCd);
+			pstmt.setString(2,msgCd);
+			pstmt.setString(3,jobGb);
+			pstmt.setString(4,sendUrl);
+			pstmt.setString(5,reqData);
+			result = pstmt.executeUpdate();
+			rset		= pstmt.executeQuery("SELECT LAST_INSERT_ID() ");
+			while(rset.next()){
+				result = rset.getLong(1);
+			}
+			conn.commit();
+
+		}catch(Exception e){
+			logger.info("DB Error : {} , {} , [{}]",Thread.currentThread().getStackTrace()[1].getMethodName(),e.getMessage(),query);
+		}finally{
+			db.close(pstmt);
+			db.close(conn);
+		}
+		return result;
+	}
+
 	public long setMasterAddSearchDate(String msgCd, String jobGb, String bankCd,String reqData) {
 		String query = "INSERT INTO PG_FIRM_MASTER (bankCd,msgCd,jobGb,seqNo,sendDate,sendTime,procGb,reqData, searchDate) "
 				+" VALUES (?,?,?,FN_BANKSEQ(), DATE_FORMAT(now(), '%Y%m%d'), DATE_FORMAT(now(), '%H%i%s'),'R',?, ?)";
@@ -353,7 +389,53 @@ public class FirmMasterDAO {
 						FcsBean fcsBean = (FcsBean) GsonUtil.fromJson(reqData, FcsBean.class);
 						fcsBean.setSeq_no(rset.getString("seqNo"));
 						hyphenBean.setReqdata(fcsBean);
-					} else if(rset.getString("sendUrl").equals("ksnet/auth/ars")) {
+					}
+
+
+					hyphenBean.setReqdata(baseBean);
+
+					list.add(hyphenBean);
+				} else {
+					logger.info("해당은행코드에 해당하는 config값이 없습니다. : [{}]", rset.getString("bankCd"));
+				}
+			}
+		}catch(Exception e){
+			logger.info("DB Error : {} , {} , [{}]",Thread.currentThread().getStackTrace()[1].getMethodName(),e.getMessage(),query);
+		}finally{
+			db.close(conn,pstmt,rset);
+		}
+		return list;
+	}
+
+	public List<HyphenBean> arsByHyphen() {
+		String query = " SELECT idx,bankCd,msgCd,jobGb,seqNo,sendDate,sendTime,sendUrl,reqData FROM PG_FIRM_ARS WHERE sendDate = DATE_FORMAT(now(), '%Y%m%d') AND procGb='H' ORDER BY idx ASC";
+
+		DBManager db 	= null;
+		PreparedStatement pstmt	= null;
+		Connection conn			= null;
+		ResultSet rset			= null;
+
+		List<HyphenBean> list = new ArrayList<HyphenBean>();
+
+
+		try{
+			db 		= DBFactory.getInstance();
+			conn	= db.getConnection();
+			pstmt	= conn.prepareStatement(query);
+			rset 	= pstmt.executeQuery();
+
+			while(rset.next()){
+				BankBean configBean = map.get(rset.getString("bankCd"));
+
+				if(configBean != null) {
+
+					HyphenBaseBean baseBean = null;
+
+					HyphenBean hyphenBean = new HyphenBean();
+					hyphenBean.setIndex(rset.getLong("idx"));
+					hyphenBean.setSendurl(rset.getString("sendUrl"));
+
+					if(rset.getString("sendUrl").equals("ksnet/auth/ars")) {
 						hyphenBean.setAuth_key(configBean.auth_key);
 
 						String reqJson = rset.getString("reqData");
@@ -365,9 +447,6 @@ public class FirmMasterDAO {
 						ArsBean arsBean = (ArsBean) GsonUtil.fromJson(reqData, ArsBean.class);
 						hyphenBean.setReqdata(arsBean);
 					}
-
-
-					hyphenBean.setReqdata(baseBean);
 
 					list.add(hyphenBean);
 				} else {
@@ -462,6 +541,38 @@ public class FirmMasterDAO {
 		}
 	}
 
+	public boolean updateArsStatus(long idx,String status){
+
+		String query = "UPDATE PG_FIRM_ARS SET procGb =? WHERE idx =?";
+
+		DBManager db 	= null;
+		PreparedStatement pstmt	= null;
+		Connection conn			= null;
+		int result		=0;
+		try{
+			db 		= DBFactory.getInstance();
+			conn	= db.getConnection();
+			pstmt	= conn.prepareStatement(query);
+			pstmt.setString(1,status);
+			pstmt.setLong(2,idx);
+			result = pstmt.executeUpdate();
+
+			conn.commit();
+
+		}catch(Exception e){
+			logger.info("DB Error : {} , {} , [{}]",Thread.currentThread().getStackTrace()[1].getMethodName(),e.getMessage(),query);
+			logger.info("UPDATE PG_FIRM_ARS SET procGb='{}' WHERE idx ={};",status,idx);
+		}finally{
+			db.close(pstmt);
+			db.close(conn);
+		}
+		if(result > 0){
+			return true;
+		}else{
+			return false;
+		}
+	}
+
 	public boolean updatebyHyphen(HyphenBean hyphenBean) {
 		String query = "UPDATE PG_FIRM_MASTER SET procGb =? , recvDate=DATE_FORMAT(now(), '%Y%m%d'), recvTime=DATE_FORMAT(now(), '%H%i%s'), resultCd=?, resultMsg=?, resData=? , modDt = now() WHERE idx =?";
 
@@ -483,6 +594,47 @@ public class FirmMasterDAO {
 
 //			pstmt.setString(2,headerBean.getTransactionTime().substring(0,8));
 //			pstmt.setString(3,headerBean.getTransactionTime().substring(8,14));
+			pstmt.setString(2,hyphenBean.getReplyCode());
+			pstmt.setString(3,hyphenBean.getSuccessYn());
+			pstmt.setString(4,hyphenBean.getResData());
+			pstmt.setLong(5,hyphenBean.getIndex());
+
+			result = pstmt.executeUpdate();
+
+			conn.commit();
+
+		}catch(Exception e){
+			logger.info("DB Error : {} , {} , [{}]",Thread.currentThread().getStackTrace()[1].getMethodName(),e.getMessage(),query);
+		}finally{
+			db.close(pstmt);
+			db.close(conn);
+		}
+		if(result > 0){
+			return true;
+		}else{
+			return false;
+		}
+	}
+
+	public boolean updateArsByHyphen(HyphenBean hyphenBean) {
+		String query = "UPDATE PG_FIRM_ARS SET procGb =? , recvDate=DATE_FORMAT(now(), '%Y%m%d'), recvTime=DATE_FORMAT(now(), '%H%i%s'), resultCd=?, resultMsg=?, resData=? , modDt = now() WHERE idx =?";
+
+		DBManager db 	= null;
+		PreparedStatement pstmt	= null;
+		Connection conn			= null;
+		int result		=0;
+		try{
+			db 		= DBFactory.getInstance();
+			conn	= db.getConnection();
+			pstmt	= conn.prepareStatement(query);
+			if(hyphenBean.getReplyCode().equals("0000")){
+				pstmt.setString(1,"Y");
+			}else if(hyphenBean.getReplyCode().equals("XXXX")){
+				pstmt.setString(1,"X");
+			}else{
+				pstmt.setString(1,"N");
+			}
+
 			pstmt.setString(2,hyphenBean.getReplyCode());
 			pstmt.setString(3,hyphenBean.getSuccessYn());
 			pstmt.setString(4,hyphenBean.getResData());

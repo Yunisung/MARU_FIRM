@@ -109,9 +109,7 @@ public class FirmMain{
 		for(int i=0;i<list.size();i++){
 			logger.info("MASTER TRANSFER : {}/{}",(i+1),list.size());
 			HyphenBean hyphenBean = (HyphenBean)list.get(i);
-			//logger.info("MASTER TRANSFER : {}",headerBean.getSpecCode()+headerBean.getClassificationCode());
 			logger.info("MASTER STATUS UPDATE : {} : {}",(i+1),firmMasterDAO.updateStatus(hyphenBean.getIndex(), "I"));
-//			FBHeaderBean resHeader = comm.ksnet(headerBean);
 			String resData = hyphenComm.connect(hyphenBean);
 
 			JSONObject apiRes = new JSONObject();
@@ -126,13 +124,7 @@ public class FirmMain{
 
 					hyphenBean.setSuccessYn(apiRes.get("reply_msg").toString());
 					hyphenBean.setReplyCode(apiRes.get("reply").toString());
-				}else if(hyphenBean.getSendurl().equals("ksnet/auth/ars")) {
-					hyphenBean.setReply(apiRes.get("reply").toString());
-					hyphenBean.setReply_msg(apiRes.get("reply_msg").toString());
-
-					hyphenBean.setSuccessYn(apiRes.get("reply_msg").toString());
-					hyphenBean.setReplyCode(apiRes.get("reply").toString());
-				}else {
+				} else {
 					hyphenBean.setSuccessYn(apiRes.get("successYn").toString());
 					hyphenBean.setReplyCode(apiRes.get("replyCode").toString());
 					String replayCode = apiRes.get("replyCode").toString();
@@ -164,5 +156,56 @@ public class FirmMain{
 		}
 	}
 
+	public void HyphenfirmArs() {
+		FirmMasterDAO firmMasterDAO = new FirmMasterDAO(firm.bank);
+		List<HyphenBean> list = firmMasterDAO.arsByHyphen();
+		for(int i=0;i<list.size();i++){
+			logger.info("ARS TRANSFER : {}/{}",(i+1),list.size());
+			HyphenBean hyphenBean = (HyphenBean)list.get(i);
+			logger.info("ARS STATUS UPDATE : {} : {}",(i+1),firmMasterDAO.updateArsStatus(hyphenBean.getIndex(), "I"));
+			String resData = hyphenComm.connect(hyphenBean);
+
+			JSONObject apiRes = new JSONObject();
+			JSONParser jsonParser = new JSONParser();
+			try {
+				apiRes = (JSONObject) jsonParser.parse(resData);
+
+				if(hyphenBean.getSendurl().equals("ksnet/auth/ars")) {
+					hyphenBean.setReply(apiRes.get("reply").toString());
+					hyphenBean.setReply_msg(apiRes.get("reply_msg").toString());
+
+					hyphenBean.setSuccessYn(apiRes.get("reply_msg").toString());
+					hyphenBean.setReplyCode(apiRes.get("reply").toString());
+				}else {
+					hyphenBean.setSuccessYn(apiRes.get("successYn").toString());
+					hyphenBean.setReplyCode(apiRes.get("replyCode").toString());
+					String replayCode = apiRes.get("replyCode").toString();
+
+					if(!hyphenBean.getReplyCode().equals("0000")) {
+						String resultMsg = "";
+
+						if(hyphenBean.getReplyCode().startsWith("KS")) {
+							resultMsg = FirmDAO.getCodeDesc("ERR", hyphenBean.getReplyCode());
+						} else {
+							resultMsg = FirmDAO.getCodeDesc("039", hyphenBean.getReplyCode());
+						}
+
+						hyphenBean.setSuccessYn(FirmUtil.changeCharset(resultMsg, "UTF-8"));
+
+					}
+				}
+
+			} catch (Exception e) {
+				logger.info("Hyphen Firm ARS Error : [{}]", e.getMessage());
+				hyphenBean.setSuccessYn("X");
+				hyphenBean.setReplyCode("XXXX");
+			}
+
+			hyphenBean.setResdata(resData);
+
+			logger.info("ARS RESULT {},[{}]",hyphenBean.getReplyCode(), hyphenBean.getSuccessYn());
+			logger.info("ARS RESULT UPDATE : {} : {}",(i+1),firmMasterDAO.updateArsByHyphen(hyphenBean));
+		}
+	}
 
 }

@@ -453,7 +453,7 @@ public class InterHyphenFirmExcuter implements InterExcuter {
 
             String jsonParams = new Gson().toJson(hyphenBean);
 
-            long idx = masterDAO.setMasterbyHyphen(firmBean.msgType.substring(0,4), firmBean.msgType.substring(4), firmBean.bankCd, hyphenBean.getSendurl(), jsonParams);
+            long idx = masterDAO.setArsbyHyphen(firmBean.msgType.substring(0,4), firmBean.msgType.substring(4), firmBean.bankCd, hyphenBean.getSendurl(), jsonParams);
 
             //230203_PYS : 등록만 하고 정상처리
             if(idx > 0) {
