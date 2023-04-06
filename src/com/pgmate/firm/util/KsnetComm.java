@@ -153,7 +153,7 @@ public class KsnetComm {
 
 			//230406_PYS : 출금계좌등록일땐 결과코드를 PG_VACT_CODE에서 들고온다.
 			//은행별로 분기
-			if(headerBean.getSpecNumber().equals("0900") && headerBean.getClassificationCode().equals("400")) {
+			if(headerBean.getSpecCode().equals("0900") && headerBean.getClassificationCode().equals("400")) {
 				resHeaderBean.setMessage(FirmDAO.getVactResultMsg(resHeaderBean.getNewBankCode(), resHeaderBean.getBankResponseCode()));
 			}else {
 				resHeaderBean.setMessage(FirmDAO.getCodeDesc(resHeaderBean.getNewBankCode(),resHeaderBean.getBankResponseCode()));
