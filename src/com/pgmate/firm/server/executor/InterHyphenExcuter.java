@@ -41,7 +41,7 @@ public class InterHyphenExcuter implements InterExcuter {
     }
 
     /**
-     * ÀÜ¾×Á¶È¸
+     * ï¿½Ü¾ï¿½ï¿½ï¿½È¸
      * @param firmBean
      * @return
      */
@@ -51,7 +51,7 @@ public class InterHyphenExcuter implements InterExcuter {
         FirmTrxDAO firmTrxDAO = new FirmTrxDAO();
         FBHeaderBean headerBean = new FBHeaderBean();
 
-        logger.info("=================== ÀÜ¾×Á¶È¸ ===================");
+        logger.info("=================== ï¿½Ü¾ï¿½ï¿½ï¿½È¸ ===================");
         logger.info("idx 	  : {}",firmBean.idx);
         logger.info("bankCd   : {}",firmBean.bankCd);
         logger.info("mAccnt : {}",firmBean.mAccnt);
@@ -99,15 +99,15 @@ public class InterHyphenExcuter implements InterExcuter {
     }
 
     /**
-     * ¿¹±ÝÁÖÁ¶È¸
-     * ¼º¸íÁ¶È¸ ÀºÇàÄÚµå¸¦ 099 ¸¦ »ç¿ëÇÏ¸é KSNET ±×¿Ü´Â °¢ ÀºÇà
+     * ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½È¸
+     * ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½È¸ ï¿½ï¿½ï¿½ï¿½ï¿½Úµå¸¦ 099 ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½Ï¸ï¿½ KSNET ï¿½×¿Ü´ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
      * data.bankCd, data.account , data.socialNumber, data.socialCheck
      * @param firmBean
      * @return
      */
     @Override
     public FirmBean proc0600400(FirmBean firmBean){
-        logger.info("=================== ¿¹±ÝÁÖÁ¶È¸ ========================");
+        logger.info("=================== ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½È¸ ========================");
         BankBean configBean = firm.bank.get(firmBean.bankCd);
 
         FirmMasterDAO masterDAO = new FirmMasterDAO();
@@ -121,14 +121,14 @@ public class InterHyphenExcuter implements InterExcuter {
         fbBean.setMAccount(configBean.account);
         fbBean.setName(firmBean.data.getString("holder"));
 
-        //PYS : ÀÌ¹Ì Á¶È¸ÇÑ °èÁÂ´Â Å×ÀÌºí¿¡¼­ Á¶È¸
+        //PYS : ï¿½Ì¹ï¿½ ï¿½ï¿½È¸ï¿½ï¿½ ï¿½ï¿½ï¿½Â´ï¿½ ï¿½ï¿½ï¿½Ìºï¿½ï¿½ï¿½ ï¿½ï¿½È¸
         if(firmBean.bankCd.equals("099") && firmBean.data.isNullOrSpace("socialCheck")) {
             String holder = masterDAO.selectAccnt(firmBean.data.getString("bankCd"), firmBean.data.getString("account"));
             logger.info("INTER ACCNT CHECK: {}",holder);
             if(!CommonUtil.isNullOrSpace(holder)) {
                 firmBean.data.put("name", holder);
                 firmBean.resultCd ="0000";
-                firmBean.resultMsg = "Á¤»óÁ¶È¸";
+                firmBean.resultMsg = "ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½È¸";
 
                 return firmBean;
             }
@@ -148,7 +148,7 @@ public class InterHyphenExcuter implements InterExcuter {
     }
 
     /**
-     * Áý°è
+     * ï¿½ï¿½ï¿½ï¿½
      * @param firmBean
      * @return
      */
@@ -184,19 +184,19 @@ public class InterHyphenExcuter implements InterExcuter {
     }
 
     /**
-     * ¼Û±ÝÀÌÃ¼
+     * ï¿½Û±ï¿½ï¿½ï¿½Ã¼
      * @param firmBean
      * @return
      */
     @Override
     public FirmBean proc0100100(FirmBean firmBean){
-        // ÀÌÃ¼°¡´É½Ã°£ ¿Ü µ¥ÀÌÅÍ µî·Ï ¸·±â
+        // ï¿½ï¿½Ã¼ï¿½ï¿½ï¿½É½Ã°ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
         Firm firm = FirmLoader.getConfig();
         long currentTime = CommonUtil.parseLong(CommonUtil.getCurrentDate("HHmmss"));
 
         if(firm.daemon.startTime > currentTime || currentTime > firm.daemon.stopTime){
             firmBean.resultCd ="XXXX";
-            firmBean.resultMsg ="ÀÌÃ¼ °¡´É ½Ã°£ ¾Æ´Ô";
+            firmBean.resultMsg ="ï¿½ï¿½Ã¼ ï¿½ï¿½ï¿½ï¿½ ï¿½Ã°ï¿½ ï¿½Æ´ï¿½";
             return firmBean;
         }
 
@@ -214,7 +214,7 @@ public class InterHyphenExcuter implements InterExcuter {
         long idx = trxDAO.insertTrx(firmBean.bankCd, firmBean.data.getLong("amount"), firmBean.data.getString("recvBankCd"), firmBean.data.getString("recvAccount"), firmBean.data.getString("sender"), firmBean.data.getString("recordInfo"), firmBean.data.getString("procType"));
         if(idx == 0){
             firmBean.resultCd ="XXXX";
-            firmBean.resultMsg ="ÀÌÃ¼µ¥ÀÌÅÍ µî·Ï½ÇÆÐ";
+            firmBean.resultMsg ="ï¿½ï¿½Ã¼ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½Ï½ï¿½ï¿½ï¿½";
         }else{
             firmBean = processCheck(idx,firmBean,trxDAO);
         }
@@ -222,7 +222,7 @@ public class InterHyphenExcuter implements InterExcuter {
     }
 
     /**
-     * Ã³¸®°á°úÁ¶È¸
+     * Ã³ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½È¸
      * @param firmBean
      * @return
      */
@@ -232,7 +232,7 @@ public class InterHyphenExcuter implements InterExcuter {
         FBHeaderBean headerBean = new FBHeaderBean();
         String resMsg = "";
 
-        logger.info("=================== Æß Ã³¸®°á°ú Á¶È¸ ===================");
+        logger.info("=================== ï¿½ï¿½ Ã³ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½È¸ ===================");
         logger.info("idx 	  : {}",firmBean.idx);
         logger.info("bankCd   : {}",firmBean.bankCd);
         logger.info("orgSeqNo : {}",firmBean.data.getString("orgSeqNo"));
@@ -254,9 +254,9 @@ public class InterHyphenExcuter implements InterExcuter {
         fb0600101Bean.setRootSpecNumber(firmBean.data.getString("orgSeqNo")) ;
         headerBean.setTransactionIndex(fb0600101Bean.getTransaction());
 
-        logger.info("½Äº°ÄÚµå 	: {}",configBean.trCd);
-        logger.info("¾÷Ã¼ÄÚµå : {}",configBean.compCd);
-        logger.info("Àü¹®ÀÏ·Ã¹øÈ£ : {}",firmBean.data.getString("orgSeqNo"));
+        logger.info("ï¿½Äºï¿½ï¿½Úµï¿½ 	: {}",configBean.trCd);
+        logger.info("ï¿½ï¿½Ã¼ï¿½Úµï¿½ : {}",configBean.compCd);
+        logger.info("ï¿½ï¿½ï¿½ï¿½ï¿½Ï·Ã¹ï¿½È£ : {}",firmBean.data.getString("orgSeqNo"));
 
         KsnetComm comm	= new KsnetComm(firm.server);
         FBHeaderBean resHeader = comm.ksnet(headerBean);
@@ -286,7 +286,7 @@ public class InterHyphenExcuter implements InterExcuter {
     }
 
     /**
-     * °¡»ó°èÁÂ Ãâ±ÝÁ¤º¸ µî·Ï
+     * ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½
      * @param firmBean
      * @return
      */
@@ -296,43 +296,43 @@ public class InterHyphenExcuter implements InterExcuter {
         FBHeaderBean headerBean = new FBHeaderBean();
         String resMsg = "";
 
-        logger.info("=================== °¡»ó°èÁÂ Ãâ±ÝÁ¤º¸ µî·Ï ===================");
+        logger.info("=================== ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ ===================");
         logger.info("idx 	  	: {}",firmBean.idx);
-        logger.info("ÀºÇàÄÚµå    	: {}",firmBean.bankCd);
-        logger.info("¾÷Ã¼ÄÚµå    	: {}",firmBean.data.getString("companyCd"));
-        logger.info("°Å·¡±¸ºÐ 	  	: {}",firmBean.data.getString("trxType"));
-        logger.info("°¡»ó°èÁÂ¹øÈ£ 	: {}",firmBean.data.getString("virtualAccount"));
-        logger.info("Ãâ±ÝÀºÇàÄÚµå 	: {}",firmBean.data.getString("withdrawBankCd"));
-        logger.info("Ãâ±Ý°èÁÂ¹øÈ£ 	: {}",firmBean.data.getString("withdrawAccount"));
+        logger.info("ï¿½ï¿½ï¿½ï¿½ï¿½Úµï¿½    	: {}",firmBean.bankCd);
+        logger.info("ï¿½ï¿½Ã¼ï¿½Úµï¿½    	: {}",firmBean.data.getString("companyCd"));
+        logger.info("ï¿½Å·ï¿½ï¿½ï¿½ï¿½ï¿½ 	  	: {}",firmBean.data.getString("trxType"));
+        logger.info("ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Â¹ï¿½È£ 	: {}",firmBean.data.getString("virtualAccount"));
+        logger.info("ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Úµï¿½ 	: {}",firmBean.data.getString("withdrawBankCd"));
+        logger.info("ï¿½ï¿½Ý°ï¿½ï¿½Â¹ï¿½È£ 	: {}",firmBean.data.getString("withdrawAccount"));
 
-        //°¡»ó°èÁÂ°¡ ½ÅÇÑÀºÇàÀÏ¶§¸¸ ¼¼ÆÃ
+        //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Â°ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ï¶ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
         if("088".equals(firmBean.bankCd)) {
-            logger.info("°í°´¸í 	  	: {}",firmBean.data.getString("customerName"));
-            logger.info("Æß¹ðÅ· ¾÷Ã¼ÄÚµå	: {}",firmBean.data.getString("firmCompanyCd"));
-            logger.info("ÈÞ´ëÆù¹øÈ£ 	: {}",firmBean.data.getString("phoneNo"));
-            logger.info("½Ç¸í¹øÈ£ 		: {}",firmBean.data.getString("identity"));
+            logger.info("ï¿½ï¿½ï¿½ï¿½ 	  	: {}",firmBean.data.getString("customerName"));
+            logger.info("ï¿½ß¹ï¿½Å· ï¿½ï¿½Ã¼ï¿½Úµï¿½	: {}",firmBean.data.getString("firmCompanyCd"));
+            logger.info("ï¿½Þ´ï¿½ï¿½ï¿½ï¿½ï¿½È£ 	: {}",firmBean.data.getString("phoneNo"));
+            logger.info("ï¿½Ç¸ï¿½ï¿½È£ 		: {}",firmBean.data.getString("identity"));
         }
 
-        //°¡»ó°èÁÂ°¡ ³óÇùÀºÇàÀÏ¶§¸¸ ¼¼ÆÃ
+        //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Â°ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ï¶ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
         if("011".equals(firmBean.bankCd) ||  "012".equals(firmBean.bankCd)) {
-            logger.info("°í°´¸í 	  	: {}",firmBean.data.getString("customerName"));
-            logger.info("µî·ÏÀ¯Çü 		: {}",firmBean.data.getString("regType"));
-            logger.info("½Ç¸í¹øÈ£ 		: {}",firmBean.data.getString("identity"));
+            logger.info("ï¿½ï¿½ï¿½ï¿½ 	  	: {}",firmBean.data.getString("customerName"));
+            logger.info("ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ 		: {}",firmBean.data.getString("regType"));
+            logger.info("ï¿½Ç¸ï¿½ï¿½È£ 		: {}",firmBean.data.getString("identity"));
         }
 
-        //°¡»ó°èÁÂ°¡ ÇÏ³ªÀºÇàÀÏ¶§¸¸ ¼¼ÆÃ
+        //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Â°ï¿½ ï¿½Ï³ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ï¶ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
         if("081".equals(firmBean.bankCd)) {
-            logger.info("°í°´¸í 	  	: {}",firmBean.data.getString("customerName"));
+            logger.info("ï¿½ï¿½ï¿½ï¿½ 	  	: {}",firmBean.data.getString("customerName"));
         }
 
-        //°¡»ó°èÁÂ°¡ ±¹¹ÎÀºÇàÀÏ¶§¸¸ ¼¼ÆÃ
+        //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Â°ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ï¶ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
         if("004".equals(firmBean.bankCd)) {
-            logger.info("°í°´¸í 	  	: {}",firmBean.data.getString("customerName"));
+            logger.info("ï¿½ï¿½ï¿½ï¿½ 	  	: {}",firmBean.data.getString("customerName"));
         }
 
-        //°¡»ó°èÁÂ°¡ ÄÉÀÌ¹ðÅ©ÀÏ¶§ ¼¼ÆÃ
+        //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Â°ï¿½ ï¿½ï¿½ï¿½Ì¹ï¿½Å©ï¿½Ï¶ï¿½ ï¿½ï¿½ï¿½ï¿½
         if("089".equals(firmBean.bankCd)) {
-            logger.info("°í°´¸í 	  	: {}",firmBean.data.getString("customerName"));
+            logger.info("ï¿½ï¿½ï¿½ï¿½ 	  	: {}",firmBean.data.getString("customerName"));
         }
 
         logger.info("=========================================================");
@@ -357,7 +357,7 @@ public class InterHyphenExcuter implements InterExcuter {
         fb0900400Bean.setWithdrawAccount(firmBean.data.getString("withdrawAccount"));
 
 
-        //°¡»ó°èÁÂ°¡ ½ÅÇÑÀºÇàÀÏ¶§¸¸ ¼¼ÆÃ
+        //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Â°ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ï¶ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
         if("088".equals(firmBean.bankCd)) {
             fb0900400Bean.setCustomerName(firmBean.data.getString("customerName"));
             fb0900400Bean.setFirmCompanyCd(firmBean.data.getString("firmCompanyCd"));
@@ -365,13 +365,13 @@ public class InterHyphenExcuter implements InterExcuter {
             fb0900400Bean.setIdentity(firmBean.data.getString("identity"));
         }
 
-        //°¡»ó°èÁÂ°¡ ½ÅÇÑ,³óÇù,ÇÏ³ª ÀºÇàÀÏ¶§¸¸ ¼¼ÆÃ
+        //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Â°ï¿½ ï¿½ï¿½ï¿½ï¿½,ï¿½ï¿½ï¿½ï¿½,ï¿½Ï³ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ï¶ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
         if("088".equals(firmBean.bankCd) || "011".equals(firmBean.bankCd) ||
                 "012".equals(firmBean.bankCd) || "081".equals(firmBean.bankCd)) {
             fb0900400Bean.setIdentity(firmBean.data.getString("identity"));
         }
 
-        //°¡»ó°èÁÂ°¡ ³óÇùÀºÇàÀÏ¶§¸¸ ¼¼ÆÃ
+        //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Â°ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ï¶ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
         if("011".equals(firmBean.bankCd) || "012".equals(firmBean.bankCd)) {
             fb0900400Bean.setRegType(firmBean.data.getString("regType"));
         }
@@ -389,13 +389,23 @@ public class InterHyphenExcuter implements InterExcuter {
 
         resMsg = FirmDAO.getCodeDesc(headerBean.getNewBankCode(), resCode);
 
-        logger.info("°¡»ó°èÁÂ Ãâ±ÝÁ¤º¸ µî·Ï : [{}][{}]",resCode,resMsg);
+        logger.info("ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ : [{}][{}]",resCode,resMsg);
         logger.info("===================================================");
 
         firmBean.resultCd = resCode;
         firmBean.resultMsg = resMsg;
 
         return firmBean;
+    }
+
+    @Override
+    public FirmBean procArsAuth(FirmBean firmBean) {
+        return null;
+    }
+
+    @Override
+    public FirmBean proc0600102(FirmBean firmBean) {
+        return null;
     }
 
 

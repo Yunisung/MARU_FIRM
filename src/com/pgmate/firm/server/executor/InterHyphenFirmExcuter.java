@@ -30,6 +30,10 @@ public class InterHyphenFirmExcuter implements InterExcuter {
         this.hyphenComm = hyphenComm;
     }
 
+    public InterHyphenFirmExcuter(Firm firm) {
+        this.firm = firm;
+    }
+
     @Override
     public FirmBean proc0800(FirmBean firmBean){
         throw new UnsupportedOperationException();
@@ -101,7 +105,7 @@ public class InterHyphenFirmExcuter implements InterExcuter {
             FirmMasterDAO masterDAO = new FirmMasterDAO();
             BankBean configBean = firm.bank.get(firmBean.bankCd);
 
-            HolderBean holderBean = new HolderBean();
+            /*HolderBean holderBean = new HolderBean();
             holderBean.setCompCode(configBean.compCd);
             //PYS : 이름조회는 099 고정
             holderBean.setBankCode("099");
@@ -117,7 +121,22 @@ public class InterHyphenFirmExcuter implements InterExcuter {
             hyphenBean.setEkey(configBean.ekey);
             hyphenBean.setMsalt(configBean.msalt);
             hyphenBean.setReqdata(holderBean);
-            hyphenBean.setSendurl("rfb/retail/account/accountname");
+            hyphenBean.setSendurl("rfb/retail/account/accountname");*/
+
+
+            //230104_PYS : PCS 로직 추가, 기존로직 주석
+            FcsBean fcsBean = new FcsBean();
+            fcsBean.setFcs_cd(configBean.fcs_cd);
+            fcsBean.setBank_cd(firmBean.data.getString("bankCd"));
+            fcsBean.setAcct_no(firmBean.data.getString("account"));
+            fcsBean.setId_no(firmBean.data.getString("socialNumber"));
+
+            HyphenBean hyphenBean = new HyphenBean();
+            hyphenBean.setAuth_key(configBean.auth_key);
+            hyphenBean.setReqdata(fcsBean);
+            hyphenBean.setSendurl("ksnet/auth/account");
+
+
 
             String holderCode = firmBean.data.getString("bankCd");
             String holderAccount = firmBean.data.getString("account");
@@ -128,10 +147,32 @@ public class InterHyphenFirmExcuter implements InterExcuter {
             firmBean = processCheck(idx,firmBean,masterDAO);
             if(firmBean.resultCd.equals("0000")){
                 String resJson = firmBean.data.getString("resData");
-                holderBean = (HolderBean) GsonUtil.fromJson(resJson, HolderBean.class);
-                String name = holderBean.getAccountName();
-                firmBean.data.put("accountName", CommonUtil.parseLong(name.trim()));
+
+                /*holderBean = (HolderBean) GsonUtil.fromJson(resJson, HolderBean.class);
+                String name = holderBean.getAccountName();*/
+                
+                fcsBean = (FcsBean) GsonUtil.fromJson(resJson, FcsBean.class);
+                String name = fcsBean.getName();
+                firmBean.data.put("accountName", name.trim());
+
+                //조회 성공하면 PG_FIRM_ACCNT에 INSERT
                 masterDAO.insertAccnt(holderCode, holderAccount, name.trim());
+            } else {
+                //230105_PYS : 하이픈에서 에러값 이상할때 DB에서 resultMsg 세팅
+                if(CommonUtil.isNullOrSpace(firmBean.resultCd)) {
+                    //resultCd가 없을때
+                    firmBean.resultCd = "XXXX";
+                    firmBean.resultMsg = "성명조회 오류. 결과코드 없음";
+                } else {
+                    //resultCd가 있을때
+                    if(CommonUtil.isNullOrSpace(firmBean.resultMsg)) {
+                        //resultMsg가 없을때
+                        firmBean.resultMsg = masterDAO.getFcsErrorMsg(firmBean.resultCd);
+                    } else {
+                        //resultMsg가 있을때
+                        logger.info("FCS ERROR [{}][{}]", firmBean.resultCd, firmBean.resultMsg);
+                    }
+                }
             }
         }catch (Exception e) {
 
@@ -316,7 +357,7 @@ public class InterHyphenFirmExcuter implements InterExcuter {
         hyphenBean.setSendurl("rfb/retail/inquiry/transfer");
         hyphenBean.setReqdata(transferBean);
 
-        HyphenComm hyphenComm = new HyphenComm(firm.server);
+        HyphenComm hyphenComm = new HyphenComm();
         String resData = hyphenComm.connect(hyphenBean);
 
         JSONObject apiRes = new JSONObject();
@@ -372,7 +413,6 @@ public class InterHyphenFirmExcuter implements InterExcuter {
         throw new UnsupportedOperationException();
     }
 
-
     public FirmBean processCheck(long idx,FirmBean firmBean,FirmMasterDAO masterDAO){
         int limit = 40;
         int count = 1;
@@ -391,6 +431,85 @@ public class InterHyphenFirmExcuter implements InterExcuter {
         return firmBean;
     }
 
+    @Override
+    public FirmBean procArsAuth(FirmBean firmBean) {
+        try {
+            FirmMasterDAO masterDAO = new FirmMasterDAO();
+            BankBean configBean = firm.bank.get(firmBean.bankCd);
 
-    
+            ArsBean arsBean = new ArsBean();
+            arsBean.setCompcode(configBean.compCd);
+            arsBean.setPhoneno(firmBean.data.getString("phoneNo"));
+            arsBean.setService("0001");
+            arsBean.setSvc_type("03");
+            arsBean.setUsedrecord("Y");
+            arsBean.setAuthno(firmBean.data.getString("authNo"));
+            arsBean.setFiller1("출금계좌 등록 가상계좌 서비스가 일반거래 외에 보이스 피싱, 코인거래등 불법을 목적으로 사용 될 경우 모든 법적책임이 본인에게 있다는점을 인지 하여 등록바랍니다. 계속 진행");
+
+            HyphenBean hyphenBean = new HyphenBean();
+            hyphenBean.setAuth_key(configBean.auth_key);
+            hyphenBean.setReqdata(arsBean);
+            hyphenBean.setSendurl("ksnet/auth/ars");
+
+            String jsonParams = new Gson().toJson(hyphenBean);
+
+            long idx = masterDAO.setArsbyHyphen(firmBean.msgType.substring(0,4), firmBean.msgType.substring(4), firmBean.bankCd, hyphenBean.getSendurl(), jsonParams);
+
+            //230203_PYS : 등록만 하고 정상처리
+            if(idx > 0) {
+                firmBean.resultCd = "0000";
+                firmBean.resultMsg = "ARS 요청이 성공하였습니다.";
+                firmBean.data.put("firmIdx", String.valueOf(idx));
+            } else {
+                firmBean.resultCd = "XXXX";
+                firmBean.resultMsg = "ARS 요청실패.";
+            }
+
+            /*firmBean = processCheck(idx,firmBean,masterDAO);
+            if(firmBean.resultCd.equals("0000")){
+                String resJson = firmBean.data.getString("resData");
+
+                arsBean = (ArsBean) GsonUtil.fromJson(resJson, ArsBean.class);
+                String trace_no = arsBean.getTrace_no();
+                String record = arsBean.getRecord();
+                firmBean.data.put("traceNo", trace_no);
+                firmBean.data.put("record", record);
+
+                logger.info("ARS인증: [{}]", arsBean.toString());
+            } else {
+                if(CommonUtil.isNullOrSpace(firmBean.resultCd)) {
+                    //resultCd가 없을때
+                    firmBean.resultCd = "XXXX";
+                    firmBean.resultMsg = "ARS인증 오류. 결과코드 없음";
+                } else {
+                    //resultCd가 있을때
+                    if(CommonUtil.isNullOrSpace(firmBean.resultMsg)) {
+                        //resultMsg가 없을때
+                        firmBean.resultMsg = masterDAO.getArsErrorMsg(firmBean.resultCd);
+                    } else {
+                        //resultMsg가 있을때
+                        logger.info("ARS ERROR [{}][{}]", firmBean.resultCd, firmBean.resultMsg);
+                    }
+                }
+            }*/
+        }catch (Exception e) {
+
+            firmBean.resultCd ="XXXX";
+            firmBean.resultMsg ="ARS 오류";
+
+            e.printStackTrace();
+            logger.error("ARS인증 Error : [{}]", e.getMessage());
+        }
+
+        logger.info("===================================================");
+
+        return firmBean;
+    }
+
+    @Override
+    public FirmBean proc0600102(FirmBean firmBean) {
+        return null;
+    }
+
+
 }

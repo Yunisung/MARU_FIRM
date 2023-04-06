@@ -1,5 +1,6 @@
 package com.pgmate.firm.server.executor;
 
+import com.pgmate.firm.conf.Firm;
 import com.pgmate.firm.inter.FirmBean;
 
 public interface InterExcuter {
@@ -49,4 +50,17 @@ public interface InterExcuter {
      */
     FirmBean proc0900400(FirmBean firmBean);
 
+    /**
+     * ARS인증
+     * @param firmBean
+     * @return
+     */
+    FirmBean procArsAuth(FirmBean firmBean);
+
+    /**
+     * 이체 재시도
+     * @param firmBean
+     * @return
+     */
+    FirmBean proc0600102(FirmBean firmBean);
 }

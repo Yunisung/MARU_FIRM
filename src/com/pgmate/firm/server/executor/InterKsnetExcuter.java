@@ -287,6 +287,35 @@ public class InterKsnetExcuter implements InterExcuter {
     }
 
     /**
+     * 이체 재시도
+     * @param firmBean
+     * @return
+     */
+    @Override
+    public FirmBean proc0600102(FirmBean firmBean){
+        long currentTime = CommonUtil.parseLong(CommonUtil.getCurrentDate("HHmmss"));
+
+        if(firm.daemon.startTime > currentTime || currentTime > firm.daemon.stopTime){
+            firmBean.resultCd ="XXXX";
+            firmBean.resultMsg ="이체 가능 시간 아님";
+            return firmBean;
+        }
+        logger.error("이체 재시도 : [{}]", firmBean.data.getString("trxId"));
+
+        FirmTrxDAO trxDAO = new FirmTrxDAO();
+        SharedMap<String, Object> trxMap = trxDAO.getTrxData(firmBean.data.getString("trxId"));
+        long idx = trxDAO.insertReTrx(trxMap);
+
+        if(idx == 0){
+            firmBean.resultCd ="XXXX";
+            firmBean.resultMsg ="이체데이터 등록실패";
+        }else{
+            firmBean = processCheck(idx,firmBean,trxDAO);
+        }
+        return firmBean;
+    }
+
+    /**
      * 가상계좌 출금정보 등록
      * @param firmBean
      * @return
@@ -316,7 +345,8 @@ public class InterKsnetExcuter implements InterExcuter {
         }
 
         //가상계좌가 농협은행일때만 세팅
-        if("011".equals(firmBean.bankCd) ||  "012".equals(firmBean.bankCd)) {
+        //230405_PYS : 경남은행 추가
+        if("011".equals(firmBean.bankCd) ||  "012".equals(firmBean.bankCd) || "039".equals(firmBean.bankCd)) {
             logger.info("고객명 	  	: {}",firmBean.data.getString("customerName"));
             logger.info("등록유형 		: {}",firmBean.data.getString("regType"));
             logger.info("실명번호 		: {}",firmBean.data.getString("identity"));
@@ -368,13 +398,17 @@ public class InterKsnetExcuter implements InterExcuter {
         }
 
         //가상계좌가 신한,농협,하나 은행일때만 세팅
+        //230405_PYS : 경남은행 추가
         if("088".equals(firmBean.bankCd) || "011".equals(firmBean.bankCd) ||
-                "012".equals(firmBean.bankCd) || "081".equals(firmBean.bankCd)) {
+                "012".equals(firmBean.bankCd) || "081".equals(firmBean.bankCd) ||
+                "039".equals(firmBean.bankCd)) {
             fb0900400Bean.setIdentity(firmBean.data.getString("identity"));
         }
 
         //가상계좌가 농협은행일때만 세팅
-        if("011".equals(firmBean.bankCd) || "012".equals(firmBean.bankCd)) {
+        //230405_PYS : 경남은행 추가
+        if("011".equals(firmBean.bankCd) || "012".equals(firmBean.bankCd) ||
+                "039".equals(firmBean.bankCd)) {
             fb0900400Bean.setRegType(firmBean.data.getString("regType"));
         }
         //가상계좌가 케이뱅크일때 세팅
