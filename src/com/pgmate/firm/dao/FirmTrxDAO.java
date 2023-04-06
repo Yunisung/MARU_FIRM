@@ -125,7 +125,7 @@ public class FirmTrxDAO {
 
 				if(configBean != null) {
 					headerBean.setIdentificationCode(configBean.trCd);
-					headerBean.setCompanyCode(configBean.compCd);
+					headerBean.setCompanyCode(configBean.firmBankCode);
 					headerBean.setSpecCode("0100");
 					headerBean.setClassificationCode("100");
 					headerBean.setFrequency("1");
@@ -148,7 +148,7 @@ public class FirmTrxDAO {
 					fb0100100Bean.setReceiveAccount(CommonUtil.nToB(rset.getString("recvAccount")));
 					fb0100100Bean.setSign(CommonUtil.nToB(rset.getString("checkDigit")));
 					fb0100100Bean.setSenderName(CommonUtil.nToB(FirmUtil.changeCharset(rset.getString("recvHolder"),"MS949")));
-					fb0100100Bean.setReceiverName(CommonUtil.nToB(rset.getString("recordInfo")));
+					fb0100100Bean.setReceiverName(CommonUtil.nToB(FirmUtil.changeCharset(rset.getString("recordInfo"), "MS949")));
 
 					headerBean.setProcType(CommonUtil.nToB(rset.getString("procType")));
 					headerBean.setProcId(CommonUtil.nToB(rset.getString("procId")));
@@ -629,7 +629,6 @@ public class FirmTrxDAO {
 		return result;
 	}
 
-
 	public FirmBean checkResult(long idx,FirmBean firmBean){
 		String query = " SELECT resultCd,resultMsg,recvHolder,balance,fee,transferTime FROM PG_FIRM_TRX WHERE idx =?  AND procGb in ('N','Y') ";
 
@@ -762,5 +761,86 @@ public class FirmTrxDAO {
 			db.close(conn,pstmt,rset);
 		}
 		return recordInfo;
+	}
+
+	public SharedMap<String, Object> getTrxData(String trxId){
+		String query = "SELECT bankCd, sendDate, sendTime, seqNo, amount, recvBank, recvAccount, recvHolder, procType, filler FROM PG_FIRM_TRX where filler = ?";
+
+		DBManager db 	= null;
+		PreparedStatement pstmt	= null;
+		Connection conn			= null;
+		ResultSet rset			= null;
+		SharedMap<String, Object> result = new SharedMap<>();
+
+		try{
+			db 		= DBFactory.getInstance();
+			conn	= db.getConnection();
+			pstmt	= conn.prepareStatement(query);
+			pstmt.setString(1,trxId);
+			rset 	= pstmt.executeQuery();
+
+			while(rset.next()){
+				result.put("bankCd", rset.getString("bankCd"));
+				result.put("sendDate", rset.getString("sendDate"));
+				result.put("sendTime", rset.getString("sendTime"));
+				result.put("seqNo", rset.getString("seqNo"));
+				result.put("amount", rset.getLong("amount"));
+				result.put("recvBank", rset.getString("recvBank"));
+				result.put("recvAccount", rset.getString("recvAccount"));
+				result.put("recoredInfo", rset.getString("recordInfo"));
+				result.put("recvHolder", rset.getString("recvHolder"));
+				result.put("procType", rset.getString("procType"));
+				result.put("filler", rset.getString("filler"));
+			}
+		}catch(Exception e){
+			System.out.println(e.getMessage());
+		}finally{
+			db.close(conn,pstmt,rset);
+		}
+
+		return result;
+	}
+
+	public long insertReTrx(SharedMap<String,Object> trxMap){
+		String query = "INSERT INTO PG_FIRM_TRX  (bankCd,sendDate,sendTime,seqNo,amount,recvBank,recvAccount,recordInfo,recvHolder,procType,filler ) values (?,?,?,?,?,?,?,?,?,?,?)";
+
+		DBManager db 			= null;
+		PreparedStatement pstmt	= null;
+		Connection conn			= null;
+		ResultSet rset 			= null;
+		long result				= 0;
+		String sendMemo			= "";
+
+		try{
+			db 		= DBFactory.getInstance();
+			conn	= db.getConnection();
+			pstmt	= conn.prepareStatement(query);
+
+			pstmt.setString(1,trxMap.getString("bankCd"));
+			pstmt.setString(2,trxMap.getString("sendDate"));
+			pstmt.setString(3,trxMap.getString("sendTime"));
+			pstmt.setString(4,trxMap.getString("seqNo"));
+			pstmt.setLong(5,trxMap.getLong("amount"));
+			pstmt.setString(6,trxMap.getString("recvBank"));
+			pstmt.setString(7,trxMap.getString("recvAccount"));
+			pstmt.setString(8,trxMap.getString("recordInfo"));
+			pstmt.setString(9,trxMap.getString("recvHolder"));
+			pstmt.setString(10,trxMap.getString("procType"));
+			pstmt.setString(11,trxMap.getString("filler"));
+
+			result = pstmt.executeUpdate();
+			rset		= pstmt.executeQuery("SELECT LAST_INSERT_ID() ");
+			while(rset.next()){
+				result = rset.getLong(1);
+			}
+			conn.commit();
+		}catch(Exception e){
+			e.printStackTrace();
+			logger.error("insertTrx Error : {} , {} , [{}]",Thread.currentThread().getStackTrace()[1].getMethodName(),e.getMessage(),query);
+		}finally{
+			db.close(pstmt);
+			db.close(conn);
+		}
+		return result;
 	}
 }
