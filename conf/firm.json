@@ -18,15 +18,17 @@
     "089": {
       "trCd": "KSBPAY",
       "compCd": "BKWIN001",
+      "firmBankCode": "BKWIN001",
       "bankCd": "089",
       "account": "70022000000008"
     },
     "039": {
       "trCd": "",
-      "compCd": "BGWINNER",
+      "compCd": "MBR00246",
+      "firmBankCode": "SDS00328",
       "bankCd": "039",
 //      "account": "8003344299939",
-      "account": "8003344291839",
+      "account": "2070008840700",
       "ekey": "E3F93E5201969E953066C7911F6AC8BB",
       "kscode": "6596",
       "msalt": "MA01"
@@ -35,7 +37,7 @@
   "server": {
     "serverIp": "10.100.200.10",
     "serverPort": 10006,
-    "ksnetIp": "10.100.100.13",
+    "ksnetIp": "10.100.200.10",
     "ksnetPort": 27701,
 //    "ksnetIp": "210.181.28.134",
 //    "ksnetPort": 19238,

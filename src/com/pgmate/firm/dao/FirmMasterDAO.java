@@ -487,7 +487,13 @@ public class FirmMasterDAO {
 
 				if(configBean != null) {
 					headerBean.setIdentificationCode(configBean.trCd);
-					headerBean.setCompanyCode(configBean.compCd);
+					//230405_PYS : 경남은행 펌뱅킹 업체코드가 틀려서 예외처리. 출금계좌 등록일때만 compCd사용
+					if(rset.getString("msgCd").equals("900") && rset.getString("jobGb").equals("400")) {
+						headerBean.setCompanyCode(configBean.compCd);
+					}else {
+						headerBean.setCompanyCode(configBean.firmBankCode);
+					}
+
 
 					headerBean.setSpecCode(rset.getString("msgCd"));
 					headerBean.setClassificationCode(rset.getString("jobGb"));

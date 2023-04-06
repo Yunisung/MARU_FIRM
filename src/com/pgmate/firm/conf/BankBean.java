@@ -19,6 +19,9 @@ public class BankBean {
 	//230104_PYS : 계좌인증때문에 추가
 	public String auth_key	= "";
 	public String fcs_cd = "";
+
+	//230405_PYS : 경남은행추가
+	public String firmBankCode = "";
 	
 	public BankBean() {
 		// TODO Auto-generated constructor stub

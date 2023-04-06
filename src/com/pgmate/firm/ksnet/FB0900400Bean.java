@@ -38,7 +38,7 @@ public class FB0900400Bean extends CommBean {
 		depositEndDate		= CommonUtil.toString(transaction,97,8).trim();		//입금종료일자
 		firmCompanyCd 		= CommonUtil.toString(transaction,105,8).trim();	//펌뱅킹업체코드 (신한은행만 사용)
 		regType 			= CommonUtil.toString(transaction,113,1).trim();	//등록유형 (농협만 사용)(1:개인, 2:법인, 3:미성년자, 4:외국인)
-		identity	 		= CommonUtil.toString(transaction,114,10).trim();	//실명번호 (농협,신한)(개인 : 샌영월일 6자리+성별1자리, 법인:사업자번호)
+		identity	 		= CommonUtil.toString(transaction,114,10).trim();	//실명번호 (농협,신한)(개인 : 생년월일 6자리+성별1자리, 법인:사업자번호)
 		phoneNo 			= CommonUtil.toString(transaction,124,12).trim();	//휴대폰번호
 		extra				= CommonUtil.toString(transaction,136,64).trim();	//예비
 	}

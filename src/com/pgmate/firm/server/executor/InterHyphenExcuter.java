@@ -403,6 +403,11 @@ public class InterHyphenExcuter implements InterExcuter {
         return null;
     }
 
+    @Override
+    public FirmBean proc0600102(FirmBean firmBean) {
+        return null;
+    }
+
 
     public FirmBean processCheck(long idx,FirmBean firmBean,FirmMasterDAO masterDAO){
         int limit = 40;

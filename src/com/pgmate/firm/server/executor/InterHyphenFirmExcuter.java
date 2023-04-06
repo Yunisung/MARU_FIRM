@@ -506,7 +506,10 @@ public class InterHyphenFirmExcuter implements InterExcuter {
         return firmBean;
     }
 
+    @Override
+    public FirmBean proc0600102(FirmBean firmBean) {
+        return null;
+    }
 
 
-    
 }
