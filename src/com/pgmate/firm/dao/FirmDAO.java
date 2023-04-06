@@ -110,11 +110,11 @@ public class FirmDAO{
 		return result;
 	}
 
-	public static String getVactResultMsg(String code){
+	public static String getVactResultMsg(String bankCd, String code){
 		if(code.equals("XXXX")){
 			return "통신장애";
 		}
-		String query = " SELECT message FROM PG_VACT_CODE WHERE `code` = ?";
+		String query = " SELECT message FROM PG_VACT_CODE WHERE `bankCd` = ? AND `code` = ?";
 
 		DBManager db 			= null;
 		PreparedStatement pstmt	= null;
@@ -126,7 +126,8 @@ public class FirmDAO{
 			db 		= DBFactory.getInstance();
 			conn	= db.getConnection();
 			pstmt	= conn.prepareStatement(query);
-			pstmt.setString(1,code);
+			pstmt.setString(1, bankCd);
+			pstmt.setString(2, code);
 			rset 	= pstmt.executeQuery();
 
 			while(rset.next()){
