@@ -150,8 +150,15 @@ public class KsnetComm {
 			logger.info("<- KSNET [{}],{},{}",CommonUtil.toString(response),response.length,(System.currentTimeMillis()-time));
 			
 			//여유 필드에 응답코드에 해당하는 메세지를 기입한다.
-//			resHeaderBean.setMessage(FirmDAO.getCodeDesc(resHeaderBean.getNewBankCode(),resHeaderBean.getBankResponseCode()));
-			resHeaderBean.setMessage(FirmDAO.getResultMsg(resHeaderBean.getBankResponseCode()));
+			//resHeaderBean.setMessage(FirmDAO.getCodeDesc(resHeaderBean.getNewBankCode(),resHeaderBean.getBankResponseCode()));
+
+			//230406_PYS : 출금계좌등록일땐 결과코드를 PG_VACT_CODE에서 들고온다.
+			//은행별로 분기
+			if(headerBean.getSpecNumber().equals("0900") && headerBean.getClassificationCode().equals("400")) {
+				resHeaderBean.setMessage(FirmDAO.getVactResultMsg(resHeaderBean.getNewBankCode(), resHeaderBean.getBankResponseCode()));
+			}else {
+				resHeaderBean.setMessage(FirmDAO.getCodeDesc(resHeaderBean.getNewBankCode(),resHeaderBean.getBankResponseCode()));
+			}
 		}
 		
 		return resHeaderBean;

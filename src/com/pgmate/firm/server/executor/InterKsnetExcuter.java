@@ -10,6 +10,7 @@ import com.pgmate.firm.inter.FirmBean;
 import com.pgmate.firm.ksnet.*;
 import com.pgmate.firm.util.KsnetComm;
 import com.pgmate.lib.util.lang.CommonUtil;
+import com.pgmate.lib.util.map.SharedMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -31,13 +32,13 @@ public class InterKsnetExcuter implements InterExcuter {
     }
 
     /**
-     * ÀÜ¾×Á¶È¸
+     * ï¿½Ü¾ï¿½ï¿½ï¿½È¸
      * @param firmBean
      * @return
      */
     @Override
     public FirmBean proc0600300(FirmBean firmBean){
-        logger.info("=================== ÀÜ¾×Á¶È¸ ===================");
+        logger.info("=================== ï¿½Ü¾ï¿½ï¿½ï¿½È¸ ===================");
 
         try {
             FirmMasterDAO masterDAO = new FirmMasterDAO();
@@ -55,10 +56,10 @@ public class InterKsnetExcuter implements InterExcuter {
             }
         }catch (Exception e) {
             firmBean.resultCd ="XXXX";
-            firmBean.resultMsg ="ÀÜ¾×Á¶È¸ ¿À·ù";
+            firmBean.resultMsg ="ï¿½Ü¾ï¿½ï¿½ï¿½È¸ ï¿½ï¿½ï¿½ï¿½";
 
             e.printStackTrace();
-            logger.error("ÀÜ¾×Á¶È¸ Error : [{}]", e.getMessage());
+            logger.error("ï¿½Ü¾ï¿½ï¿½ï¿½È¸ Error : [{}]", e.getMessage());
         }
 
         logger.info("===================================================");
@@ -67,15 +68,15 @@ public class InterKsnetExcuter implements InterExcuter {
     }
 
     /**
-     * ¿¹±ÝÁÖÁ¶È¸
-     * ¼º¸íÁ¶È¸ ÀºÇàÄÚµå¸¦ 099 ¸¦ »ç¿ëÇÏ¸é KSNET ±×¿Ü´Â °¢ ÀºÇà
+     * ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½È¸
+     * ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½È¸ ï¿½ï¿½ï¿½ï¿½ï¿½Úµå¸¦ 099 ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½Ï¸ï¿½ KSNET ï¿½×¿Ü´ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
      * data.bankCd, data.account , data.socialNumber, data.socialCheck
      * @param firmBean
      * @return
      */
     @Override
     public FirmBean proc0600400(FirmBean firmBean){
-        logger.info("=================== ¿¹±ÝÁÖÁ¶È¸ ========================");
+        logger.info("=================== ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½È¸ ========================");
         BankBean configBean = firm.bank.get(firmBean.bankCd);
 
         FirmMasterDAO masterDAO = new FirmMasterDAO();
@@ -89,15 +90,15 @@ public class InterKsnetExcuter implements InterExcuter {
         fbBean.setMAccount(configBean.account);
         fbBean.setName(firmBean.data.getString("holder"));
 
-        //PYS : ÀÌ¹Ì Á¶È¸ÇÑ °èÁÂ´Â Å×ÀÌºí¿¡¼­ Á¶È¸
-        // ³ªÁß¿¡ ÁÖ¼®Ã³¸® ÇÏ´ø°¡ ÇÒ°Í.
+        //PYS : ï¿½Ì¹ï¿½ ï¿½ï¿½È¸ï¿½ï¿½ ï¿½ï¿½ï¿½Â´ï¿½ ï¿½ï¿½ï¿½Ìºï¿½ï¿½ï¿½ ï¿½ï¿½È¸
+        // ï¿½ï¿½ï¿½ß¿ï¿½ ï¿½Ö¼ï¿½Ã³ï¿½ï¿½ ï¿½Ï´ï¿½ï¿½ï¿½ ï¿½Ò°ï¿½.
 //        if(firmBean.bankCd.equals("099") && firmBean.data.isNullOrSpace("socialCheck")) {
 //            String holder = masterDAO.selectAccnt(firmBean.data.getString("bankCd"), firmBean.data.getString("account"));
 //            logger.info("INTER ACCNT CHECK: {}",holder);
 //            if(!CommonUtil.isNullOrSpace(holder)) {
 //                firmBean.data.put("name", holder);
 //                firmBean.resultCd ="0000";
-//                firmBean.resultMsg = "Á¤»óÁ¶È¸";
+//                firmBean.resultMsg = "ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½È¸";
 //
 //                return firmBean;
 //            }
@@ -117,7 +118,7 @@ public class InterKsnetExcuter implements InterExcuter {
     }
 
     /**
-     * Áý°è
+     * ï¿½ï¿½ï¿½ï¿½
      * @param firmBean
      * @return
      */
@@ -153,19 +154,19 @@ public class InterKsnetExcuter implements InterExcuter {
     }
 
     /**
-     * ¼Û±ÝÀÌÃ¼
+     * ï¿½Û±ï¿½ï¿½ï¿½Ã¼
      * @param firmBean
      * @return
      */
     @Override
     public FirmBean proc0100100(FirmBean firmBean){
-        // ÀÌÃ¼°¡´É½Ã°£ ¿Ü µ¥ÀÌÅÍ µî·Ï ¸·±â
+        // ï¿½ï¿½Ã¼ï¿½ï¿½ï¿½É½Ã°ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
         //Firm firm = FirmLoader.getConfig();
         long currentTime = CommonUtil.parseLong(CommonUtil.getCurrentDate("HHmmss"));
 
         if(firm.daemon.startTime > currentTime || currentTime > firm.daemon.stopTime){
             firmBean.resultCd ="XXXX";
-            firmBean.resultMsg ="ÀÌÃ¼ °¡´É ½Ã°£ ¾Æ´Ô";
+            firmBean.resultMsg ="ï¿½ï¿½Ã¼ ï¿½ï¿½ï¿½ï¿½ ï¿½Ã°ï¿½ ï¿½Æ´ï¿½";
             return firmBean;
         }
 
@@ -183,7 +184,7 @@ public class InterKsnetExcuter implements InterExcuter {
         long idx = trxDAO.insertTrx(firmBean.bankCd, firmBean.data.getLong("amount"), firmBean.data.getString("recvBankCd"), firmBean.data.getString("recvAccount"), firmBean.data.getString("sender"), firmBean.data.getString("recordInfo"), firmBean.data.getString("procType"));
         if(idx == 0){
             firmBean.resultCd ="XXXX";
-            firmBean.resultMsg ="ÀÌÃ¼µ¥ÀÌÅÍ µî·Ï½ÇÆÐ";
+            firmBean.resultMsg ="ï¿½ï¿½Ã¼ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½Ï½ï¿½ï¿½ï¿½";
         }else{
             firmBean = processCheck(idx,firmBean,trxDAO);
         }
@@ -191,7 +192,7 @@ public class InterKsnetExcuter implements InterExcuter {
     }
 
     /**
-     * Ã³¸®°á°úÁ¶È¸
+     * Ã³ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½È¸
      * @param firmBean
      * @return
      */
@@ -202,7 +203,7 @@ public class InterKsnetExcuter implements InterExcuter {
         FBHeaderBean headerBean = new FBHeaderBean();
         String resMsg = "";
 
-        logger.info("=================== Æß Ã³¸®°á°ú Á¶È¸ ===================");
+        logger.info("=================== ï¿½ï¿½ Ã³ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½È¸ ===================");
         logger.info("idx 	  : {}",firmBean.idx);
         logger.info("bankCd   : {}",firmBean.bankCd);
         logger.info("orgSeqNo : {}",firmBean.data.getString("orgSeqNo"));
@@ -224,9 +225,9 @@ public class InterKsnetExcuter implements InterExcuter {
         fb0600101Bean.setRootSpecNumber(firmBean.data.getString("orgSeqNo")) ;
         headerBean.setTransactionIndex(fb0600101Bean.getTransaction());
 
-        logger.info("½Äº°ÄÚµå 	: {}",configBean.trCd);
-        logger.info("¾÷Ã¼ÄÚµå : {}",configBean.compCd);
-        logger.info("Àü¹®ÀÏ·Ã¹øÈ£ : {}",firmBean.data.getString("orgSeqNo"));
+        logger.info("ï¿½Äºï¿½ï¿½Úµï¿½ 	: {}",configBean.trCd);
+        logger.info("ï¿½ï¿½Ã¼ï¿½Úµï¿½ : {}",configBean.compCd);
+        logger.info("ï¿½ï¿½ï¿½ï¿½ï¿½Ï·Ã¹ï¿½È£ : {}",firmBean.data.getString("orgSeqNo"));
 
         KsnetComm comm	= new KsnetComm(firm.server);
         FBHeaderBean resHeader = comm.ksnet(headerBean);
@@ -257,7 +258,7 @@ public class InterKsnetExcuter implements InterExcuter {
     */
 
     /**
-     * Ã³¸®°á°úÁ¶È¸
+     * Ã³ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½È¸
      * @param firmBean
      * @return
      */
@@ -268,17 +269,28 @@ public class InterKsnetExcuter implements InterExcuter {
             FB0600101Bean fbBean = new FB0600101Bean();
             fbBean.setRootSpecNumber(firmBean.data.getString("orgSeqNo")) ;
 
-            long idx = masterDAO.setMaster(firmBean.msgType.substring(0,4), firmBean.msgType.substring(4), firmBean.bankCd, fbBean.getTransaction());
+            long idx = masterDAO.setMasterAddSearchDate(firmBean.msgType.substring(0,4), firmBean.msgType.substring(4), firmBean.bankCd, fbBean.getTransaction());
             firmBean = processCheck(idx,firmBean,masterDAO);
+
+            //OSC: Ã³ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ (ï¿½ï¿½ï¿½à¿¡ ï¿½Æ¿ï¿½ ï¿½Å·ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½)
+            if("KS10".equals(firmBean.resultCd)) {
+                // ï¿½Æ¹ï¿½ï¿½Íµï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
+            } else {
+                //PYS : ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Úµå¸¦ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ö´Â°É·ï¿½ ï¿½ï¿½ï¿½ï¿½
+                fbBean = new FB0600101Bean(firmBean.data.getString("resData"));
+                firmBean.resultCd = fbBean.getResultCd();
+                firmBean.resultMsg = FirmDAO.getResultMsg(firmBean.resultCd);
+            }
+
             if(firmBean.resultCd.equals("0000")){
-                // ¾Æ¹«°Íµµ ÇÏÁö ¾ÊÀ½
+                // ï¿½Æ¹ï¿½ï¿½Íµï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
             }
         }catch (Exception e) {
             firmBean.resultCd ="XXXX";
-            firmBean.resultMsg ="Ã³¸®°á°úÁ¶È¸ ¿À·ù";
+            firmBean.resultMsg ="Ã³ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½È¸ ï¿½ï¿½ï¿½ï¿½";
 
             e.printStackTrace();
-            logger.error("Ã³¸®°á°úÁ¶È¸ Error : [{}]", e.getMessage());
+            logger.error("Ã³ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½È¸ Error : [{}]", e.getMessage());
         }
 
         logger.info("===================================================");
@@ -287,7 +299,7 @@ public class InterKsnetExcuter implements InterExcuter {
     }
 
     /**
-     * ÀÌÃ¼ Àç½Ãµµ
+     * ï¿½ï¿½Ã¼ ï¿½ï¿½Ãµï¿½
      * @param firmBean
      * @return
      */
@@ -297,10 +309,10 @@ public class InterKsnetExcuter implements InterExcuter {
 
         if(firm.daemon.startTime > currentTime || currentTime > firm.daemon.stopTime){
             firmBean.resultCd ="XXXX";
-            firmBean.resultMsg ="ÀÌÃ¼ °¡´É ½Ã°£ ¾Æ´Ô";
+            firmBean.resultMsg ="ï¿½ï¿½Ã¼ ï¿½ï¿½ï¿½ï¿½ ï¿½Ã°ï¿½ ï¿½Æ´ï¿½";
             return firmBean;
         }
-        logger.error("ÀÌÃ¼ Àç½Ãµµ : [{}]", firmBean.data.getString("trxId"));
+        logger.error("ï¿½ï¿½Ã¼ ï¿½ï¿½Ãµï¿½ : [{}]", firmBean.data.getString("trxId"));
 
         FirmTrxDAO trxDAO = new FirmTrxDAO();
         SharedMap<String, Object> trxMap = trxDAO.getTrxData(firmBean.data.getString("trxId"));
@@ -308,7 +320,7 @@ public class InterKsnetExcuter implements InterExcuter {
 
         if(idx == 0){
             firmBean.resultCd ="XXXX";
-            firmBean.resultMsg ="ÀÌÃ¼µ¥ÀÌÅÍ µî·Ï½ÇÆÐ";
+            firmBean.resultMsg ="ï¿½ï¿½Ã¼ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½Ï½ï¿½ï¿½ï¿½";
         }else{
             firmBean = processCheck(idx,firmBean,trxDAO);
         }
@@ -316,7 +328,7 @@ public class InterKsnetExcuter implements InterExcuter {
     }
 
     /**
-     * °¡»ó°èÁÂ Ãâ±ÝÁ¤º¸ µî·Ï
+     * ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½
      * @param firmBean
      * @return
      */
@@ -327,44 +339,44 @@ public class InterKsnetExcuter implements InterExcuter {
         FBHeaderBean headerBean = new FBHeaderBean();
         String resMsg = "";
 
-        logger.info("=================== °¡»ó°èÁÂ Ãâ±ÝÁ¤º¸ µî·Ï ===================");
+        logger.info("=================== ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ ===================");
         logger.info("idx 	  	: {}",firmBean.idx);
-        logger.info("ÀºÇàÄÚµå    	: {}",firmBean.bankCd);
-        logger.info("¾÷Ã¼ÄÚµå    	: {}",firmBean.data.getString("companyCd"));
-        logger.info("°Å·¡±¸ºÐ 	  	: {}",firmBean.data.getString("trxType"));
-        logger.info("°¡»ó°èÁÂ¹øÈ£ 	: {}",firmBean.data.getString("virtualAccount"));
-        logger.info("Ãâ±ÝÀºÇàÄÚµå 	: {}",firmBean.data.getString("withdrawBankCd"));
-        logger.info("Ãâ±Ý°èÁÂ¹øÈ£ 	: {}",firmBean.data.getString("withdrawAccount"));
+        logger.info("ï¿½ï¿½ï¿½ï¿½ï¿½Úµï¿½    	: {}",firmBean.bankCd);
+        logger.info("ï¿½ï¿½Ã¼ï¿½Úµï¿½    	: {}",firmBean.data.getString("companyCd"));
+        logger.info("ï¿½Å·ï¿½ï¿½ï¿½ï¿½ï¿½ 	  	: {}",firmBean.data.getString("trxType"));
+        logger.info("ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Â¹ï¿½È£ 	: {}",firmBean.data.getString("virtualAccount"));
+        logger.info("ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Úµï¿½ 	: {}",firmBean.data.getString("withdrawBankCd"));
+        logger.info("ï¿½ï¿½Ý°ï¿½ï¿½Â¹ï¿½È£ 	: {}",firmBean.data.getString("withdrawAccount"));
 
-        //°¡»ó°èÁÂ°¡ ½ÅÇÑÀºÇàÀÏ¶§¸¸ ¼¼ÆÃ
+        //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Â°ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ï¶ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
         if("088".equals(firmBean.bankCd)) {
-            logger.info("°í°´¸í 	  	: {}",firmBean.data.getString("customerName"));
-            logger.info("Æß¹ðÅ· ¾÷Ã¼ÄÚµå	: {}",firmBean.data.getString("firmCompanyCd"));
-            logger.info("ÈÞ´ëÆù¹øÈ£ 	: {}",firmBean.data.getString("phoneNo"));
-            logger.info("½Ç¸í¹øÈ£ 		: {}",firmBean.data.getString("identity"));
+            logger.info("ï¿½ï¿½ï¿½ï¿½ 	  	: {}",firmBean.data.getString("customerName"));
+            logger.info("ï¿½ß¹ï¿½Å· ï¿½ï¿½Ã¼ï¿½Úµï¿½	: {}",firmBean.data.getString("firmCompanyCd"));
+            logger.info("ï¿½Þ´ï¿½ï¿½ï¿½ï¿½ï¿½È£ 	: {}",firmBean.data.getString("phoneNo"));
+            logger.info("ï¿½Ç¸ï¿½ï¿½È£ 		: {}",firmBean.data.getString("identity"));
         }
 
-        //°¡»ó°èÁÂ°¡ ³óÇùÀºÇàÀÏ¶§¸¸ ¼¼ÆÃ
-        //230405_PYS : °æ³²ÀºÇà Ãß°¡
+        //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Â°ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ï¶ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
+        //230405_PYS : ï¿½æ³²ï¿½ï¿½ï¿½ï¿½ ï¿½ß°ï¿½
         if("011".equals(firmBean.bankCd) ||  "012".equals(firmBean.bankCd) || "039".equals(firmBean.bankCd)) {
-            logger.info("°í°´¸í 	  	: {}",firmBean.data.getString("customerName"));
-            logger.info("µî·ÏÀ¯Çü 		: {}",firmBean.data.getString("regType"));
-            logger.info("½Ç¸í¹øÈ£ 		: {}",firmBean.data.getString("identity"));
+            logger.info("ï¿½ï¿½ï¿½ï¿½ 	  	: {}",firmBean.data.getString("customerName"));
+            logger.info("ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ 		: {}",firmBean.data.getString("regType"));
+            logger.info("ï¿½Ç¸ï¿½ï¿½È£ 		: {}",firmBean.data.getString("identity"));
         }
 
-        //°¡»ó°èÁÂ°¡ ÇÏ³ªÀºÇàÀÏ¶§¸¸ ¼¼ÆÃ
+        //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Â°ï¿½ ï¿½Ï³ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ï¶ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
         if("081".equals(firmBean.bankCd)) {
-            logger.info("°í°´¸í 	  	: {}",firmBean.data.getString("customerName"));
+            logger.info("ï¿½ï¿½ï¿½ï¿½ 	  	: {}",firmBean.data.getString("customerName"));
         }
 
-        //°¡»ó°èÁÂ°¡ ±¹¹ÎÀºÇàÀÏ¶§¸¸ ¼¼ÆÃ
+        //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Â°ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ï¶ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
         if("004".equals(firmBean.bankCd)) {
-            logger.info("°í°´¸í 	  	: {}",firmBean.data.getString("customerName"));
+            logger.info("ï¿½ï¿½ï¿½ï¿½ 	  	: {}",firmBean.data.getString("customerName"));
         }
 
-        //°¡»ó°èÁÂ°¡ ÄÉÀÌ¹ðÅ©ÀÏ¶§ ¼¼ÆÃ
+        //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Â°ï¿½ ï¿½ï¿½ï¿½Ì¹ï¿½Å©ï¿½Ï¶ï¿½ ï¿½ï¿½ï¿½ï¿½
         if("089".equals(firmBean.bankCd)) {
-            logger.info("°í°´¸í 	  	: {}",firmBean.data.getString("customerName"));
+            logger.info("ï¿½ï¿½ï¿½ï¿½ 	  	: {}",firmBean.data.getString("customerName"));
         }
 
         logger.info("=========================================================");
@@ -372,7 +384,7 @@ public class InterKsnetExcuter implements InterExcuter {
         headerBean.setIndex(firmBean.idx);
         headerBean.setNewBankCode(firmBean.bankCd);
 
-        //°¡»ó°èÁÂ¿ë ½Äº°ÄÚµå : KSNETVR
+        //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Â¿ï¿½ ï¿½Äºï¿½ï¿½Úµï¿½ : KSNETVR
         headerBean.setIdentificationCode("KSNETVR");
 
         headerBean.setCompanyCode(firmBean.data.getString("companyCd"));
@@ -389,7 +401,7 @@ public class InterKsnetExcuter implements InterExcuter {
         fb0900400Bean.setWithdrawAccount(firmBean.data.getString("withdrawAccount"));
 
 
-        //°¡»ó°èÁÂ°¡ ½ÅÇÑÀºÇàÀÏ¶§¸¸ ¼¼ÆÃ
+        //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Â°ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ï¶ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
         if("088".equals(firmBean.bankCd)) {
             fb0900400Bean.setCustomerName(firmBean.data.getString("customerName"));
             fb0900400Bean.setFirmCompanyCd(firmBean.data.getString("firmCompanyCd"));
@@ -397,21 +409,21 @@ public class InterKsnetExcuter implements InterExcuter {
             fb0900400Bean.setIdentity(firmBean.data.getString("identity"));
         }
 
-        //°¡»ó°èÁÂ°¡ ½ÅÇÑ,³óÇù,ÇÏ³ª ÀºÇàÀÏ¶§¸¸ ¼¼ÆÃ
-        //230405_PYS : °æ³²ÀºÇà Ãß°¡
+        //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Â°ï¿½ ï¿½ï¿½ï¿½ï¿½,ï¿½ï¿½ï¿½ï¿½,ï¿½Ï³ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ï¶ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
+        //230405_PYS : ï¿½æ³²ï¿½ï¿½ï¿½ï¿½ ï¿½ß°ï¿½
         if("088".equals(firmBean.bankCd) || "011".equals(firmBean.bankCd) ||
                 "012".equals(firmBean.bankCd) || "081".equals(firmBean.bankCd) ||
                 "039".equals(firmBean.bankCd)) {
             fb0900400Bean.setIdentity(firmBean.data.getString("identity"));
         }
 
-        //°¡»ó°èÁÂ°¡ ³óÇùÀºÇàÀÏ¶§¸¸ ¼¼ÆÃ
-        //230405_PYS : °æ³²ÀºÇà Ãß°¡
+        //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Â°ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ï¶ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
+        //230405_PYS : ï¿½æ³²ï¿½ï¿½ï¿½ï¿½ ï¿½ß°ï¿½
         if("011".equals(firmBean.bankCd) || "012".equals(firmBean.bankCd) ||
                 "039".equals(firmBean.bankCd)) {
             fb0900400Bean.setRegType(firmBean.data.getString("regType"));
         }
-        //°¡»ó°èÁÂ°¡ ÄÉÀÌ¹ðÅ©ÀÏ¶§ ¼¼ÆÃ
+        //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Â°ï¿½ ï¿½ï¿½ï¿½Ì¹ï¿½Å©ï¿½Ï¶ï¿½ ï¿½ï¿½ï¿½ï¿½
         if("089".equals(firmBean.bankCd)) {
             fb0900400Bean.setCustomerName(firmBean.data.getString("customerName"));
         }
@@ -423,7 +435,7 @@ public class InterKsnetExcuter implements InterExcuter {
 
         String resCode = resHeader.getBankResponseCode();
 
-        resMsg = FirmDAO.getCodeDesc(headerBean.getNewBankCode(), resCode);
+        resMsg = FirmDAO.getVactResultMsg(firmBean.bankCd, resCode);
 
         logger.info("MASTER TRANSFER : {}",headerBean.getSpecCode()+headerBean.getClassificationCode());
         long idx = masterDAO.setMasterForResponse(firmBean.msgType.substring(0,4), firmBean.msgType.substring(4)
@@ -433,7 +445,7 @@ public class InterKsnetExcuter implements InterExcuter {
         logger.info("MASTER RESULT {},[{}]",resHeader.getBankResponseCode(),resHeader.getMessage());
         logger.info("MASTER RESULT UPDATE : {}", masterDAO.update(resHeader));
 
-        logger.info("°¡»ó°èÁÂ Ãâ±ÝÁ¤º¸ µî·Ï : [{}][{}]",resCode,resMsg);
+        logger.info("ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ : [{}][{}]",resCode,resMsg);
         logger.info("===================================================");
 
         firmBean.resultCd = resCode;
@@ -442,9 +454,14 @@ public class InterKsnetExcuter implements InterExcuter {
         return firmBean;
     }
 
+    @Override
+    public FirmBean procArsAuth(FirmBean firmBean) {
+        return null;
+    }
+
     /**
-     * °¡»ó°èÁÂ Ãâ±ÝÁ¤º¸ µî·Ï
-     * firm.json ¿¡ ¾Æ·¡¿Í °°ÀÌ ¼¼ÆÃµÇ¾î¾ß µ¿ÀÛÇÔ. ÇöÀç´Â KSBPAY·Î ±¸¼ºµÇ¾î ÀÖÀ½
+     * ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½
+     * firm.json ï¿½ï¿½ ï¿½Æ·ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ÃµÇ¾ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½. ï¿½ï¿½ï¿½ï¿½ï¿½ KSBPAYï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ç¾ï¿½ ï¿½ï¿½ï¿½ï¿½
      * "089": {
      *       "trCd": "KSNETVR",
      *       "compCd": "",
@@ -460,9 +477,9 @@ public class InterKsnetExcuter implements InterExcuter {
             FirmMasterDAO masterDAO = new FirmMasterDAO();
             FB0900400Bean fbBean = new FB0900400Bean();
 
-            logger.info("°í°´¸í 	  	: {}",firmBean.data.getString("customerName"));
+            logger.info("ï¿½ï¿½ï¿½ï¿½ 	  	: {}",firmBean.data.getString("customerName"));
 
-            logger.info("======================== °¡»ó°èÁÂ Ãâ±ÝÁ¤º¸ µî·Ï =================================");
+            logger.info("======================== ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ =================================");
 
             fbBean.setTrxType(firmBean.data.getString("trxType"));
             fbBean.setVirtualAccount(firmBean.data.getString("virtualAccount"));
@@ -473,14 +490,14 @@ public class InterKsnetExcuter implements InterExcuter {
             long idx = masterDAO.setMaster(firmBean.msgType.substring(0,4), firmBean.msgType.substring(4), firmBean.bankCd, fbBean.getTransaction());
             firmBean = processCheck(idx,firmBean,masterDAO);
             if(firmBean.resultCd.equals("0000")){
-                // ¾Æ¹«°Íµµ ÇÏÁö ¾ÊÀ½
+                // ï¿½Æ¹ï¿½ï¿½Íµï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
             }
         }catch (Exception e) {
             firmBean.resultCd ="XXXX";
-            firmBean.resultMsg ="Ã³¸®°á°úÁ¶È¸ ¿À·ù";
+            firmBean.resultMsg ="Ã³ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½È¸ ï¿½ï¿½ï¿½ï¿½";
 
             e.printStackTrace();
-            logger.error("Ã³¸®°á°úÁ¶È¸ Error : [{}]", e.getMessage());
+            logger.error("Ã³ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½È¸ Error : [{}]", e.getMessage());
         }
 
         logger.info("===================================================");
