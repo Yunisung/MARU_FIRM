@@ -31,9 +31,9 @@
     }
   },
   "server": {
-    "serverIp": "10.100.200.10",
+    "serverIp": "10.100.100.13",
     "serverPort": 10006,
-    "ksnetIp": "10.100.200.10",
+    "ksnetIp": "127.0.0.1",
     "ksnetPort": 27701,
 //    "ksnetIp": "210.181.28.134",
 //    "ksnetPort": 19238,

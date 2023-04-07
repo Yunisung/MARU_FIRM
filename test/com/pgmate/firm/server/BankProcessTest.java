@@ -3,13 +3,21 @@ package com.pgmate.firm.server;
 import com.pgmate.firm.conf.Firm;
 import com.pgmate.firm.conf.FirmLoader;
 import com.pgmate.firm.dao.FirmDAO;
+import com.pgmate.firm.inter.FirmBean;
 import com.pgmate.firm.main.Daemon;
 import com.pgmate.lib.util.comm.TcpSocket;
+import com.pgmate.lib.util.gson.GsonUtil;
 import com.pgmate.lib.util.lang.CommonUtil;
 import org.junit.Before;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.net.Socket;
 
 public class BankProcessTest {
     BankProcess bankProcess;
@@ -29,11 +37,11 @@ public class BankProcessTest {
         logger.info("--- 가상계좌 입금 (0200/300) ---");
 
         //여기만 수정
-        String virtualAccount = "70019000000094"; //가상계좌 번호
-        String amount = "1004";
-        String name = "bkwinners"; //입금한 사람 이름
+        String virtualAccount = "70022000105736"; //가상계좌 번호
+        String amount = "1000";
+        String name = "김정미"; //입금한 사람 이름
 
-        String mAccount = "70110001999557"; //모계좌번호
+        String mAccount = "70022000000008"; //모계좌번호
         String count = "";
         String classificationCode = "20"; //20: 입금, 30: 출금, 51: 입금취소
         String bankCode = "";
@@ -184,12 +192,13 @@ public class BankProcessTest {
     @Test
     public void SearchVact() {
         logger.info("---가상계좌 수취조회---");
-        String virtualAccount = "70019000000008";
+//        String virtualAccount = "70019000000008";
+        String virtualAccount = "70022000474973";
         String companyName = "";
         String bankCode = "89";
         String startDay = "";
         String endTime = "";
-        String amount = "1004";
+        String amount = "1000";
         String classificationCode = "";
         String transactionType = "10"; //10 : 수취, 20: 입금, 51: 취소
         String requestorName = "test";
@@ -217,5 +226,64 @@ public class BankProcessTest {
         byte[] recv = bankProcess.execute(msg.getBytes());
         String result = new String(recv);
         logger.info("<= ["+result+"]");
+//        comm(firmBean);
+    }
+
+    public FirmBean comm(FirmBean firmBean){
+
+        Socket socket = null;
+        OutputStream output = null;
+        InputStream input = null;
+        String reqJson = GsonUtil.toJson(firmBean);
+        String resJson = "";
+        long time = System.currentTimeMillis();
+        try{
+            socket = new Socket("10.100.100.13", 10006);
+            socket.setSoTimeout(40000);
+
+            output = socket.getOutputStream();
+            output.write(reqJson.getBytes());
+            output.flush();
+
+            input = socket.getInputStream();
+
+            ByteArrayOutputStream bout = new ByteArrayOutputStream();
+            int bcount = 0;
+            byte[] buf = new byte[2048];
+            int read_retry_count = 0;
+            while(true) {
+                int n = input.read(buf);
+                if ( n > 0 ) { bcount += n; bout.write(buf,0,n); }
+                else if (n == -1) break;
+                else  { // n == 0
+                    if (++read_retry_count >= 5)
+                        throw new IOException("inputstream-read-retry-count(5) exceed !");
+                }
+                if(input.available() == 0){ break; }
+            }
+            bout.flush();
+            byte[] res = bout.toByteArray();
+            bout.close();
+
+            firmBean = (FirmBean)GsonUtil.fromJson(new String(res), FirmBean.class);
+
+        }catch(Exception e){
+            firmBean.resultCd = "XXXX";
+            firmBean.resultMsg = "펌뱅킹 시스템과의 통신장애 :"+e.getMessage();
+        }finally{
+            logger.info("-> FIRM : [{}]",reqJson);
+            logger.info("<- FIRM : [{}],{}",resJson,(System.currentTimeMillis()-time));
+
+            try{
+                if(input != null){ input.close();}
+                if(output != null){ output.close();}
+                if(socket != null){ socket.close();}
+            }catch(Exception ex){
+
+            }
+        }
+
+        return firmBean;
+
     }
 }

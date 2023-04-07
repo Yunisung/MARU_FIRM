@@ -130,7 +130,7 @@ public class KsnetComm {
 			response = (headerBean.getTransaction()+headerBean.getTransactionIndex()).getBytes();
 			if(headerBean.getSpecCode().equals("0100")) {
 				String msgBody = "KSNET Æß¹ğÅ· Ãâ±İ Àå¾Ö ¹ß»ı [" + message + "] ";
-				smsGw.sendMessage("1", "1", msgBody);
+//				smsGw.sendMessage("1", "1", msgBody);
 			}
 			
 		}finally{
