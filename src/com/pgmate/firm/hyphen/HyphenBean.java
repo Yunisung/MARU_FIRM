@@ -8,12 +8,18 @@ public class HyphenBean {
     private String ekey;
     private String msalt;
 
+
     private ArrayList<HyphenBaseBean> reqdata = new ArrayList<>();
 
     //Response Parameter
     private String resdata;
     protected String replyCode;
     protected String successYn;
+
+    //230104_PYS : FCS용파라미터 추가
+    private String auth_key;
+    protected String reply;
+    protected String reply_msg;
 
     protected long index;
     protected String sendurl;
@@ -47,4 +53,23 @@ public class HyphenBean {
 
     public String getSuccessYn() {return successYn;}
     public void setSuccessYn(String data) {successYn = data;}
+
+    public String getAuth_key() {return auth_key;}
+    public void setAuth_key(String data) {auth_key = data;}
+
+    public String getReply() {
+        return reply;
+    }
+
+    public String getReply_msg() {
+        return reply_msg;
+    }
+
+    public void setReply(String reply) {
+        this.reply = reply;
+    }
+
+    public void setReply_msg(String reply_msg) {
+        this.reply_msg = reply_msg;
+    }
 }

@@ -11,7 +11,7 @@ public class BankBean {
 	public String account	= "";	
 	public String newAccount	= "";	
 
-	//PYS : 하이픈에 맞게 추가
+	//PYS : ������ ������ �߰�
 	public String ekey		= "";
 	public String msalt 	= "";
 	public String kscode	= "";
@@ -22,7 +22,7 @@ public class BankBean {
 
 	//230405_PYS : �泲�����߰�
 	public String firmBankCode = "";
-	
+
 	public BankBean() {
 		// TODO Auto-generated constructor stub
 	}

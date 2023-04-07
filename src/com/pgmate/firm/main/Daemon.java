@@ -38,7 +38,8 @@ public class Daemon extends Thread{
 						//main.transMaster();
 						main.firmMaster();
 						main.wireTransfer();
-//						main.firmMaster();
+						main.HyphenfirmMaster();
+						main.HyphenfirmArs();
 						//main.firmTrx();
 
 					}

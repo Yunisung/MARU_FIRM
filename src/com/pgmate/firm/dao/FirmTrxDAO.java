@@ -596,6 +596,8 @@ public class FirmTrxDAO {
 				sendMemo = "¸ğ°èÁÂ";
 			}else if("WT".equals(procType)) {
 				sendMemo = "¿ù·¿";
+			}else if("AT".equals(procType)) {
+				sendMemo = "1¿øÀÎÁõ";
 			}
 
 			if("".equals(sender)) {
@@ -645,7 +647,7 @@ public class FirmTrxDAO {
 
 			while(rset.next()){
 				firmBean.resultCd = rset.getString("resultCd");
-				firmBean.resultMsg = rset.getString("resultMsg");
+				firmBean.resultMsg = rset.getString("resultMsg").trim();
 				firmBean.idx  = idx;
 				if(firmBean.data == null){
 					firmBean.data = new SharedMap<String,Object>();

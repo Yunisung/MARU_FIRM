@@ -61,13 +61,14 @@ public class InterProcessTest {
         firmBean.msgType 	= "0600400";
         firmBean.userId		= "SYSTEM";
         firmBean.data.put("bankCd", "088");
-        firmBean.data.put("account", "70022000474973");
+        firmBean.data.put("account", "110487944164");
+        firmBean.data.put("socialNumber", "");
 
         String reqJson = GsonUtil.toJson(firmBean);
         logger.info("reqJson: {} ", reqJson);
-//        String send = interProcess.execute(reqJson);
-//        logger.info("<- {} [{}]", FirmUtil.KSNET, CommonUtil.toString(send));
-        comm(firmBean);
+        String send = interProcess.execute(reqJson);
+        logger.info("<- {} [{}]", FirmUtil.HYPHEN, CommonUtil.toString(send));
+//        comm(firmBean);
     }
 
     @Test
@@ -77,7 +78,7 @@ public class InterProcessTest {
         firmBean.bankCd 	= "089";
         firmBean.msgType 	= "0600101";
         firmBean.userId		= "SYSTEM";
-        firmBean.data.put("orgSeqNo", "000354");
+        firmBean.data.put("orgSeqNo", "000169");
 
         String reqJson = GsonUtil.toJson(firmBean);
         logger.info("reqJson: {} ", reqJson);
@@ -90,7 +91,7 @@ public class InterProcessTest {
     @Test
     public void transfer() {
         // 이체
-        String sender = "테스트";
+        String sender = "test";
         byte[] sendByte = sender.getBytes(StandardCharsets.UTF_8);
         try {
             //UTF-8
@@ -107,63 +108,38 @@ public class InterProcessTest {
         firmBean.bankCd 	= "089";
         firmBean.msgType 	= "0100100";
         firmBean.userId		= "SYSTEM";
-        firmBean.data.put("amount",100);
+        firmBean.data.put("amount",1000);
         firmBean.data.put("recvBankCd","088");
-        firmBean.data.put("recvAccount","100035419428");
+        firmBean.data.put("recvAccount","110487944164");
         firmBean.data.put("sender", sender);
         firmBean.data.put("procType", "RS");
 
         String reqJson = GsonUtil.toJson(firmBean);
         logger.info("reqJson: {} ", reqJson);
-//        String send = interProcess.execute(reqJson);
-//        logger.info("<- {} [{}]", FirmUtil.KSNET, CommonUtil.toString(send));
+        String send = interProcess.execute(reqJson);
+        logger.info("<- {} [{}]", FirmUtil.KSNET, CommonUtil.toString(send));
 
-        comm(firmBean);
     }
 
     @Test
-    public void withdrawAccountReg케이() {
+    public void withdrawAccountReg() {
         // 출금계좌등록
         FirmBean firmBean = new FirmBean();
-        firmBean.bankCd 	= "039";
+        firmBean.bankCd 	= "089";
         firmBean.msgType 	= "0900400";
         firmBean.userId		= "SYSTEM";
         firmBean.data.put("trxType", "1");         // (거래구분) '1':신규, '4':해지, '8':변경, '9':조회
-        firmBean.data.put("virtualAccount", "8008308818439");  // (가상계좌번호)
-        firmBean.data.put("withdrawBankCd", "088");  // (출금은행코드) PG_CODE 테이블 참조
-        firmBean.data.put("withdrawAccount", "100035419428"); // (출금계좌번호)
-        firmBean.data.put("customerName", "김정미");    // (고객명)
+        firmBean.data.put("virtualAccount", "70022000105591");  // (가상계좌번호)
+        firmBean.data.put("withdrawBankCd", "032");  // (출금은행코드) PG_CODE 테이블 참조
+        firmBean.data.put("withdrawAccount", "087120852531"); // (출금계좌번호)
+        firmBean.data.put("customerName", "오세창");    // (고객명)
 
         String reqJson = GsonUtil.toJson(firmBean);
         logger.info("reqJson: {} ", reqJson);
-//        String send = interProcess.execute(reqJson);
-//        logger.info("<- {} [{}]", FirmUtil.KSNET, CommonUtil.toString(send));
+        String send = interProcess.execute(reqJson);
+        logger.info("<- {} [{}]", FirmUtil.KSNET, CommonUtil.toString(send));
 
-        comm(firmBean);
-    }
-
-    @Test
-    public void withdrawAccountReg경남() {
-        // 출금계좌등록
-        FirmBean firmBean = new FirmBean();
-        firmBean.bankCd 	= "039";
-        firmBean.msgType 	= "0900400";
-        firmBean.userId		= "SYSTEM";
-        firmBean.data.put("trxType", "1");         // (거래구분) '1':신규, '4':해지, '8':변경, '9':조회
-        firmBean.data.put("companyCd", "MBR00246");
-        firmBean.data.put("virtualAccount", "8008308818439");  // (가상계좌번호)
-        firmBean.data.put("withdrawBankCd", "088");  // (출금은행코드) PG_CODE 테이블 참조
-        firmBean.data.put("withdrawAccount", "100035419428"); // (출금계좌번호)
-        firmBean.data.put("customerName", "김정미");    // (고객명)
-        firmBean.data.put("regType", "2");
-        firmBean.data.put("identity", "970105");
-
-        String reqJson = GsonUtil.toJson(firmBean);
-        logger.info("reqJson: {} ", reqJson);
-//        String send = interProcess.execute(reqJson);
-//        logger.info("<- {} [{}]", FirmUtil.KSNET, CommonUtil.toString(send));
-
-        comm(firmBean);
+//        ServerTest(reqJson);
     }
 
     public FirmBean comm(FirmBean firmBean){
@@ -175,7 +151,7 @@ public class InterProcessTest {
         String resJson = "";
         long time = System.currentTimeMillis();
         try{
-            socket = new Socket("10.100.200.10", 10006);
+            socket = new Socket("10.100.100.13", 10006);
             socket.setSoTimeout(40000);
 
             output = socket.getOutputStream();
