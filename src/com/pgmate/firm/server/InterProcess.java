@@ -58,7 +58,11 @@ public class InterProcess implements java.io.Serializable{
 				//가상계좌 출금정보 등록
 				firmBean = interExcuter.proc0900400(firmBean);
 			}else if(firmBean.msgType.startsWith("ARSAUTH")) {
+				//ARS 인증
 				firmBean = interHyphenFirmExcuter.procArsAuth(firmBean);
+			}else if(firmBean.msgType.startsWith("0600102")){
+				//이체 재시도
+				firmBean = interExcuter.proc0600102(firmBean);
 			}
 		}
 
