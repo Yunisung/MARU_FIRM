@@ -157,7 +157,13 @@ public class KsnetComm {
 			if(headerBean.getSpecCode().equals("0900") && headerBean.getClassificationCode().equals("400")) {
 				resHeaderBean.setMessage(FirmDAO.getVactResultMsg(resHeaderBean.getNewBankCode(), resHeaderBean.getBankResponseCode()));
 			}else {
-				resHeaderBean.setMessage(FirmDAO.getCodeDesc(resHeaderBean.getNewBankCode(),resHeaderBean.getBankResponseCode()));
+				//KS로 시작하는 에러코드(하이픈 에러코드) 는 예외처리
+				if(resHeaderBean.getBankResponseCode().startsWith("KS")) {
+					resHeaderBean.setMessage(FirmDAO.getCodeDesc("ERR", resHeaderBean.getBankResponseCode()));
+				}else{
+					resHeaderBean.setMessage(FirmDAO.getCodeDesc(resHeaderBean.getNewBankCode(), resHeaderBean.getBankResponseCode()));
+				}
+
 			}
 		}
 		

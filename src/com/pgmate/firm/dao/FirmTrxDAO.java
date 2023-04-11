@@ -764,7 +764,7 @@ public class FirmTrxDAO {
 	}
 
 	public SharedMap<String, Object> getTrxData(String trxId){
-		String query = "SELECT bankCd, sendDate, sendTime, seqNo, amount, recvBank, recvAccount, recvHolder, procType, filler FROM PG_FIRM_TRX where filler = ?";
+		String query = "SELECT bankCd, sendDate, sendTime, seqNo, amount, recvBank, recvAccount, recvHolder, recordInfo,procType, filler FROM PG_FIRM_TRX where filler = ?";
 
 		DBManager db 	= null;
 		PreparedStatement pstmt	= null;
@@ -781,13 +781,13 @@ public class FirmTrxDAO {
 
 			while(rset.next()){
 				result.put("bankCd", rset.getString("bankCd"));
-				result.put("sendDate", rset.getString("sendDate"));
-				result.put("sendTime", rset.getString("sendTime"));
+				result.put("sendDate", CommonUtil.getCurrentDate("yyyyMMdd"));
+				result.put("sendTime", CommonUtil.getCurrentDate("HHmmss"));
 				result.put("seqNo", rset.getString("seqNo"));
 				result.put("amount", rset.getLong("amount"));
 				result.put("recvBank", rset.getString("recvBank"));
 				result.put("recvAccount", rset.getString("recvAccount"));
-				result.put("recoredInfo", rset.getString("recordInfo"));
+				result.put("recordInfo", rset.getString("recordInfo"));
 				result.put("recvHolder", rset.getString("recvHolder"));
 				result.put("procType", rset.getString("procType"));
 				result.put("filler", rset.getString("filler"));
