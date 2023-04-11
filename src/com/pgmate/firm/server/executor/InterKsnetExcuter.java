@@ -312,10 +312,24 @@ public class InterKsnetExcuter implements InterExcuter {
             firmBean.resultMsg ="이체 가능 시간 아님";
             return firmBean;
         }
+
+        if(CommonUtil.isNullOrSpace(firmBean.data.getString("trxId"))) {
+            firmBean.resultCd ="9999";
+            firmBean.resultMsg ="trxId 없음";
+            return firmBean;
+        }
+
         logger.error("이체 재시도 : [{}]", firmBean.data.getString("trxId"));
 
         FirmTrxDAO trxDAO = new FirmTrxDAO();
         SharedMap<String, Object> trxMap = trxDAO.getTrxData(firmBean.data.getString("trxId"));
+
+        if(trxMap.isEmpty()) {
+            firmBean.resultCd ="9999";
+            firmBean.resultMsg ="해당 조건을 만족하는 이체요청이 없음";
+            return firmBean;
+        }
+
         long idx = trxDAO.insertReTrx(trxMap);
 
         if(idx == 0){
@@ -324,6 +338,8 @@ public class InterKsnetExcuter implements InterExcuter {
         }else{
             firmBean = processCheck(idx,firmBean,trxDAO);
         }
+
+        logger.error("이체 재시도 결과: [{}][{}]", firmBean.resultCd, firmBean.resultMsg);
         return firmBean;
     }
 
