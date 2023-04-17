@@ -122,7 +122,7 @@ public class InterProcessTest {
     }
 
     @Test
-    public void withdrawAccountReg() {
+    public void withdrawAccountReg케이() {
         // 출금계좌등록
         FirmBean firmBean = new FirmBean();
         firmBean.bankCd 	= "089";
@@ -140,6 +140,30 @@ public class InterProcessTest {
         logger.info("<- {} [{}]", FirmUtil.KSNET, CommonUtil.toString(send));
 
 //        ServerTest(reqJson);
+    }
+
+    @Test
+    public void withdrawAccountReg경남() {
+        // 출금계좌등록
+        FirmBean firmBean = new FirmBean();
+        firmBean.bankCd    = "039";
+        firmBean.msgType    = "0900400";
+        firmBean.userId      = "SYSTEM";
+        firmBean.data.put("trxType", "3");         // (거래구분) '1':신규, '3':해지
+        firmBean.data.put("companyCd", "MBR00246");
+        firmBean.data.put("virtualAccount", "8008308818739");  // (가상계좌번호)
+        firmBean.data.put("withdrawBankCd", "088");  // (출금은행코드) PG_CODE 테이블 참조
+        firmBean.data.put("withdrawAccount", "100035419428"); // (출금계좌번호)
+        firmBean.data.put("customerName", "김정미");    // (고객명)
+        firmBean.data.put("regType", "2");
+        firmBean.data.put("identity", "970105");
+
+        String reqJson = GsonUtil.toJson(firmBean);
+        logger.info("reqJson: {} ", reqJson);
+        String send = interProcess.execute(reqJson);
+        logger.info("<- {} [{}]", FirmUtil.KSNET, CommonUtil.toString(send));
+
+//      comm(reqJson);
     }
 
     public FirmBean comm(FirmBean firmBean){
