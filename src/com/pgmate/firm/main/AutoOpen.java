@@ -24,7 +24,7 @@ public class AutoOpen {
 		SharedMap<String,BankBean> firm = FirmLoader.getConfig().bank;
 		
 		for(String bankCd : firm.keySet()){
-			if(!bankCd.equals("099")){
+			if(bankCd.equals("039")){
 				String seqNo = FirmDAO.getSeqNO();
 				logger.info("autoopen : bank:{} ,seq:{},insert : {}", bankCd,seqNo,new FirmMasterDAO(firm).insert0800100(bankCd,seqNo));
 			}
