@@ -5,7 +5,10 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.Socket;
+import java.nio.charset.Charset;
 
+import com.pgmate.firm.util.FirmUtil;
+import com.pgmate.lib.util.lang.CommonUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -19,6 +22,7 @@ import com.pgmate.lib.util.gson.GsonUtil;
 public class FirmClient {
 
 	private static Logger logger = LoggerFactory.getLogger( com.pgmate.firm.client.FirmClient.class );
+//	private static String host 	= "10.100.100.13";
 	private static String host 	= "10.100.200.10";
 	private static int port 	= 10006;
 	private static int timeout  = 40000;
@@ -28,6 +32,19 @@ public class FirmClient {
 	}
 
 
+	public void resultCheck(String bankCd, String orgSeqNo) {
+		// 처리결과조회
+		logger.info("처리결과조회");
+		FirmBean firmBean = new FirmBean();
+		firmBean.bankCd 	= "039";
+		firmBean.msgType 	= "0600101";
+		firmBean.userId		= "SYSTEM";
+		firmBean.data.put("orgSeqNo", orgSeqNo);
+
+		firmBean = comm(firmBean);
+		logger.info("응답:{},{}",firmBean.resultCd,firmBean.resultMsg);
+		logger.info("idx:{},{}",firmBean.idx,firmBean.data.get("resData"));
+	}
 
 	public void testCall(String bankCd){
 		logger.info("테스트콜");
@@ -66,13 +83,13 @@ public class FirmClient {
 	}
 
 
-	public void balance(String bankCd){
+	public void balance(String bankCd, String mAccount){
 		logger.info("모계좌잔액조회");
 		FirmBean firmBean = new FirmBean();
 		firmBean.bankCd 	= bankCd;
 		firmBean.msgType 	= "0600300";
 		firmBean.userId		= "SYSTEM";
-		firmBean.mAccnt     = "70110001999557";
+		firmBean.mAccnt     = mAccount;
 
 		firmBean = comm(firmBean);
 		logger.info("응답:{},{}",firmBean.resultCd,firmBean.resultMsg);
@@ -161,7 +178,7 @@ public class FirmClient {
 	public void holder(String userBankCd,String userAccount){
 		logger.info("예금주조회");
 		FirmBean firmBean = new FirmBean();
-		firmBean.bankCd 	= "089";
+		firmBean.bankCd 	= "099";
 		firmBean.msgType 	= "0600400";
 		firmBean.userId		= "SYSTEM";
 		firmBean.data.put("bankCd", userBankCd);
@@ -192,7 +209,7 @@ public class FirmClient {
 	}
 
 
-	public void trasfer(String bankCd, String recvBankCd,String recvAccount,long amount){
+	public void transfer(String bankCd, String recvBankCd,String recvAccount,long amount){
 		FirmBean firmBean = new FirmBean();
 		firmBean.bankCd 	= bankCd;
 		firmBean.msgType 	= "0100100";
@@ -200,15 +217,51 @@ public class FirmClient {
 		firmBean.data.put("amount",amount);
 		firmBean.data.put("recvBankCd",recvBankCd);
 		firmBean.data.put("recvAccount",recvAccount);
-		firmBean.data.put("recordInfo","");
-		firmBean.data.put("sender", "(주)케이원피에스");
+		firmBean.data.put("sender", "");
+		firmBean.data.put("procType", "CS");
 
 		firmBean = comm(firmBean);
 		logger.info("응답:{},{}",firmBean.resultCd,firmBean.resultMsg);
 		logger.info("idx:{},{}",firmBean.idx,firmBean.data.getLong("balance"));
 		logger.info("data : {}",GsonUtil.toJson(firmBean.data));
+	}
+
+	public void reTransfer(String trxId) {
+		//이체 재시도
+		FirmBean firmBean = new FirmBean();
+		firmBean.bankCd 	= "089";
+		firmBean.msgType 	= "0600102";
+		firmBean.userId		= "SYSTEM";
+		firmBean.data.put("trxId", trxId);
+
+		firmBean = comm(firmBean);
+		logger.info("응답:{},{}",firmBean.resultCd,firmBean.resultMsg);
+		logger.info("idx:{},{}",firmBean.idx,firmBean.data.getLong("balance"));
+		logger.info("data : {}",GsonUtil.toJson(firmBean.data));
+	}
+
+	public void reg() {
+		FirmBean firmBean = new FirmBean();
+		firmBean.bankCd 	= "039";
+		firmBean.msgType 	= "0900400";
+		firmBean.userId		= "SYSTEM";
+		firmBean.data.put("trxType", "1");         // (거래구분) '1':신규, '4':해지, '8':변경, '9':조회
+		firmBean.data.put("companyCd", "MBR00246");
+		firmBean.data.put("virtualAccount", "8008308817439");  // (가상계좌번호)
+		firmBean.data.put("withdrawBankCd", "090");  // (출금은행코드) PG_CODE 테이블 참조
+		firmBean.data.put("withdrawAccount", "3333064866100"); // (출금계좌번호)
+		firmBean.data.put("customerName", "박윤성");    // (고객명)
+		firmBean.data.put("regType", "1");
+		firmBean.data.put("identity", "8901021");
 
 
+
+
+
+		firmBean = comm(firmBean);
+		logger.info("응답:{},{}",firmBean.resultCd,firmBean.resultMsg);
+		logger.info("idx:{},{}",firmBean.idx,firmBean.data.getLong("balance"));
+		logger.info("data : {}",GsonUtil.toJson(firmBean.data));
 	}
 
 
@@ -226,7 +279,7 @@ public class FirmClient {
 			socket.setSoTimeout(timeout);
 
 			output = socket.getOutputStream();
-			output.write(reqJson.getBytes());
+			output.write(reqJson.getBytes(Charset.forName("EUC-KR")));
 			output.flush();
 
 			input = socket.getInputStream();
@@ -276,9 +329,15 @@ public class FirmClient {
 		FirmClient client = new FirmClient();
 
 		//###########부국 테스트 #################
-
-//		client.balance("089");
-		client.holder("088", "110487944164");
+//		client.transfer("039", "081", "43591027511307", 100);
+//		client.transfer("039", "039", "587220142117", 100);
+//		client.balance("089", "70022000000008");
+//		client.balance("039", "2070008840700");
+//		client.holder("088", "110487944164");
+//		client.holder("088", "100035419428");
+//		client.resultCheck("039", "000537");
+		client.reg();
+//		client.reTransfer("CS221110037667");
 
 
 
