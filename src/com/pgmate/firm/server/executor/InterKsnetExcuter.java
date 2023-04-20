@@ -439,10 +439,14 @@ public class InterKsnetExcuter implements InterExcuter {
                 "039".equals(firmBean.bankCd)) {
             fb0900400Bean.setRegType(firmBean.data.getString("regType"));
         }
+
         //가상계좌가 케이뱅크일때 세팅
-        if("089".equals(firmBean.bankCd)) {
-            fb0900400Bean.setCustomerName(firmBean.data.getString("customerName"));
-        }
+//        if("089".equals(firmBean.bankCd)) {
+//            fb0900400Bean.setCustomerName(firmBean.data.getString("customerName"));
+//        }
+
+        //이름은 조회할때 편해서 무조건 넣는걸로 변경
+        fb0900400Bean.setCustomerName(firmBean.data.getString("customerName"));
 
         headerBean.setTransactionIndex(fb0900400Bean.getTransaction());
 
