@@ -91,7 +91,7 @@ public class InterProcessTest {
     @Test
     public void transfer() {
         // ¿Ã√º
-        String sender = "test";
+        String sender = "»´ø¡¡÷";
         byte[] sendByte = sender.getBytes(StandardCharsets.UTF_8);
         try {
             //UTF-8
@@ -105,12 +105,12 @@ public class InterProcessTest {
         logger.info(sender);
 
         FirmBean firmBean = new FirmBean();
-        firmBean.bankCd 	= "089";
+        firmBean.bankCd 	= "039";
         firmBean.msgType 	= "0100100";
         firmBean.userId		= "SYSTEM";
         firmBean.data.put("amount",1000);
-        firmBean.data.put("recvBankCd","088");
-        firmBean.data.put("recvAccount","110487944164");
+        firmBean.data.put("recvBankCd","003");
+        firmBean.data.put("recvAccount","51807417401012");
         firmBean.data.put("sender", sender);
         firmBean.data.put("procType", "RS");
 
