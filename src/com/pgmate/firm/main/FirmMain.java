@@ -144,7 +144,7 @@ public class FirmMain{
 				}
 
 			} catch (Exception e) {
-				logger.info("Hyphen Firm Master Error : [{}]", e.getMessage());
+				logger.error("Hyphen Firm Master Error : [{}]", e);
 				hyphenBean.setSuccessYn("X");
 				hyphenBean.setReplyCode("XXXX");
 			}
@@ -196,7 +196,7 @@ public class FirmMain{
 				}
 
 			} catch (Exception e) {
-				logger.info("Hyphen Firm ARS Error : [{}]", e.getMessage());
+				logger.error("Hyphen Firm ARS Error : [{}]", e);
 				hyphenBean.setSuccessYn("X");
 				hyphenBean.setReplyCode("XXXX");
 			}
