@@ -13,6 +13,7 @@ import com.pgmate.lib.util.gson.GsonUtil;
 import com.pgmate.lib.util.lang.CommonUtil;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -143,8 +144,8 @@ public class FirmMain{
 					}
 				}
 
-			} catch (Exception e) {
-				logger.error("Hyphen Firm Master Error : [{}]", e);
+			} catch (ParseException e) {
+				logger.error("Hyphen Firm Master Error : [{}] [{}]", resData, e.getMessage());
 				hyphenBean.setSuccessYn("X");
 				hyphenBean.setReplyCode("XXXX");
 			}
@@ -195,8 +196,8 @@ public class FirmMain{
 					}
 				}
 
-			} catch (Exception e) {
-				logger.error("Hyphen Firm ARS Error : [{}]", e);
+			} catch (ParseException e) {
+				logger.error("Hyphen Firm ARS Error : [{}] [{}]", resData, e.getMessage());
 				hyphenBean.setSuccessYn("X");
 				hyphenBean.setReplyCode("XXXX");
 			}
