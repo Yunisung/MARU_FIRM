@@ -502,7 +502,7 @@ public class FirmTrxDAO {
 				result = rset.getString("codeName");
 			}
 		}catch(Exception e){
-			System.out.println(e.getMessage());
+			logger.error(e.getMessage());
 		}finally{
 			db.close(conn,pstmt,rset);
 		}
@@ -690,7 +690,7 @@ public class FirmTrxDAO {
 				result = rset.getString("seq");
 			}
 		}catch(Exception e){
-			System.out.println(e.getMessage());
+			logger.error(e.getMessage());
 		}finally{
 			db.close(conn,pstmt,rset);
 		}
@@ -722,7 +722,7 @@ public class FirmTrxDAO {
 				result = rset.getString("sendDate");
 			}
 		}catch(Exception e){
-			System.out.println(e.getMessage());
+			logger.error(e.getMessage());
 		}finally{
 			db.close(conn,pstmt,rset);
 		}
@@ -793,7 +793,7 @@ public class FirmTrxDAO {
 				result.put("filler", rset.getString("filler"));
 			}
 		}catch(Exception e){
-			System.out.println(e.getMessage());
+			logger.error(e.getMessage());
 		}finally{
 			db.close(conn,pstmt,rset);
 		}
