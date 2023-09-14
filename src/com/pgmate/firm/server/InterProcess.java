@@ -2,11 +2,7 @@ package com.pgmate.firm.server;
 
 import com.pgmate.firm.conf.Firm;
 import com.pgmate.firm.inter.FirmBean;
-import com.pgmate.firm.server.executor.InterExcuter;
-import com.pgmate.firm.server.executor.InterHyphenExcuter;
-import com.pgmate.firm.server.executor.InterHyphenFirmExcuter;
-import com.pgmate.firm.server.executor.InterKsnetExcuter;
-import com.pgmate.firm.util.HyphenComm;
+import com.pgmate.firm.server.executor.*;
 import com.pgmate.lib.util.gson.GsonUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -32,37 +28,73 @@ public class InterProcess implements java.io.Serializable{
 		InterExcuter interExcuter = new InterKsnetExcuter(firm);
 //		InterExcuter interExcuter = new InterHyphenExcuter(firm);
 		InterExcuter interHyphenFirmExcuter = new InterHyphenFirmExcuter(firm);
+		InterExcuter doznExcuter = new DoznExcuter(firm);
 
 		if(firmBean.resultCd.equals("9999")){
 			return GsonUtil.toJson(firmBean);
 		}else{
-			if(firmBean.msgType.startsWith("0800")){
-				firmBean = interExcuter.proc0800(firmBean);
-			}else if(firmBean.msgType.startsWith("0600300")){
-				//잔액조회
-				firmBean = interExcuter.proc0600300(firmBean);
-			}else if(firmBean.msgType.startsWith("0600400")){
-				//성명조회
-//				firmBean = interExcuter.proc0600400(firmBean);
-				firmBean = interHyphenFirmExcuter.proc0600400(firmBean);
-			}else if(firmBean.msgType.startsWith("0700100")){
-				//집계
-				firmBean = interExcuter.proc0700100(firmBean);
-			}else if(firmBean.msgType.startsWith("0100100")){
-				//이체
-				firmBean = interExcuter.proc0100100(firmBean);
-			}else if(firmBean.msgType.startsWith("0600101")){
-				//처리결과조회
-				firmBean = interExcuter.proc0600101(firmBean);
-			}else if(firmBean.msgType.startsWith("0900400")){
-				//가상계좌 출금정보 등록
-				firmBean = interExcuter.proc0900400(firmBean);
-			}else if(firmBean.msgType.startsWith("ARSAUTH")) {
-				//ARS 인증
-				firmBean = interHyphenFirmExcuter.procArsAuth(firmBean);
-			}else if(firmBean.msgType.startsWith("0600102")){
-				//이체 재시도
-				firmBean = interExcuter.proc0600102(firmBean);
+			if(firmBean.bankCd.equals("034")) {
+				//더즌은 따로 예외처리
+				if(firmBean.msgType.startsWith("0600300")) {
+					//잔액조회
+					firmBean = doznExcuter.proc0600300(firmBean);
+				}else if(firmBean.msgType.startsWith("0600400")){
+					//성명조회
+					firmBean = doznExcuter.proc0600400(firmBean);
+				}else if(firmBean.msgType.startsWith("0700100")){
+					//집계
+					firmBean = doznExcuter.proc0700100(firmBean);
+				}else if(firmBean.msgType.startsWith("0100100")){
+					//이체
+					firmBean = doznExcuter.proc0100100(firmBean);
+				}else if(firmBean.msgType.startsWith("0600101")){
+					//처리결과조회
+					firmBean = doznExcuter.proc0600101(firmBean);
+				}else if(firmBean.msgType.startsWith("0900400")){
+					//가상계좌 출금정보 등록
+					firmBean = doznExcuter.proc0900400(firmBean);
+				}else if(firmBean.msgType.startsWith("ARSAUTH")) {
+					//ARS 인증
+					firmBean = doznExcuter.procArsAuth(firmBean);
+				}else if(firmBean.msgType.startsWith("0600102")){
+					//이체 재시도
+					firmBean = doznExcuter.proc0600102(firmBean);
+				}else if(firmBean.msgType.startsWith("ACCAUTH")) {
+					//계좌점유인증(1원인증)
+					firmBean = doznExcuter.procAccAuth(firmBean);
+				}else if(firmBean.msgType.startsWith("ARSCHCK")) {
+					//ARS인증 체크
+					firmBean = doznExcuter.procArschck(firmBean);
+				}
+
+			} else {
+				if(firmBean.msgType.startsWith("0800")){
+					firmBean = interExcuter.proc0800(firmBean);
+				}else if(firmBean.msgType.startsWith("0600300")){
+					//잔액조회
+					firmBean = interExcuter.proc0600300(firmBean);
+				}else if(firmBean.msgType.startsWith("0600400")){
+					//성명조회
+					firmBean = interHyphenFirmExcuter.proc0600400(firmBean);
+				}else if(firmBean.msgType.startsWith("0700100")){
+					//집계
+					firmBean = interExcuter.proc0700100(firmBean);
+				}else if(firmBean.msgType.startsWith("0100100")){
+					//이체
+					firmBean = interExcuter.proc0100100(firmBean);
+				}else if(firmBean.msgType.startsWith("0600101")){
+					//처리결과조회
+					firmBean = interExcuter.proc0600101(firmBean);
+				}else if(firmBean.msgType.startsWith("0900400")){
+					//가상계좌 출금정보 등록
+					firmBean = interExcuter.proc0900400(firmBean);
+				}else if(firmBean.msgType.startsWith("ARSAUTH")) {
+					//ARS 인증
+					firmBean = interHyphenFirmExcuter.procArsAuth(firmBean);
+				}else if(firmBean.msgType.startsWith("0600102")){
+					//이체 재시도
+					firmBean = interExcuter.proc0600102(firmBean);
+				}
 			}
 		}
 

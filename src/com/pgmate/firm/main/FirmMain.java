@@ -4,9 +4,12 @@ import java.nio.charset.StandardCharsets;
 import java.util.List;
 
 import com.pgmate.firm.dao.FirmDAO;
+import com.pgmate.firm.dozn.DoznBaseBean;
+import com.pgmate.firm.dozn.DoznBean;
 import com.pgmate.firm.hyphen.BalanceBean;
 import com.pgmate.firm.hyphen.HyphenBaseBean;
 import com.pgmate.firm.hyphen.HyphenBean;
+import com.pgmate.firm.util.DoznComm;
 import com.pgmate.firm.util.FirmUtil;
 import com.pgmate.firm.util.HyphenComm;
 import com.pgmate.lib.util.gson.GsonUtil;
@@ -32,11 +35,13 @@ public class FirmMain{
 	private Firm firm = null;
 	private KsnetComm comm			= null;
 	private HyphenComm hyphenComm 	= null;
+	private DoznComm doznComm		= null;
 
 	public FirmMain(Firm firm) {
 		this.firm = firm;
 		comm = new KsnetComm(firm.server);
 		hyphenComm = new HyphenComm();
+		doznComm = new DoznComm();
 	}
 
 
@@ -206,6 +211,90 @@ public class FirmMain{
 
 			logger.info("ARS RESULT {},[{}]",hyphenBean.getReplyCode(), hyphenBean.getSuccessYn());
 			logger.info("ARS RESULT UPDATE : {} : {}",(i+1),firmMasterDAO.updateArsByHyphen(hyphenBean));
+		}
+	}
+
+	/**
+	 * PYS : 더즌용 펌 마스터 전송
+	 */
+	public void DoznfirmMaster() {
+		FirmMasterDAO firmMasterDAO = new FirmMasterDAO(firm.bank);
+		List<DoznBean> list = firmMasterDAO.selectByDozn();
+		for(int i=0;i<list.size();i++){
+			logger.info("DOZN MASTER TRANSFER : {}/{}",(i+1),list.size());
+			DoznBean doznBean = list.get(i);
+			logger.info("DOZN MASTER STATUS UPDATE : {} : {}",(i+1),firmMasterDAO.updateStatus(doznBean.getIndex(), "I"));
+			String resData = doznComm.connect(doznBean);
+
+			JSONObject apiRes = new JSONObject();
+			JSONParser jsonParser = new JSONParser();
+			try {
+				apiRes = (JSONObject) jsonParser.parse(resData);
+
+				doznBean.setStatus(apiRes.get("status").toString());
+				if(doznBean.getStatus().equals("200")) {
+					doznBean.setVanTrxId(apiRes.get("natv_tr_no").toString()); //더즌거래번호
+					doznBean.setResultCode("0000");
+					doznBean.setResultMsg("정상");
+				} else {
+					doznBean.setResultCode(apiRes.get("error_code").toString());
+					doznBean.setResultMsg(apiRes.get("error_message").toString());
+				}
+				doznBean.setResData(resData);
+
+			} catch (ParseException e) {
+				logger.error("DOZN Firm Master Error : [{}] [{}]", resData, e.getMessage());
+				doznBean.setResultCode("XXXX");
+				doznBean.setResultMsg("통신실패");
+				doznBean.setResData("");
+			}
+
+
+
+			logger.info("DOZN MASTER RESULT {},[{}]", doznBean.getStatus(), doznBean.getResData());
+			logger.info("DOZN MASTER RESULT UPDATE : {} : {}",(i+1),firmMasterDAO.updateByDozn(doznBean));
+		}
+	}
+
+	/**
+	 * PYS : 더즌용 이체전문 전송
+	 */
+	public void DoznFirmTrx() {
+		FirmTrxDAO firmTrxDAO = new FirmTrxDAO(firm.bank);
+		List<DoznBean> list = firmTrxDAO.selectByDozn();
+		for(int i=0;i<list.size();i++){
+			logger.info("DOZN TRX TRANSFER : {}/{}",(i+1),list.size());
+			DoznBean doznBean = list.get(i);
+			logger.info("DOZN TRX STATUS UPDATE : {} : {}",(i+1),firmTrxDAO.updateStatus(doznBean.getIndex(), "I"));
+			String resData = doznComm.connect(doznBean);
+
+			JSONObject apiRes = new JSONObject();
+			JSONParser jsonParser = new JSONParser();
+			try {
+				apiRes = (JSONObject) jsonParser.parse(resData);
+
+				doznBean.setStatus(apiRes.get("status").toString());
+				if(doznBean.getStatus().equals("200")) {
+					doznBean.setVanTrxId(apiRes.get("natv_tr_no").toString()); //더즌거래번호
+					doznBean.setResultCode("0000");
+					doznBean.setResultMsg("정상");
+				} else {
+					doznBean.setResultCode(apiRes.get("error_code").toString());
+					doznBean.setResultMsg(apiRes.get("error_message").toString());
+				}
+				doznBean.setResData(resData);
+
+			} catch (ParseException e) {
+				logger.error("DOZN Firm Master Error : [{}] [{}]", resData, e.getMessage());
+				doznBean.setResultCode("XXXX");
+				doznBean.setResultMsg("통신실패");
+				doznBean.setResData("");
+			}
+
+
+
+			logger.info("DOZN MASTER RESULT {},[{}]", doznBean.getStatus(), doznBean.getResData());
+			logger.info("DOZN MASTER RESULT UPDATE : {} : {}",(i+1),firmTrxDAO.updateByDozn(doznBean));
 		}
 	}
 

@@ -22,6 +22,11 @@ public class BankBean {
 
 	//230405_PYS : 경남은행추가
 	public String firmBankCode = "";
+
+	//230911_PYS : 더즌 추가
+	public String api_key = ""; //더즌에서 발급한 KEY
+	public String org_code = ""; //더즌에서 발급한 코드
+	public String crypto = ""; //더즌 암호화 유무
 	
 	public BankBean() {
 		// TODO Auto-generated constructor stub

@@ -39,6 +39,8 @@ public class Daemon extends Thread{
 						main.wireTransfer();
 						main.HyphenfirmMaster();
 						main.HyphenfirmArs();
+						main.DoznfirmMaster();
+						main.DoznFirmTrx();
 						//main.firmTrx();
 
 					}

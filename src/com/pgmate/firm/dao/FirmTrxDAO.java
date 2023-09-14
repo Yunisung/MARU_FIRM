@@ -6,6 +6,9 @@ import java.sql.ResultSet;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.google.gson.Gson;
+import com.pgmate.firm.dozn.DoznBean;
+import com.pgmate.firm.dozn.DoznTransferBean;
 import com.pgmate.firm.hyphen.DepositBean;
 import com.pgmate.firm.hyphen.HyphenBean;
 import com.pgmate.firm.hyphen.TransferBean;
@@ -100,7 +103,7 @@ public class FirmTrxDAO {
 	}
 
 	public List<FBHeaderBean> select(){
-		String query = " SELECT idx,bankCd,sendTime,seqNo,amount,recvBank,recvAccount,checkDigit,recvHolder,recordInfo,procType,procId	FROM PG_FIRM_TRX WHERE sendDate = DATE_FORMAT(now(), '%Y%m%d') 	AND procGb='R' AND procType != 'BT' ORDER BY idx ASC LIMIT 10";
+		String query = " SELECT idx,bankCd,sendTime,seqNo,amount,recvBank,recvAccount,checkDigit,recvHolder,recordInfo,procType,procId	FROM PG_FIRM_TRX WHERE sendDate = DATE_FORMAT(now(), '%Y%m%d') 	AND procGb='R' AND procType != 'BT' AND bankCd != '034' ORDER BY idx ASC LIMIT 10";
 
 		DBManager db 	= null;
 		PreparedStatement pstmt	= null;
@@ -843,4 +846,148 @@ public class FirmTrxDAO {
 		}
 		return result;
 	}
+
+	/**
+	 * 더즌용 이체데이터
+	 * @return
+	 */
+	public List<DoznBean> selectByDozn(){
+		String query = " SELECT idx,bankCd,sendDate,sendTime,seqNo,amount,recvBank,recvAccount,checkDigit,recvHolder,recordInfo,procType,procId	FROM PG_FIRM_TRX WHERE sendDate = DATE_FORMAT(now(), '%Y%m%d') 	AND procGb='R' AND procType != 'BT' AND bankCd = '034' ORDER BY idx ASC LIMIT 10";
+
+		DBManager db 	= null;
+		PreparedStatement pstmt	= null;
+		Connection conn			= null;
+		ResultSet rset			= null;
+
+
+
+		List<DoznBean> list = new ArrayList<DoznBean>();
+
+
+		try{
+			db 		= DBFactory.getInstance();
+			conn	= db.getConnection();
+			pstmt	= conn.prepareStatement(query);
+			rset 	= pstmt.executeQuery();
+
+			while(rset.next()){
+				//더즌 이체전문은 여기서 생성
+				BankBean configBean = map.get(rset.getString("bankCd"));
+
+				DoznTransferBean bean = new DoznTransferBean();
+				bean.setApiKey(configBean.api_key);
+				bean.setOrgCode(configBean.org_code);
+				bean.setDrw_bank_code(configBean.bankCd);
+				bean.setTelegram_no(CommonUtil.parseLong(rset.getString("seqNo")));
+				bean.setDrw_account(configBean.account);
+				bean.setDrw_account_cntn(rset.getString("recordInfo"));
+				bean.setRv_bank_code(rset.getString("recvBank"));
+				bean.setRv_account(rset.getString("recvAccount"));
+				bean.setRv_account_cntn(rset.getString("recvHolder"));
+				bean.setAmount(rset.getLong("amount"));
+				bean.setSign_no("");
+				bean.setTr_dt(rset.getString("sendDate"));
+				bean.setTr_tm(rset.getString("sendTime"));
+
+				String jsonParams = new Gson().toJson(bean);
+
+				//URL 세팅
+				String sendUrl = "api/rt/v1/transfer";
+				if(configBean.crypto.equals("Y")) {
+					sendUrl = "crypto/rt/v1/transfer";
+				}
+
+				DoznBean doznBean = new DoznBean();
+				doznBean.setUrl(sendUrl);
+				doznBean.setReqData(jsonParams);
+				doznBean.setIndex(rset.getLong("idx"));
+				list.add(doznBean);
+			}
+		}catch(Exception e){
+			e.printStackTrace();
+			logger.error("DB Error : {} , {} , [{}]",Thread.currentThread().getStackTrace()[1].getMethodName(),e.getMessage(),query);
+		}finally{
+			db.close(conn,pstmt,rset);
+		}
+		return list;
+	}
+
+	/**
+	 * 더즌 통신결과 UPDATE
+	 */
+	public boolean updateByDozn(DoznBean doznBean){
+		String query = "UPDATE PG_FIRM_TRX SET procGb =?, recvDate=DATE_FORMAT(now(), '%Y%m%d'), recvTime=DATE_FORMAT(now(), '%H%i%s'), resultCd=?, resultMsg=?, modDt=now() WHERE idx =?";
+
+		DBManager db 	= null;
+		PreparedStatement pstmt	= null;
+		Connection conn			= null;
+		int result		=0;
+		try{
+			db 		= DBFactory.getInstance();
+			conn	= db.getConnection();
+			pstmt	= conn.prepareStatement(query);
+			if(doznBean.getResultCode().equals("0000")){
+				pstmt.setString(1,"Y");
+			}else if(doznBean.getResultCode().equals("XXXX")){
+				pstmt.setString(1,"X");
+			}else{
+				pstmt.setString(1,"N");
+			}
+
+			pstmt.setString(2, doznBean.getResultCode());
+			pstmt.setString(3, doznBean.getResultMsg());
+			pstmt.setLong(4, doznBean.getIndex());
+
+			result = pstmt.executeUpdate();
+
+			conn.commit();
+
+		}catch(Exception e){
+			logger.info("DB Error : {} , {} , [{}]",Thread.currentThread().getStackTrace()[1].getMethodName(),e.getMessage(),query);
+		}finally{
+			db.close(pstmt);
+			db.close(conn);
+		}
+
+		if(result > 0){
+			return true;
+		}else{
+			return false;
+		}
+	}
+
+	public FirmBean checkResultByDozn(long idx,FirmBean firmBean){
+		String query = " SELECT resultCd,resultMsg,recvHolder FROM PG_FIRM_TRX WHERE idx =?  AND procGb in ('N','Y') ";
+
+		DBManager db 	= null;
+		PreparedStatement pstmt	= null;
+		Connection conn			= null;
+		ResultSet rset			= null;
+
+
+		try{
+			db 		= DBFactory.getInstance();
+			conn	= db.getConnection();
+			pstmt	= conn.prepareStatement(query);
+			pstmt.setLong(1, idx);
+			rset 	= pstmt.executeQuery();
+
+			while(rset.next()){
+				firmBean.resultCd = rset.getString("resultCd");
+				firmBean.resultMsg = rset.getString("resultMsg").trim();
+				firmBean.idx  = idx;
+				if(firmBean.data == null){
+					firmBean.data = new SharedMap<String,Object>();
+				}
+				firmBean.data.put("recvHolder", rset.getString("recvHolder"));
+
+			}
+		}catch(Exception e){
+			logger.info("DB Error : {} , {} , [{}]",Thread.currentThread().getStackTrace()[1].getMethodName(),e.getMessage(),query);
+		}finally{
+			db.close(conn,pstmt,rset);
+		}
+		return firmBean;
+	}
+
 }
