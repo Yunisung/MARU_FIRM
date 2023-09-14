@@ -511,5 +511,15 @@ public class InterHyphenFirmExcuter implements InterExcuter {
         return null;
     }
 
+    @Override
+    public FirmBean procAccAuth(FirmBean firmBean) {
+        return null;
+    }
+
+    @Override
+    public FirmBean procArschck(FirmBean firmBean) {
+        return null;
+    }
+
 
 }

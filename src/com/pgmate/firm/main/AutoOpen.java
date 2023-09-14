@@ -1,5 +1,10 @@
 package com.pgmate.firm.main;
 
+import com.google.gson.Gson;
+import com.pgmate.firm.dozn.DoznAccountOpenBean;
+import com.pgmate.firm.dozn.DoznBalanceCheckBean;
+import com.pgmate.firm.dozn.DoznBaseBean;
+import com.pgmate.lib.util.lang.CommonUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -25,8 +30,29 @@ public class AutoOpen {
 		
 		for(String bankCd : firm.keySet()){
 			if(bankCd.equals("039")){
+				//String seqNo = FirmDAO.getSeqNO();
+				//logger.info("autoopen : bank:{} ,seq:{},insert : {}", bankCd,seqNo,new FirmMasterDAO(firm).insert0800100(bankCd,seqNo));
+			} else if(bankCd.equals("034")) {
 				String seqNo = FirmDAO.getSeqNO();
-				logger.info("autoopen : bank:{} ,seq:{},insert : {}", bankCd,seqNo,new FirmMasterDAO(firm).insert0800100(bankCd,seqNo));
+				String crypto = firm.get(bankCd).crypto;
+
+				//BEAN 세팅
+				DoznAccountOpenBean bean = new DoznAccountOpenBean();
+				bean.setApiKey(firm.get(bankCd).api_key);
+				bean.setOrgCode(firm.get(bankCd).org_code);
+				bean.setTelegram_no(CommonUtil.parseLong(seqNo));
+				bean.setDrw_bank_code(bankCd);
+
+				String sendUrl = "api/rt/v1/account/open";
+				if(crypto.equals("Y")) {
+					sendUrl = "crypto/rt/v1/account/open";
+				}
+
+				String jsonParams = new Gson().toJson(bean);
+
+				long idx = new FirmMasterDAO().setMasterbyDozn("0800", "100", bankCd, seqNo, sendUrl, jsonParams);
+
+				logger.info("autoopen : bank:{} ,seq:{}, Index : {}", bankCd,seqNo, idx);
 			}
 		}
 	}

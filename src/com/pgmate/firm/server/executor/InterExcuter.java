@@ -63,4 +63,18 @@ public interface InterExcuter {
      * @return
      */
     FirmBean proc0600102(FirmBean firmBean);
+
+    /**
+     * 계좌점유인증(1원인증)
+     * @param firmBean
+     * @return
+     */
+    FirmBean procAccAuth(FirmBean firmBean);
+
+    /**
+     * ARS인증 결과
+     * @param firmBean
+     * @return
+     */
+    FirmBean procArschck(FirmBean firmBean);
 }

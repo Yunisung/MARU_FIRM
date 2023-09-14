@@ -7,6 +7,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.pgmate.firm.conf.BankBean;
+import com.pgmate.firm.dozn.DoznBaseBean;
+import com.pgmate.firm.dozn.DoznBean;
 import com.pgmate.firm.hyphen.*;
 import com.pgmate.firm.inter.FirmBean;
 import com.pgmate.firm.ksnet.FBHeaderBean;
@@ -527,8 +529,8 @@ public class FirmMasterDAO {
 			conn.commit();
 
 		}catch(Exception e){
-			logger.info("DB Error : {} , {} , [{}]",Thread.currentThread().getStackTrace()[1].getMethodName(),e.getMessage(),query);
-			logger.info("UPDATE PG_FIRM_MASTER SET procGb='{}' WHERE idx ={};",status,idx);
+			logger.error("DB Error : {} , {} , [{}]",Thread.currentThread().getStackTrace()[1].getMethodName(),e.getMessage(),query);
+			logger.error("UPDATE PG_FIRM_MASTER SET procGb='{}' WHERE idx ={};",status,idx);
 		}finally{
 			db.close(pstmt);
 			db.close(conn);
@@ -920,4 +922,205 @@ public class FirmMasterDAO {
 		return errorMsg;
 	}
 
+	/**
+	 *
+	 * PYS : 더즌용 FIRM MASTER 세팅
+	 * @return
+	 */
+	public long setMasterbyDozn(String msgCd,String jobGb,String bankCd, String seqNo, String sendUrl,String reqData){
+		String query = "INSERT INTO PG_FIRM_MASTER (bankCd,msgCd,jobGb,seqNo,sendDate,sendTime,procGb, sendUrl,reqData) "
+				+" VALUES (?,?,?,?, DATE_FORMAT(now(), '%Y%m%d'), DATE_FORMAT(now(), '%H%i%s'),'D',?,?)";
+
+		DBManager db 			= null;
+		PreparedStatement pstmt	= null;
+		Connection conn			= null;
+		ResultSet rset 			= null;
+		long result				= 0;
+
+		try{
+			db 		= DBFactory.getInstance();
+			conn	= db.getConnection();
+			pstmt	= conn.prepareStatement(query);
+
+			pstmt.setString(1,bankCd);
+			pstmt.setString(2,msgCd);
+			pstmt.setString(3,jobGb);
+			pstmt.setString(4,seqNo);
+			pstmt.setString(5,sendUrl);
+			pstmt.setString(6,reqData);
+			result = pstmt.executeUpdate();
+			rset		= pstmt.executeQuery("SELECT LAST_INSERT_ID() ");
+			while(rset.next()){
+				result = rset.getLong(1);
+			}
+			conn.commit();
+
+		}catch(Exception e){
+			logger.info("DB Error : {} , {} , [{}]",Thread.currentThread().getStackTrace()[1].getMethodName(),e.getMessage(),query);
+		}finally{
+			db.close(pstmt);
+			db.close(conn);
+		}
+		return result;
+	}
+
+	/**
+	 * PYS : 더즌용 PG_FIRM_MASTER SELECTOR
+	 * @return
+	 */
+	public List<DoznBean> selectByDozn() {
+		String query = " SELECT idx,bankCd,msgCd,jobGb,seqNo,sendDate,sendTime,searchDate,searchNo,bankSeqNo,filler,sendUrl,reqData FROM PG_FIRM_MASTER WHERE sendDate = DATE_FORMAT(now(), '%Y%m%d') AND procGb='D' AND filler IS null ORDER BY idx ASC";
+
+		DBManager db 	= null;
+		PreparedStatement pstmt	= null;
+		Connection conn			= null;
+		ResultSet rset			= null;
+
+		List<DoznBean> list = new ArrayList<DoznBean>();
+
+		try{
+			db 		= DBFactory.getInstance();
+			conn	= db.getConnection();
+			pstmt	= conn.prepareStatement(query);
+			rset 	= pstmt.executeQuery();
+
+			while(rset.next()){
+				BankBean configBean = map.get(rset.getString("bankCd"));
+
+				if(configBean != null) {
+					DoznBean doznBean = new DoznBean();
+					doznBean.setIndex(rset.getLong("idx"));
+					doznBean.setUrl(rset.getString("sendUrl"));
+					doznBean.setReqData(rset.getString("reqData"));
+					list.add(doznBean);
+				} else {
+					logger.info("해당은행코드에 해당하는 config값이 없습니다. : [{}]", rset.getString("bankCd"));
+				}
+			}
+		}catch(Exception e){
+			logger.error("DB Error : {} , {} , [{}]",Thread.currentThread().getStackTrace()[1].getMethodName(),e.getMessage(),query);
+		}finally{
+			db.close(conn,pstmt,rset);
+		}
+		return list;
+	}
+
+	/**
+	 * PYS : 더즌 통신결과 UPDATE
+	 *
+	 * @return
+	 */
+	public boolean updateByDozn(DoznBean doznBean) {
+		String query = "UPDATE PG_FIRM_MASTER SET procGb =? , recvDate=DATE_FORMAT(now(), '%Y%m%d'), recvTime=DATE_FORMAT(now(), '%H%i%s'), resultCd=?, resultMsg=?, resData=? , modDt = now() WHERE idx =?";
+
+		DBManager db 	= null;
+		PreparedStatement pstmt	= null;
+		Connection conn			= null;
+		int result		=0;
+		try{
+			db 		= DBFactory.getInstance();
+			conn	= db.getConnection();
+			pstmt	= conn.prepareStatement(query);
+			if(doznBean.getResultCode().equals("0000")){
+				pstmt.setString(1,"Y");
+			}else if(doznBean.getResultCode().equals("XXXX")){
+				pstmt.setString(1,"X");
+			}else{
+				pstmt.setString(1,"N");
+			}
+
+			pstmt.setString(2, doznBean.getResultCode());
+			pstmt.setString(3, doznBean.getResultMsg());
+			pstmt.setString(4,doznBean.getResData());
+			pstmt.setLong(5,doznBean.getIndex());
+
+			result = pstmt.executeUpdate();
+
+			conn.commit();
+
+		}catch(Exception e){
+			logger.info("DB Error : {} , {} , [{}]",Thread.currentThread().getStackTrace()[1].getMethodName(),e.getMessage(),query);
+		}finally{
+			db.close(pstmt);
+			db.close(conn);
+		}
+		if(result > 0){
+			return true;
+		}else{
+			return false;
+		}
+	}
+
+	/**
+	 *
+	 * 더즌용 처리결과조회
+	 */
+	public long setMasterAddSearchDateByDozn(String msgCd, String jobGb, String bankCd, String url, String reqData, String searchDate) {
+		String query = "INSERT INTO PG_FIRM_MASTER (bankCd,msgCd,jobGb,seqNo,sendDate,sendTime,procGb, sendUrl, reqData, searchDate) "
+				+" VALUES (?,?,?,FN_BANKSEQ(), DATE_FORMAT(now(), '%Y%m%d'), DATE_FORMAT(now(), '%H%i%s'),'D',?, ?, ?)";
+
+		DBManager db 			= null;
+		PreparedStatement pstmt	= null;
+		Connection conn			= null;
+		ResultSet rset 			= null;
+		long result				= 0;
+
+		try{
+			db 		= DBFactory.getInstance();
+			conn	= db.getConnection();
+			pstmt	= conn.prepareStatement(query);
+
+			pstmt.setString(1,bankCd);
+			pstmt.setString(2,msgCd);
+			pstmt.setString(3,jobGb);
+			pstmt.setString(4,url);
+			pstmt.setString(5,reqData);
+			pstmt.setString(6,searchDate);
+			result = pstmt.executeUpdate();
+			rset		= pstmt.executeQuery("SELECT LAST_INSERT_ID() ");
+			while(rset.next()){
+				result = rset.getLong(1);
+			}
+			conn.commit();
+
+		}catch(Exception e){
+			logger.info("DB Error : {} , {} , [{}]",Thread.currentThread().getStackTrace()[1].getMethodName(),e.getMessage(),query);
+		}finally{
+			db.close(pstmt);
+			db.close(conn);
+		}
+		return result;
+	}
+
+	/**
+	 * 펌 처리결과 확인 전문에서 필요한 전문번호 호출
+	 * @return
+	 */
+	public String getTranDate(String seqNo){
+		String query = "SELECT sendDate from PG_FIRM_MASTER where seqNo = ?";
+
+		DBManager db 	= null;
+		PreparedStatement pstmt	= null;
+		Connection conn			= null;
+		ResultSet rset			= null;
+		String result	= "";
+
+		try{
+			db 		= DBFactory.getInstance();
+			conn	= db.getConnection();
+			pstmt	= conn.prepareStatement(query);
+			pstmt.setString(1,seqNo);
+			rset 	= pstmt.executeQuery();
+
+			while(rset.next()){
+				result = rset.getString("sendDate");
+			}
+		}catch(Exception e){
+			logger.error(e.getMessage());
+		}finally{
+			db.close(conn,pstmt,rset);
+		}
+
+		return result;
+	}
 }

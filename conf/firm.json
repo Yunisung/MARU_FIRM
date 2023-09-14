@@ -31,6 +31,13 @@
       "ekey": "E3F93E5201969E953066C7911F6AC8BB",
       "kscode": "6596",
       "msalt": "MA01"
+    },
+    "034" : {
+      "bankCd" : "034",
+      "account" : "019107542861",
+      "api_key" : "APIKEY",
+      "org_code" : "BKWINNER",
+      "crypto" : "N"
     }
   },
   "server": {

@@ -343,6 +343,16 @@ public class InterKsnetExcuter implements InterExcuter {
         return firmBean;
     }
 
+    @Override
+    public FirmBean procAccAuth(FirmBean firmBean) {
+        return null;
+    }
+
+    @Override
+    public FirmBean procArschck(FirmBean firmBean) {
+        return null;
+    }
+
     /**
      * 가상계좌 출금정보 등록
      * @param firmBean
