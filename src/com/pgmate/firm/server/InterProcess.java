@@ -64,7 +64,9 @@ public class InterProcess implements java.io.Serializable{
 					firmBean = doznExcuter.procAccAuth(firmBean);
 				}else if(firmBean.msgType.startsWith("ARSCHCK")) {
 					//ARS인증 체크
-					firmBean = doznExcuter.procArschck(firmBean);
+					firmBean = doznExcuter.procArsChck(firmBean);
+				}else if(firmBean.msgType.startsWith("ACCCHCK")) {
+					firmBean = doznExcuter.procAccChck(firmBean);
 				}
 
 			} else {

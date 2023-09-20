@@ -2,11 +2,14 @@ package com.pgmate.firm.util;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonIOException;
+import com.pgmate.firm.conf.BankBean;
+import com.pgmate.firm.conf.Firm;
 import com.pgmate.firm.conf.ServerBean;
 import com.pgmate.firm.dozn.DoznBean;
 import com.pgmate.firm.hyphen.BalanceBean;
 import com.pgmate.firm.hyphen.HyphenBean;
 import com.pgmate.firm.ksnet.FBHeaderBean;
+import kr.co.dozn.secure.base.CryptoUtil;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.slf4j.Logger;
@@ -19,32 +22,56 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
+import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
+import java.util.Base64;
 
 public class DoznComm {
     private static final Logger logger = LoggerFactory.getLogger(com.pgmate.firm.util.DoznComm.class);
     private SmsGw smsGw = null;
+    private Firm firm = null;
 
     //개발
     private static final String defaultURL = "https://test-gw-firm.dozn.co.kr/";
     //운영
 //    private static final String defaultURL = "https://firmapi-pub.dozn.co.kr/";
+//    private static final String key = "bkwinners0123456";
 
-    public DoznComm() { }
+    private static final String key = "f657a924f4db69f745909f462c0f1a2e";
+    private static final String iv = "4a9acfb04bf38a5b";
+
+    public DoznComm(Firm firm) {
+        this.firm = firm;
+    }
 
     public String connect(DoznBean bean) {
+        String result = "";
+        BankBean bankBean = firm.bank.get("034");
 
         StringBuffer stringBuffer = new StringBuffer();
         String urlAddress = defaultURL + bean.getUrl();
         logger.info("SEND-URL : " + urlAddress);
+
+        //암호화모듈 세팅
+        CryptoUtil cryptoUtil = CryptoUtil.getInstance(key, iv);
+
+        HttpURLConnection conn = null;
 
         try {
             URL url = new URL(urlAddress);
             String postData = bean.getReqData();
             logger.info("REQUEST DATA: {} ", postData);
 
+            //암호화 적용
+            if(bankBean.crypto.equals("Y")) {
+                postData = cryptoUtil.encrypt(postData);
+            }
+
+            //logger.info("REQUEST CRYPTO DATA : {}", postData);
+
             byte[] postDataBytes = postData.getBytes("utf-8");
 
-            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+            conn = (HttpURLConnection) url.openConnection();
             conn.setRequestProperty("Content-Type", "application/json");
             conn.setRequestProperty("Accept", "*/*");
             conn.setRequestProperty("Accept-Charset", "UTF-8");
@@ -52,6 +79,7 @@ public class DoznComm {
             conn.setConnectTimeout(60000);
             conn.setReadTimeout(60000);
             conn.setRequestMethod("POST");
+
             conn.getOutputStream().write(postDataBytes);
             conn.getOutputStream().flush();
             conn.getOutputStream().close();
@@ -74,15 +102,25 @@ public class DoznComm {
             }
             bufferedReader.close();
 
-            String result = stringBuffer.toString();
+            result = stringBuffer.toString();
+
+            //복호화 적용
+            if(responseCode == HttpsURLConnection.HTTP_OK && bankBean.crypto.equals("Y")) {
+                result = cryptoUtil.decrypt(result);
+            }
+
             logger.info("RESPONSE DATA : " + result);
+
+            conn.disconnect();
 
         } catch (Exception e) {
             logger.error("DoznComm Exception : {}", e.getMessage());
             e.printStackTrace();
+        } finally {
+            if(conn != null)
+                conn.disconnect();
         }
 
-        return stringBuffer.toString();
+        return result;
     }
-
 }

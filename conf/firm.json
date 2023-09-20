@@ -35,9 +35,9 @@
     "034" : {
       "bankCd" : "034",
       "account" : "019107542861",
-      "api_key" : "APIKEY",
-      "org_code" : "BKWINNER",
-      "crypto" : "N"
+      "api_key" : "e98722d5-a701-4731-ae12-5e09b72ca4be",
+      "org_code" : "10000614",
+      "crypto" : "Y"
     }
   },
   "server": {
