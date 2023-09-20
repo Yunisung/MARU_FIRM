@@ -41,7 +41,7 @@ public class FirmMain{
 		this.firm = firm;
 		comm = new KsnetComm(firm.server);
 		hyphenComm = new HyphenComm();
-		doznComm = new DoznComm();
+		doznComm = new DoznComm(firm);
 	}
 
 
@@ -233,7 +233,7 @@ public class FirmMain{
 
 				doznBean.setStatus(apiRes.get("status").toString());
 				if(doznBean.getStatus().equals("200")) {
-					doznBean.setVanTrxId(apiRes.get("natv_tr_no").toString()); //더즌거래번호
+					//doznBean.setVanTrxId(apiRes.get("natv_tr_no").toString()); //더즌거래번호
 					doznBean.setResultCode("0000");
 					doznBean.setResultMsg("정상");
 				} else {
@@ -285,7 +285,7 @@ public class FirmMain{
 				doznBean.setResData(resData);
 
 			} catch (ParseException e) {
-				logger.error("DOZN Firm Master Error : [{}] [{}]", resData, e.getMessage());
+				logger.error("DOZN TRX Error : [{}] [{}]", resData, e.getMessage());
 				doznBean.setResultCode("XXXX");
 				doznBean.setResultMsg("통신실패");
 				doznBean.setResData("");
@@ -293,8 +293,8 @@ public class FirmMain{
 
 
 
-			logger.info("DOZN MASTER RESULT {},[{}]", doznBean.getStatus(), doznBean.getResData());
-			logger.info("DOZN MASTER RESULT UPDATE : {} : {}",(i+1),firmTrxDAO.updateByDozn(doznBean));
+			logger.info("DOZN TRX RESULT {},[{}]", doznBean.getStatus(), doznBean.getResData());
+			logger.info("DOZN TRX RESULT UPDATE : {} : {}",(i+1),firmTrxDAO.updateByDozn(doznBean));
 		}
 	}
 

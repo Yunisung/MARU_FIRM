@@ -1,6 +1,5 @@
 package com.pgmate.firm.server.executor;
 
-import com.pgmate.firm.conf.Firm;
 import com.pgmate.firm.inter.FirmBean;
 
 public interface InterExcuter {
@@ -72,9 +71,16 @@ public interface InterExcuter {
     FirmBean procAccAuth(FirmBean firmBean);
 
     /**
+     * 계좌점유인증 결과조회
+     * @param firmBean
+     * @return
+     */
+    FirmBean procAccChck(FirmBean firmBean);
+
+    /**
      * ARS인증 결과
      * @param firmBean
      * @return
      */
-    FirmBean procArschck(FirmBean firmBean);
+    FirmBean procArsChck(FirmBean firmBean);
 }

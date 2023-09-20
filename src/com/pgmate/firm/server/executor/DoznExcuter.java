@@ -42,10 +42,14 @@ public class DoznExcuter implements InterExcuter {
             bean.setOrgCode(configBean.org_code);
 
             bean.setDrw_bank_code(firmBean.bankCd);
+
+            String account = "";
             if(CommonUtil.isNullOrSpace(firmBean.mAccnt)) {
                 bean.setDrw_account(configBean.account);
+                account = configBean.account;
             } else {
                 bean.setDrw_account(firmBean.mAccnt);
+                account = firmBean.mAccnt;
             }
 
 
@@ -80,7 +84,7 @@ public class DoznExcuter implements InterExcuter {
                 firmBean.data.put("amount", CommonUtil.parseLong(balance_amount.trim()));
                 firmBean.data.put("payable_amount", CommonUtil.parseLong(payable_amount.trim()));
 
-                masterDAO.insertBalance(firmBean.bankCd, firmBean.mAccnt, balance_amount.trim());
+                masterDAO.insertBalance(firmBean.bankCd, account, balance_amount.trim());
             }
 
         } catch (Exception e) {
@@ -207,8 +211,12 @@ public class DoznExcuter implements InterExcuter {
             if(firmBean.resultCd.equals("0000")) {
                 firmBean.data.put("sucCount", CommonUtil.parseLong(apiRes.get("success_total_count").toString()));
                 firmBean.data.put("sucAmount", CommonUtil.parseLong(apiRes.get("success_total_amount").toString()));
-                firmBean.data.put("failCount", CommonUtil.parseLong(apiRes.get("fail_total_count").toString()));
-                firmBean.data.put("timeOutCount", CommonUtil.parseLong(apiRes.get("timeout_total_count").toString()));
+
+                if(apiRes.get("fail_total_count") != null)
+                    firmBean.data.put("failCount", CommonUtil.parseLong(apiRes.get("fail_total_count").toString()));
+
+                if(apiRes.get("timeout_total_count") != null)
+                    firmBean.data.put("timeOutCount", CommonUtil.parseLong(apiRes.get("timeout_total_count").toString()));
             }
 
         } catch (Exception e) {
@@ -430,7 +438,60 @@ public class DoznExcuter implements InterExcuter {
     }
 
     @Override
-    public FirmBean procArschck(FirmBean firmBean) {
+    public FirmBean procAccChck(FirmBean firmBean) {
+        logger.info("===================DOZN 계좌점유인증결과 ========================");
+
+        try {
+            FirmMasterDAO masterDAO = new FirmMasterDAO();
+            FirmTrxDAO firmTrxDAO = new FirmTrxDAO();
+            BankBean configBean = firm.bank.get(firmBean.bankCd);
+
+            String seqNo = firmTrxDAO.getBankSeq();
+
+            //BEAN 세팅
+            DoznAccountAuthInquireBean bean = new DoznAccountAuthInquireBean();
+            bean.setApiKey(configBean.api_key);
+            bean.setOrgCode(configBean.org_code);
+            bean.setOrg_telegram_no(CommonUtil.parseLong(firmBean.data.getString("orgSeqNo")));
+            bean.setTr_dt(masterDAO.getTranDate(firmBean.data.getString("orgSeqNo")));
+
+
+            //URL 세팅
+            String sendUrl = "api/rt/v1/account/auth/inquire";
+            if(configBean.crypto.equals("Y")) {
+                sendUrl = "crypto/rt/v1/account/auth/inquire";
+            }
+
+            String jsonParams = new Gson().toJson(bean);
+
+            //logger.info("dozn json data : [{}]", jsonParams);
+
+            //MASTER DB 저장
+            long idx = masterDAO.setMasterbyDozn(firmBean.msgType.substring(0,4), firmBean.msgType.substring(4), firmBean.bankCd, seqNo, sendUrl, jsonParams);
+            firmBean = processCheck(idx, firmBean, masterDAO);
+
+            String resJson = firmBean.data.getString("resData");
+            //logger.info("dozn response : [{}]", resJson);
+
+            //JSON 파싱
+            JSONParser jsonParser = new JSONParser();
+            JSONObject apiRes  = (JSONObject) jsonParser.parse(resJson);
+
+            //결과처리
+
+        } catch (Exception e) {
+            firmBean.resultCd = "XXXX";
+            firmBean.resultMsg = "더즌 계좌점유인증결과 오류";
+
+            e.printStackTrace();
+            logger.error("DOZN 계좌점유인증결과 오류 : [{}]", e.getMessage());
+        }
+
+        return firmBean;
+    }
+
+    @Override
+    public FirmBean procArsChck(FirmBean firmBean) {
         logger.info("===================DOZN ARS인증결과 ========================");
 
         try {

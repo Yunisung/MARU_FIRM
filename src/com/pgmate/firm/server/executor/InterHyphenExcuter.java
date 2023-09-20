@@ -414,7 +414,12 @@ public class InterHyphenExcuter implements InterExcuter {
     }
 
     @Override
-    public FirmBean procArschck(FirmBean firmBean) {
+    public FirmBean procAccChck(FirmBean firmBean) {
+        return null;
+    }
+
+    @Override
+    public FirmBean procArsChck(FirmBean firmBean) {
         return null;
     }
 
