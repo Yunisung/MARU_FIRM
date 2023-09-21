@@ -1,17 +1,17 @@
 package com.pgmate.firm.dozn;
 
 /**
- * ARSì¸ì¦
+ * ARSÀÎÁõ
  */
 public class DoznArsAuthenticateBean extends DoznBaseBean{
-    private long telegram_no;   //ê±°ë˜ê³ ìœ ë²ˆí˜¸
-    private String bank_code;   //ì€í–‰ì½”ë“œ
-    private String account;     //ê³„ì¢Œë²ˆí˜¸
-    private String depositor;   //ì˜ˆê¸ˆì£¼ëª…
-    private String phone_no;    //íœ´ëŒ€ì „í™”ë²ˆí˜¸
-    private String auth_no;     //ì¸ì¦ë²ˆí˜¸
-    private String send_no;     //ë°œì‹ ë²ˆí˜¸ : ë¯¸ì…ë ¥ì‹œ ë”ì¦Œë²ˆí˜¸ ì‚¬ìš©
-    private String org_nm;      //ì´ìš©ê¸°ê´€ëª…
+    private long telegram_no;   //°Å·¡°íÀ¯¹øÈ£
+    private String bank_code;   //ÀºÇàÄÚµå
+    private String account;     //°èÁÂ¹øÈ£
+    private String depositor;   //¿¹±İÁÖ¸í
+    private String phone_no;    //ÈŞ´ëÀüÈ­¹øÈ£
+    private String auth_no;     //ÀÎÁõ¹øÈ£
+    private String send_no;     //¹ß½Å¹øÈ£ : ¹ÌÀÔ·Â½Ã ´õÁğ¹øÈ£ »ç¿ë
+    private String org_nm;      //ÀÌ¿ë±â°ü¸í
 
     public DoznArsAuthenticateBean() {}
 

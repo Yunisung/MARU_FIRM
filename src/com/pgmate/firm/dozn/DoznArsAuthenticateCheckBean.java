@@ -1,11 +1,11 @@
 package com.pgmate.firm.dozn;
 
 /**
- * ARSì¸ì¦ê²°ê³¼
+ * ARSÀÎÁõ°á°ú
  */
 public class DoznArsAuthenticateCheckBean extends DoznBaseBean{
-    private long org_telegram_no;   //ì›ê±°ë˜ê³ ìœ ë²ˆí˜¸
-    private String tr_dt;           //ì›ê±°ë˜ì¼ì
+    private long org_telegram_no;   //¿ø°Å·¡°íÀ¯¹øÈ£
+    private String tr_dt;           //¿ø°Å·¡ÀÏÀÚ
 
     public DoznArsAuthenticateCheckBean(){}
 
