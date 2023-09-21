@@ -151,7 +151,7 @@ public class DoznExcuter implements InterExcuter {
                 String name = apiRes.get("depositor").toString();
                 firmBean.data.put("accountName", name);
 
-                masterDAO.insertAccnt(firmBean.data.getString("bankCd"), firmBean.data.getString("account"), firmBean.data.getString("name"));
+                masterDAO.insertAccnt(firmBean.data.getString("bankCd"), firmBean.data.getString("account"), firmBean.data.getString("accountName"));
             }
 
         } catch (Exception e) {

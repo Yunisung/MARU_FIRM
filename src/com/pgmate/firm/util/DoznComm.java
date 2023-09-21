@@ -64,7 +64,7 @@ public class DoznComm {
 
             //암호화 적용
             if(bankBean.crypto.equals("Y")) {
-                postData = cryptoUtil.encrypt(postData);
+                postData = cryptoUtil.encrypt(postData, "UTF-8");
             }
 
             //logger.info("REQUEST CRYPTO DATA : {}", postData);
@@ -106,7 +106,7 @@ public class DoznComm {
 
             //복호화 적용
             if(responseCode == HttpsURLConnection.HTTP_OK && bankBean.crypto.equals("Y")) {
-                result = cryptoUtil.decrypt(result);
+                result = cryptoUtil.decrypt(result, "UTF-8");
             }
 
             logger.info("RESPONSE DATA : " + result);
