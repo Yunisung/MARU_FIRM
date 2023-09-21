@@ -5,7 +5,6 @@ import com.pgmate.firm.conf.FirmLoader;
 import com.pgmate.firm.inter.FirmBean;
 import com.pgmate.firm.main.Daemon;
 import com.pgmate.firm.util.FirmUtil;
-import com.pgmate.firm.util.KISA_SEED_CBC;
 import com.pgmate.lib.util.gson.GsonUtil;
 import com.pgmate.lib.util.lang.CommonUtil;
 import kr.co.dozn.secure.base.CryptoUtil;
