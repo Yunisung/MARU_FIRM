@@ -1,12 +1,12 @@
 package com.pgmate.firm.dozn;
 
 /**
- * ì²˜ë¦¬ê²°ê³¼ì¡°íšŒ ì „ë¬¸
+ * Ã³¸®°á°úÁ¶È¸ Àü¹®
  */
 public class DoznTransferCheckBean extends DoznBaseBean{
-    private long org_telegram_no;   //ì›ê±°ë˜ê³ ìœ ë²ˆí˜¸
-    private String tr_dt;           //ì›ê±°ë˜ì¼ì YYYYMMDD
-    private String drw_bank_code;   //ì›ê±°ë˜ ëª¨ì€í–‰ì½”ë“œ
+    private long org_telegram_no;   //¿ø°Å·¡°íÀ¯¹øÈ£
+    private String tr_dt;           //¿ø°Å·¡ÀÏÀÚ YYYYMMDD
+    private String drw_bank_code;   //¿ø°Å·¡ ¸ğÀºÇàÄÚµå
 
     public DoznTransferCheckBean() {}
 

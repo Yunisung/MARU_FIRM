@@ -1,14 +1,14 @@
 package com.pgmate.firm.dozn;
 
 /**
- * ê³„ì¢Œì ìœ ì¸ì¦(1ì›ì¸ì¦)
+ * °èÁÂÁ¡À¯ÀÎÁõ(1¿øÀÎÁõ)
  */
 public class DoznAccountAuthBean extends DoznBaseBean{
-    private long telegram_no;           //ê±°ë˜ê³ ìœ ë²ˆí˜¸
-    private String rv_bank_code;        //ì…ê¸ˆì€í–‰ì½”ë“œ
-    private String rv_account;          //ì…ê¸ˆê³„ì¢Œë²ˆí˜¸
-    private String rv_account_cntn;     //ì…ê¸ˆê³„ì¢Œì ìš”(ê°’ì´ì—†ì„ê²½ìš° ë‚œìˆ˜2ìë¦¬ìƒì„±)
-    private long amount;                //ì ìœ ì¸ì¦ê¸ˆì•¡(ê°’ì´ì—†ì„ê²½ìš° 1ì› ì†¡ê¸ˆ)
+    private long telegram_no;           //°Å·¡°íÀ¯¹øÈ£
+    private String rv_bank_code;        //ÀÔ±İÀºÇàÄÚµå
+    private String rv_account;          //ÀÔ±İ°èÁÂ¹øÈ£
+    private String rv_account_cntn;     //ÀÔ±İ°èÁÂÀû¿ä(°ªÀÌ¾øÀ»°æ¿ì ³­¼ö2ÀÚ¸®»ı¼º)
+    private long amount;                //Á¡À¯ÀÎÁõ±İ¾×(°ªÀÌ¾øÀ»°æ¿ì 1¿ø ¼Û±İ)
 
     public DoznAccountAuthBean() {}
 

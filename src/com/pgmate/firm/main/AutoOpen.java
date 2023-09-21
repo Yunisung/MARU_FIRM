@@ -30,13 +30,13 @@ public class AutoOpen {
 		
 		for(String bankCd : firm.keySet()){
 			if(bankCd.equals("039")){
-				//String seqNo = FirmDAO.getSeqNO();
-				//logger.info("autoopen : bank:{} ,seq:{},insert : {}", bankCd,seqNo,new FirmMasterDAO(firm).insert0800100(bankCd,seqNo));
+				String seqNo = FirmDAO.getSeqNO();
+				logger.info("autoopen : bank:{} ,seq:{},insert : {}", bankCd,seqNo,new FirmMasterDAO(firm).insert0800100(bankCd,seqNo));
 			} else if(bankCd.equals("034")) {
 				String seqNo = FirmDAO.getSeqNO();
 				String crypto = firm.get(bankCd).crypto;
 
-				//BEAN ì„¸íŒ…
+				//BEAN ¼¼ÆÃ
 				DoznAccountOpenBean bean = new DoznAccountOpenBean();
 				bean.setApiKey(firm.get(bankCd).api_key);
 				bean.setOrgCode(firm.get(bankCd).org_code);
