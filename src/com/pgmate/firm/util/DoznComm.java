@@ -32,9 +32,9 @@ public class DoznComm {
     private Firm firm = null;
 
     //개발
-    private static final String defaultURL = "https://test-gw-firm.dozn.co.kr/";
+//    private static final String defaultURL = "https://test-gw-firm.dozn.co.kr/";
     //운영
-//    private static final String defaultURL = "https://firmapi-pub.dozn.co.kr/";
+    private static final String defaultURL = "https://firmapi-pub.dozn.co.kr/";
 //    private static final String key = "bkwinners0123456";
 
     private static final String key = "f657a924f4db69f745909f462c0f1a2e";
