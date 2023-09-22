@@ -13,6 +13,11 @@ import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.net.Socket;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.Base64;
@@ -41,6 +46,8 @@ public class InterDoznExecutorTest {
         logger.info("reqJson: {} ", reqJson);
         String send = interProcess.execute(reqJson);
         logger.info("<- {} [{}]", FirmUtil.DOZN, CommonUtil.toString(send));
+
+//        comm(firmBean);
     }
 
     @Test
@@ -50,9 +57,11 @@ public class InterDoznExecutorTest {
         firmBean.bankCd 	= "034";
         firmBean.msgType 	= "0600400";
         firmBean.userId		= "SYSTEM";
-        firmBean.data.put("bankCd", "090");
-        firmBean.data.put("account", "3333030303018");
+        firmBean.data.put("bankCd", "088");
+        firmBean.data.put("account", "110487944164");
         //firmBean.data.put("socialNumber", "890102"); // 주민번호
+
+//        comm(firmBean);
 
         String reqJson = GsonUtil.toJson(firmBean);
         logger.info("reqJson: {} ", reqJson);
@@ -67,8 +76,8 @@ public class InterDoznExecutorTest {
         firmBean.bankCd 	= "034";
         firmBean.msgType 	= "0700100";
         firmBean.userId		= "SYSTEM";
-        firmBean.data.put("searchDate", "20230920");
-        firmBean.data.put("searchCode", "3"); //1: 예금주조회 2: 점유인증 3. 이체
+        firmBean.data.put("searchDate", "20230921");
+        firmBean.data.put("searchCode", "1"); //1: 예금주조회 2: 점유인증 3. 이체
 
         String reqJson = GsonUtil.toJson(firmBean);
         logger.info("reqJson: {} ", reqJson);
@@ -84,8 +93,8 @@ public class InterDoznExecutorTest {
         firmBean.msgType 	= "0100100";
         firmBean.userId		= "SYSTEM";
         firmBean.data.put("amount",1000);
-        firmBean.data.put("recvBankCd","088");
-        firmBean.data.put("recvAccount","110487944164");
+        firmBean.data.put("recvBankCd","007");
+        firmBean.data.put("recvAccount","113000509251");
         firmBean.data.put("sender", "");
         firmBean.data.put("procType", "CS");
 
@@ -103,7 +112,7 @@ public class InterDoznExecutorTest {
         firmBean.bankCd 	= "034";
         firmBean.msgType 	= "0600101";
         firmBean.userId		= "SYSTEM";
-        firmBean.data.put("orgSeqNo", "000384");
+        firmBean.data.put("orgSeqNo", "000455");
 
         String reqJson = GsonUtil.toJson(firmBean);
         logger.info("reqJson: {} ", reqJson);
@@ -122,6 +131,8 @@ public class InterDoznExecutorTest {
         firmBean.data.put("recvAccount", "110487944164");
         firmBean.data.put("sender", "BK1234");
 
+//        comm(firmBean);
+
         String reqJson = GsonUtil.toJson(firmBean);
         logger.info("reqJson: {} ", reqJson);
         String send = interProcess.execute(reqJson);
@@ -135,7 +146,9 @@ public class InterDoznExecutorTest {
         firmBean.bankCd 	= "034";
         firmBean.msgType 	= "ACCCHCK";
         firmBean.userId		= "SYSTEM";
-        firmBean.data.put("orgSeqNo", "000386");
+        firmBean.data.put("orgSeqNo", "000458");
+
+//        comm(firmBean);
 
         String reqJson = GsonUtil.toJson(firmBean);
         logger.info("reqJson: {} ", reqJson);
@@ -153,6 +166,8 @@ public class InterDoznExecutorTest {
         firmBean.data.put("phoneNo", "01091697725");
         firmBean.data.put("authNo", "11");
 
+        //comm(firmBean);
+
         String reqJson = GsonUtil.toJson(firmBean);
         logger.info("reqJson: {} ", reqJson);
         String send = interProcess.execute(reqJson);
@@ -166,7 +181,7 @@ public class InterDoznExecutorTest {
         firmBean.bankCd 	= "034";
         firmBean.msgType 	= "ARSCHCK";
         firmBean.userId		= "SYSTEM";
-        firmBean.data.put("orgSeqNo", "000358");
+        firmBean.data.put("orgSeqNo", "000449");
 
         String reqJson = GsonUtil.toJson(firmBean);
         logger.info("reqJson: {} ", reqJson);
@@ -188,6 +203,65 @@ public class InterDoznExecutorTest {
         text2 = enc2;
         String dec2 = util.decrypt(text2);
         logger.info("DOZN Dec : {}", dec2);
+
+    }
+
+
+    public FirmBean comm(FirmBean firmBean){
+
+        Socket socket = null;
+        OutputStream output = null;
+        InputStream input = null;
+        String reqJson = GsonUtil.toJson(firmBean);
+        String resJson = "";
+        long time = System.currentTimeMillis();
+        try{
+            socket = new Socket("10.100.200.10", 10006);
+            socket.setSoTimeout(40000);
+
+            output = socket.getOutputStream();
+            output.write(reqJson.getBytes());
+            output.flush();
+
+            input = socket.getInputStream();
+
+            ByteArrayOutputStream bout = new ByteArrayOutputStream();
+            int bcount = 0;
+            byte[] buf = new byte[2048];
+            int read_retry_count = 0;
+            while(true) {
+                int n = input.read(buf);
+                if ( n > 0 ) { bcount += n; bout.write(buf,0,n); }
+                else if (n == -1) break;
+                else  { // n == 0
+                    if (++read_retry_count >= 5)
+                        throw new IOException("inputstream-read-retry-count(5) exceed !");
+                }
+                if(input.available() == 0){ break; }
+            }
+            bout.flush();
+            byte[] res = bout.toByteArray();
+            bout.close();
+
+            firmBean = (FirmBean)GsonUtil.fromJson(new String(res), FirmBean.class);
+
+        }catch(Exception e){
+            firmBean.resultCd = "XXXX";
+            firmBean.resultMsg = "펌뱅킹 시스템과의 통신장애 :"+e.getMessage();
+        }finally{
+            logger.info("-> FIRM : [{}]",reqJson);
+            logger.info("<- FIRM : [{}],{}",resJson,(System.currentTimeMillis()-time));
+
+            try{
+                if(input != null){ input.close();}
+                if(output != null){ output.close();}
+                if(socket != null){ socket.close();}
+            }catch(Exception ex){
+
+            }
+        }
+
+        return firmBean;
 
     }
 }
