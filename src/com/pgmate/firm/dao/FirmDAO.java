@@ -17,6 +17,7 @@ public class FirmDAO{
 	
 	public FirmDAO() {
 	}
+
 	
 	public synchronized static String getSeqNO(){
 		String returnVal = "";
@@ -140,5 +141,62 @@ public class FirmDAO{
 		}
 
 		return result;
+	}
+
+	public synchronized static String getFirmSeqNO(){
+		String returnVal = "";
+		String query = "SELECT FN_FIRMSEQ() as val";
+
+		DBManager db 			= null;
+		PreparedStatement pstmt = null;
+		Connection 	conn		= null;
+		ResultSet rset			= null;
+
+		try {
+
+			db 			= DBFactory.getInstance();
+			conn		= db.getConnection();
+			pstmt		= conn.prepareStatement(query);
+			rset		= pstmt.executeQuery();
+
+			while(rset.next()){
+				returnVal = rset.getString("val");
+			}
+			conn.commit();
+		}catch(Exception t){
+			logger.debug("sql error : {}, query : {}",t.getMessage(),query);
+		}finally {
+			db.close(conn, pstmt, rset);
+		}
+		return returnVal;
+	}
+
+
+	public static boolean resetFirmSeqNo() {
+		String query = "UPDATE PG_SEQ SET curVal = '1' WHERE name = 'FIRM'";
+
+		DBManager db 	= null;
+		PreparedStatement pstmt	= null;
+		Connection conn			= null;
+		int result		=0;
+		try{
+			db 		= DBFactory.getInstance();
+			conn	= db.getConnection();
+			pstmt	= conn.prepareStatement(query);
+			result = pstmt.executeUpdate();
+
+			conn.commit();
+
+		}catch(Exception e){
+			logger.error("DB Error : {} , {} , [{}]",Thread.currentThread().getStackTrace()[1].getMethodName(),e.getMessage(),query);
+		}finally{
+			db.close(pstmt);
+			db.close(conn);
+		}
+		if(result > 0){
+			return true;
+		}else{
+			return false;
+		}
 	}
 }
