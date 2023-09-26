@@ -990,4 +990,36 @@ public class FirmTrxDAO {
 		return firmBean;
 	}
 
+	/**
+	 * 더즌용 거래번호
+	 * @return
+	 */
+	public String getFirmSeq(){
+		String query = "SELECT FN_FIRMSEQ() as seq";
+
+		DBManager db 	= null;
+		PreparedStatement pstmt	= null;
+		Connection conn			= null;
+		ResultSet rset			= null;
+		String result	= "";
+
+		try{
+			db 		= DBFactory.getInstance();
+			conn	= db.getConnection();
+			pstmt	= conn.prepareStatement(query);
+
+			rset 	= pstmt.executeQuery();
+
+			while(rset.next()){
+				result = rset.getString("seq");
+			}
+		}catch(Exception e){
+			logger.error(e.getMessage());
+		}finally{
+			db.close(conn,pstmt,rset);
+		}
+
+		return result;
+	}
+
 }

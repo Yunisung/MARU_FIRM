@@ -53,7 +53,7 @@ public class DoznExcuter implements InterExcuter {
             }
 
 
-            String seqNo = firmTrxDAO.getBankSeq();
+            String seqNo = firmTrxDAO.getFirmSeq();
             bean.setTelegram_no(CommonUtil.parseLong(seqNo));
 
             //URL 技泼
@@ -122,7 +122,7 @@ public class DoznExcuter implements InterExcuter {
                 bean.setCheck_depositor("Y");
             }
 
-            String seqNo = firmTrxDAO.getBankSeq();
+            String seqNo = firmTrxDAO.getFirmSeq();
             bean.setTelegram_no(CommonUtil.parseLong(seqNo));
 
             //URL 技泼
@@ -183,7 +183,7 @@ public class DoznExcuter implements InterExcuter {
             bean.setDrw_bank_code(firmBean.bankCd);
             bean.setDivision_code(CommonUtil.parseLong(firmBean.data.getString("searchCode")));
 
-            String seqNo = firmTrxDAO.getBankSeq();
+            String seqNo = firmTrxDAO.getFirmSeq();
             bean.setTelegram_no(CommonUtil.parseLong(seqNo));
 
             //URL 技泼
@@ -329,7 +329,7 @@ public class DoznExcuter implements InterExcuter {
             FirmTrxDAO firmTrxDAO = new FirmTrxDAO();
             BankBean configBean = firm.bank.get(firmBean.bankCd);
 
-            String seqNo = firmTrxDAO.getBankSeq();
+            String seqNo = firmTrxDAO.getFirmSeq();
 
             //BEAN 技泼
             DoznArsAuthenticateBean bean = new DoznArsAuthenticateBean();
@@ -391,7 +391,7 @@ public class DoznExcuter implements InterExcuter {
             FirmTrxDAO firmTrxDAO = new FirmTrxDAO();
             BankBean configBean = firm.bank.get(firmBean.bankCd);
 
-            String seqNo = firmTrxDAO.getBankSeq();
+            String seqNo = firmTrxDAO.getFirmSeq();
 
             //BEAN 技泼
             DoznAccountAuthBean bean = new DoznAccountAuthBean();
@@ -446,7 +446,7 @@ public class DoznExcuter implements InterExcuter {
             FirmTrxDAO firmTrxDAO = new FirmTrxDAO();
             BankBean configBean = firm.bank.get(firmBean.bankCd);
 
-            String seqNo = firmTrxDAO.getBankSeq();
+            String seqNo = firmTrxDAO.getFirmSeq();
 
             //BEAN 技泼
             DoznAccountAuthInquireBean bean = new DoznAccountAuthInquireBean();
@@ -499,7 +499,7 @@ public class DoznExcuter implements InterExcuter {
             FirmTrxDAO firmTrxDAO = new FirmTrxDAO();
             BankBean configBean = firm.bank.get(firmBean.bankCd);
 
-            String seqNo = firmTrxDAO.getBankSeq();
+            String seqNo = firmTrxDAO.getFirmSeq();
 
             //BEAN 技泼
             DoznArsAuthenticateCheckBean bean = new DoznArsAuthenticateCheckBean();

@@ -33,7 +33,8 @@ public class AutoOpen {
 				String seqNo = FirmDAO.getSeqNO();
 				logger.info("autoopen : bank:{} ,seq:{},insert : {}", bankCd,seqNo,new FirmMasterDAO(firm).insert0800100(bankCd,seqNo));
 			} else if(bankCd.equals("034")) {
-				String seqNo = FirmDAO.getSeqNO();
+				FirmDAO.resetFirmSeqNo();
+				String seqNo = FirmDAO.getFirmSeqNO();
 				String crypto = firm.get(bankCd).crypto;
 
 				//BEAN ¼¼ÆÃ
