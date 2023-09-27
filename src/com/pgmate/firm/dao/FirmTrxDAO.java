@@ -607,8 +607,8 @@ public class FirmTrxDAO {
 				sender = "(주)부국위너스";
 			}
 
-			pstmt.setString(1,seqNo);
-			pstmt.setString(2,bankCd);
+			pstmt.setString(1,bankCd);
+			pstmt.setString(2,seqNo);
 			pstmt.setLong(3,amount);
 			pstmt.setString(4,recvBankCd);
 			pstmt.setString(5,recvAccount);
