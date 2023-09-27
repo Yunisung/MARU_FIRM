@@ -1057,7 +1057,7 @@ public class FirmMasterDAO {
 	 */
 	public long setMasterAddSearchDateByDozn(String msgCd, String jobGb, String bankCd, String url, String reqData, String searchDate) {
 		String query = "INSERT INTO PG_FIRM_MASTER (bankCd,msgCd,jobGb,seqNo,sendDate,sendTime,procGb, sendUrl, reqData, searchDate) "
-				+" VALUES (?,?,?,FN_BANKSEQ(), DATE_FORMAT(now(), '%Y%m%d'), DATE_FORMAT(now(), '%H%i%s'),'D',?, ?, ?)";
+				+" VALUES (?,?,?,FN_FIRMSEQ(), DATE_FORMAT(now(), '%Y%m%d'), DATE_FORMAT(now(), '%H%i%s'),'D',?, ?, ?)";
 
 		DBManager db 			= null;
 		PreparedStatement pstmt	= null;

@@ -181,7 +181,9 @@ public class InterKsnetExcuter implements InterExcuter {
         logger.info("amount : {}",CommonUtil.getAmountFormat(firmBean.data.getString("amount")));
         logger.info("procType : {}",firmBean.data.getString("procType"));
 
-        long idx = trxDAO.insertTrx(firmBean.bankCd, firmBean.data.getLong("amount"), firmBean.data.getString("recvBankCd"), firmBean.data.getString("recvAccount"), firmBean.data.getString("sender"), firmBean.data.getString("recordInfo"), firmBean.data.getString("procType"));
+        String seqNo = trxDAO.getBankSeq();
+
+        long idx = trxDAO.insertTrx(seqNo, firmBean.bankCd, firmBean.data.getLong("amount"), firmBean.data.getString("recvBankCd"), firmBean.data.getString("recvAccount"), firmBean.data.getString("sender"), firmBean.data.getString("recordInfo"), firmBean.data.getString("procType"));
         if(idx == 0){
             firmBean.resultCd ="XXXX";
             firmBean.resultMsg ="이체데이터 등록실패";
