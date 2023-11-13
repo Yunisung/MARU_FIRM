@@ -55,6 +55,6 @@
     "interval": 1000,
     "log": false,
     "stopTime": 232500,
-    "startTime": 10000
+    "startTime": 3000
   }
 }
