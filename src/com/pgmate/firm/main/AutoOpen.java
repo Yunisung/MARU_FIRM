@@ -27,6 +27,8 @@ public class AutoOpen {
 	
 	public void execute(){
 		SharedMap<String,BankBean> firm = FirmLoader.getConfig().bank;
+
+		FirmDAO.resetKycSeqNo();
 		
 		for(String bankCd : firm.keySet()){
 			if(bankCd.equals("039")){

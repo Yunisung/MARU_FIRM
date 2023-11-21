@@ -33,7 +33,7 @@ public class InterProcess implements java.io.Serializable{
 		if(firmBean.resultCd.equals("9999")){
 			return GsonUtil.toJson(firmBean);
 		}else{
-			if(firmBean.bankCd.equals("034")) {
+			if(firmBean.bankCd.equals("034") || firmBean.bankCd.equals("007")) {
 				//더즌은 따로 예외처리
 				if(firmBean.msgType.startsWith("0600300")) {
 					//잔액조회
