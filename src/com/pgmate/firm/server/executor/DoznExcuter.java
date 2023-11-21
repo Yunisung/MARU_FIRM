@@ -3,6 +3,7 @@ package com.pgmate.firm.server.executor;
 import com.google.gson.Gson;
 import com.pgmate.firm.conf.BankBean;
 import com.pgmate.firm.conf.Firm;
+import com.pgmate.firm.dao.FirmDAO;
 import com.pgmate.firm.dao.FirmMasterDAO;
 import com.pgmate.firm.dao.FirmTrxDAO;
 import com.pgmate.firm.dozn.*;
@@ -318,7 +319,46 @@ public class DoznExcuter implements InterExcuter {
 
     @Override
     public FirmBean proc0900400(FirmBean firmBean) {
-        return null;
+        logger.info("===================DOZN 출금계좌등록 ========================");
+
+        try {
+            FirmMasterDAO masterDAO = new FirmMasterDAO();
+            FirmTrxDAO firmTrxDAO = new FirmTrxDAO();
+            BankBean configBean = firm.bank.get(firmBean.bankCd);
+
+            String seqNo = FirmDAO.getKycSeqNO();
+
+            //BEAN 세팅
+            DoznKycBean bean = new DoznKycBean();
+            bean.setTrNatvNo(seqNo);
+            bean.setBnkC(firmBean.bankCd);
+            bean.setRegDsc(firmBean.data.getString("trxType"));
+            bean.setVrAcno(firmBean.data.getString("virtualAccount"));
+            bean.setDprnm(firmBean.data.getString("customerName"));
+            bean.setDrwBnkC(firmBean.data.getString("withdrawBankCd"));
+            bean.setDrwAcno(firmBean.data.getString("withdrawAccount"));
+
+            //URL 세팅
+            String sendUrl = "api/v1/kyc";
+
+            String jsonParams = new Gson().toJson(bean);
+
+            logger.info("dozn json data : [{}]", jsonParams);
+
+            //MASTER DB 저장
+            long idx = masterDAO.setMasterbyDozn(firmBean.msgType.substring(0,4), firmBean.msgType.substring(4), firmBean.bankCd, seqNo, sendUrl, jsonParams);
+            firmBean = processCheck(idx, firmBean, masterDAO);
+
+
+        } catch (Exception e) {
+            firmBean.resultCd = "XXXX";
+            firmBean.resultMsg = "더즌 출금계좌등록 오류";
+
+            e.printStackTrace();
+            logger.error("DOZN 출금계좌등록(KYC) 오류 : [{}]", e.getMessage());
+        }
+
+        return firmBean;
     }
 
     @Override
@@ -579,4 +619,5 @@ public class DoznExcuter implements InterExcuter {
         }
         return firmBean;
     }
+
 }

@@ -38,6 +38,11 @@
       "api_key" : "0d5b706e-b03c-4a52-9936-2ac0b04466a7",
       "org_code" : "10000614",
       "crypto" : "Y"
+    },
+    "007" : {
+      "bankCd" : "007",
+      "api_key" : "6468d9e9-4ea4-4cce-b90a-b8d295a4f282",
+      "org_code" : "30000098"
     }
   },
   "server": {

@@ -9,6 +9,7 @@ import com.pgmate.firm.dozn.DoznBean;
 import com.pgmate.firm.hyphen.BalanceBean;
 import com.pgmate.firm.hyphen.HyphenBean;
 import com.pgmate.firm.ksnet.FBHeaderBean;
+import com.pgmate.lib.util.lang.CommonUtil;
 import kr.co.dozn.secure.base.CryptoUtil;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -30,12 +31,17 @@ public class DoznComm {
     private static final Logger logger = LoggerFactory.getLogger(com.pgmate.firm.util.DoznComm.class);
     private SmsGw smsGw = null;
     private Firm firm = null;
+    //ï¿½ï¿½Ý°ï¿½ï¿½Âµï¿½ï¿½
+    private static final String apiKey = "6468d9e9-4ea4-4cce-b90a-b8d295a4f282";
+    private static final String orgCode = "30000098";
 
-    //°³¹ß
-//    private static final String defaultURL = "https://test-gw-firm.dozn.co.kr/";
-    //¿î¿µ
+    //ï¿½ï¿½ï¿½ï¿½
+    private static final String defaultURL = "https://test-gw-firm.dozn.co.kr/";
+    private static final String kycURL = "https://test-vacc-pub.dozn.co.kr/";
+    //ï¿½î¿µ
     private static final String defaultURL = "https://firmapi-pub.dozn.co.kr/";
 //    private static final String key = "bkwinners0123456";
+//    private static final String kycURL = "https://vacc-pub.dozn.co.kr/";
 
     private static final String key = "f657a924f4db69f745909f462c0f1a2e";
     private static final String iv = "4a9acfb04bf38a5b";
@@ -52,7 +58,7 @@ public class DoznComm {
         String urlAddress = defaultURL + bean.getUrl();
         logger.info("SEND-URL : " + urlAddress);
 
-        //¾ÏÈ£È­¸ðµâ ¼¼ÆÃ
+        //ï¿½ï¿½È£È­ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
         CryptoUtil cryptoUtil = CryptoUtil.getInstance(key, iv);
 
         HttpURLConnection conn = null;
@@ -62,7 +68,7 @@ public class DoznComm {
             String postData = bean.getReqData();
             logger.info("REQUEST DATA: {} ", postData);
 
-            //¾ÏÈ£È­ Àû¿ë
+            //ï¿½ï¿½È£È­ ï¿½ï¿½ï¿½ï¿½
             if(bankBean.crypto.equals("Y")) {
                 postData = cryptoUtil.encrypt(postData, "UTF-8");
             }
@@ -104,10 +110,91 @@ public class DoznComm {
 
             result = stringBuffer.toString();
 
-            //º¹È£È­ Àû¿ë
+            //ï¿½ï¿½È£È­ ï¿½ï¿½ï¿½ï¿½
             if(responseCode == HttpsURLConnection.HTTP_OK && bankBean.crypto.equals("Y")) {
                 result = cryptoUtil.decrypt(result, "UTF-8");
             }
+
+            logger.info("RESPONSE DATA : " + result);
+
+            conn.disconnect();
+
+        } catch (Exception e) {
+            logger.error("DoznComm Exception : {}", e.getMessage());
+            e.printStackTrace();
+        } finally {
+            if(conn != null)
+                conn.disconnect();
+        }
+
+        return result;
+    }
+
+    public String connectKyc(DoznBean bean) {
+        String result = "";
+        BankBean bankBean = firm.bank.get("034");
+
+        StringBuffer stringBuffer = new StringBuffer();
+        String urlAddress = kycURL + bean.getUrl();
+        logger.info("SEND-URL : " + urlAddress);
+
+        //ï¿½ï¿½È£È­ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
+        //CryptoUtil cryptoUtil = CryptoUtil.getInstance(key, iv);
+
+        HttpURLConnection conn = null;
+
+        try {
+            URL url = new URL(urlAddress);
+            String postData = bean.getReqData();
+            logger.info("REQUEST DATA: {} ", postData);
+
+            //ï¿½ï¿½È£È­ ï¿½ï¿½ï¿½ï¿½
+//            if(bankBean.crypto.equals("Y")) {
+//                postData = cryptoUtil.encrypt(postData, "UTF-8");
+//            }
+
+            byte[] postDataBytes = postData.getBytes("utf-8");
+
+            conn = (HttpURLConnection) url.openConnection();
+            conn.setRequestProperty("Content-Type", "application/json");
+            conn.setRequestProperty("Accept", "*/*");
+            conn.setRequestProperty("Accept-Charset", "UTF-8");
+            conn.setRequestProperty("api-key", apiKey);
+            conn.setRequestProperty("org-c", orgCode);
+            conn.setDoOutput(true);
+            conn.setConnectTimeout(60000);
+            conn.setReadTimeout(60000);
+            conn.setRequestMethod("POST");
+
+            conn.getOutputStream().write(postDataBytes);
+            conn.getOutputStream().flush();
+            conn.getOutputStream().close();
+
+            int responseCode = conn.getResponseCode();
+            bean.setStatus(CommonUtil.toString(responseCode));
+
+            InputStream is = null;
+
+            if(responseCode == HttpsURLConnection.HTTP_OK) {
+                is = conn.getInputStream();
+            } else {
+                is = conn.getErrorStream();
+            }
+
+            BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(is, "UTF-8"));
+            String inputLine;
+
+            while ((inputLine = bufferedReader.readLine()) != null)  {
+                stringBuffer.append(inputLine.replace("\\", ""));
+            }
+            bufferedReader.close();
+
+            result = stringBuffer.toString();
+
+            //ï¿½ï¿½È£È­ ï¿½ï¿½ï¿½ï¿½
+//            if(responseCode == HttpsURLConnection.HTTP_OK && bankBean.crypto.equals("Y")) {
+//                result = cryptoUtil.decrypt(result, "UTF-8");
+//            }
 
             logger.info("RESPONSE DATA : " + result);
 

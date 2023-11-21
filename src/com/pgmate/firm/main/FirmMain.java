@@ -224,22 +224,45 @@ public class FirmMain{
 			logger.info("DOZN MASTER TRANSFER : {}/{}",(i+1),list.size());
 			DoznBean doznBean = list.get(i);
 			logger.info("DOZN MASTER STATUS UPDATE : {} : {}",(i+1),firmMasterDAO.updateStatus(doznBean.getIndex(), "I"));
-			String resData = doznComm.connect(doznBean);
+
+			//출금계좌등록 로직처리
+			String resData = "";
+
+			if(doznBean.getUrl().equals("api/v1/kyc")) {
+				resData = doznComm.connectKyc(doznBean);
+			} else {
+				resData = doznComm.connect(doznBean);
+			}
 
 			JSONObject apiRes = new JSONObject();
 			JSONParser jsonParser = new JSONParser();
 			try {
 				apiRes = (JSONObject) jsonParser.parse(resData);
 
-				doznBean.setStatus(apiRes.get("status").toString());
-				if(doznBean.getStatus().equals("200")) {
-					//doznBean.setVanTrxId(apiRes.get("natv_tr_no").toString()); //더즌거래번호
-					doznBean.setResultCode("0000");
-					doznBean.setResultMsg("정상");
+				//출금계좌등록 로직처리
+				if(doznBean.getUrl().equals("api/v1/kyc")) {
+					if(doznBean.getStatus().equals("200")) {
+						doznBean.setResultCode(apiRes.get("rspC").toString());
+						doznBean.setResultMsg("정상");
+					} else {
+						doznBean.setResultCode(doznBean.getStatus());
+						doznBean.setResultMsg(apiRes.get("message").toString());
+					}
+
 				} else {
-					doznBean.setResultCode(apiRes.get("error_code").toString());
-					doznBean.setResultMsg(apiRes.get("error_message").toString());
+					doznBean.setStatus(apiRes.get("status").toString());
+					if(doznBean.getStatus().equals("200")) {
+						doznBean.setResultCode("0000");
+						doznBean.setResultMsg("정상");
+					} else {
+						doznBean.setResultCode(apiRes.get("error_code").toString());
+						doznBean.setResultMsg(apiRes.get("error_message").toString());
+					}
 				}
+
+
+
+
 				doznBean.setResData(resData);
 
 			} catch (ParseException e) {
