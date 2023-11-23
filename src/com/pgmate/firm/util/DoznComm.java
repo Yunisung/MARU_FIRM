@@ -31,9 +31,6 @@ public class DoznComm {
     private static final Logger logger = LoggerFactory.getLogger(com.pgmate.firm.util.DoznComm.class);
     private SmsGw smsGw = null;
     private Firm firm = null;
-    //��ݰ��µ��
-    private static final String apiKey = "6468d9e9-4ea4-4cce-b90a-b8d295a4f282";
-    private static final String orgCode = "30000098";
 
     //����
     private static final String defaultURL = "https://test-gw-firm.dozn.co.kr/";
@@ -132,7 +129,7 @@ public class DoznComm {
 
     public String connectKyc(DoznBean bean) {
         String result = "";
-        BankBean bankBean = firm.bank.get("034");
+        BankBean bankBean = firm.bank.get("007");
 
         StringBuffer stringBuffer = new StringBuffer();
         String urlAddress = kycURL + bean.getUrl();
@@ -159,8 +156,8 @@ public class DoznComm {
             conn.setRequestProperty("Content-Type", "application/json");
             conn.setRequestProperty("Accept", "*/*");
             conn.setRequestProperty("Accept-Charset", "UTF-8");
-            conn.setRequestProperty("api-key", apiKey);
-            conn.setRequestProperty("org-c", orgCode);
+            conn.setRequestProperty("api-key", bankBean.api_key);
+            conn.setRequestProperty("org-c", bankBean.org_code);
             conn.setDoOutput(true);
             conn.setConnectTimeout(60000);
             conn.setReadTimeout(60000);
