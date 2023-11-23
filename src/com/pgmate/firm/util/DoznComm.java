@@ -33,12 +33,11 @@ public class DoznComm {
     private Firm firm = null;
 
     //����
-    private static final String defaultURL = "https://test-gw-firm.dozn.co.kr/";
-    private static final String kycURL = "https://test-vacc-pub.dozn.co.kr/";
+//    private static final String defaultURL = "https://test-gw-firm.dozn.co.kr/";
+//    private static final String kycURL = "https://test-vacc-pub.dozn.co.kr/";
     //�
     private static final String defaultURL = "https://firmapi-pub.dozn.co.kr/";
-//    private static final String key = "bkwinners0123456";
-//    private static final String kycURL = "https://vacc-pub.dozn.co.kr/";
+    private static final String kycURL = "https://vacc-pub.dozn.co.kr/";
 
     private static final String key = "f657a924f4db69f745909f462c0f1a2e";
     private static final String iv = "4a9acfb04bf38a5b";
