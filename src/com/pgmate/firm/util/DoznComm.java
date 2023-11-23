@@ -32,10 +32,10 @@ public class DoznComm {
     private SmsGw smsGw = null;
     private Firm firm = null;
 
-    //����
+
 //    private static final String defaultURL = "https://test-gw-firm.dozn.co.kr/";
 //    private static final String kycURL = "https://test-vacc-pub.dozn.co.kr/";
-    //�
+    
     private static final String defaultURL = "https://firmapi-pub.dozn.co.kr/";
     private static final String kycURL = "https://vacc-pub.dozn.co.kr/";
 
@@ -54,7 +54,6 @@ public class DoznComm {
         String urlAddress = defaultURL + bean.getUrl();
         logger.info("SEND-URL : " + urlAddress);
 
-        //��ȣȭ��� ����
         CryptoUtil cryptoUtil = CryptoUtil.getInstance(key, iv);
 
         HttpURLConnection conn = null;
@@ -106,7 +105,7 @@ public class DoznComm {
 
             result = stringBuffer.toString();
 
-            //��ȣȭ ����
+
             if(responseCode == HttpsURLConnection.HTTP_OK && bankBean.crypto.equals("Y")) {
                 result = cryptoUtil.decrypt(result, "UTF-8");
             }
@@ -134,7 +133,7 @@ public class DoznComm {
         String urlAddress = kycURL + bean.getUrl();
         logger.info("SEND-URL : " + urlAddress);
 
-        //��ȣȭ��� ����
+
         //CryptoUtil cryptoUtil = CryptoUtil.getInstance(key, iv);
 
         HttpURLConnection conn = null;
@@ -144,7 +143,7 @@ public class DoznComm {
             String postData = bean.getReqData();
             logger.info("REQUEST DATA: {} ", postData);
 
-            //��ȣȭ ����
+
 //            if(bankBean.crypto.equals("Y")) {
 //                postData = cryptoUtil.encrypt(postData, "UTF-8");
 //            }
@@ -187,7 +186,7 @@ public class DoznComm {
 
             result = stringBuffer.toString();
 
-            //��ȣȭ ����
+
 //            if(responseCode == HttpsURLConnection.HTTP_OK && bankBean.crypto.equals("Y")) {
 //                result = cryptoUtil.decrypt(result, "UTF-8");
 //            }
