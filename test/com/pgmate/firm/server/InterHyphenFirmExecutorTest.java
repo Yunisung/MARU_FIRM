@@ -47,11 +47,73 @@ public class InterHyphenFirmExecutorTest {
         firmBean.data.put("bankCd", "032");
         firmBean.data.put("account", "087120852531");
 
-        String reqJson = GsonUtil.toJson(firmBean);
-        logger.info("reqJson: {} ", reqJson);
-        String send = interProcess.execute(reqJson);
-        logger.info("<- {} [{}]", FirmUtil.KSNET, CommonUtil.toString(send));
+//        String reqJson = GsonUtil.toJson(firmBean);
+//        logger.info("reqJson: {} ", reqJson);
+//        String send = interProcess.execute(reqJson);
+//        logger.info("<- {} [{}]", FirmUtil.KSNET, CommonUtil.toString(send));
+
+        comm(firmBean);
     }
+
+    public FirmBean comm(FirmBean firmBean){
+
+        Socket socket = null;
+        OutputStream output = null;
+        InputStream input = null;
+        String reqJson = GsonUtil.toJson(firmBean);
+        String resJson = "";
+        long time = System.currentTimeMillis();
+        try{
+            socket = new Socket("10.100.100.13", 10006);
+            socket.setSoTimeout(40000);
+
+            output = socket.getOutputStream();
+            output.write(reqJson.getBytes());
+            output.flush();
+
+            input = socket.getInputStream();
+
+            ByteArrayOutputStream bout = new ByteArrayOutputStream();
+            int bcount = 0;
+            byte[] buf = new byte[2048];
+            int read_retry_count = 0;
+            while(true) {
+                int n = input.read(buf);
+                if ( n > 0 ) { bcount += n; bout.write(buf,0,n); }
+                else if (n == -1) break;
+                else  { // n == 0
+                    if (++read_retry_count >= 5)
+                        throw new IOException("inputstream-read-retry-count(5) exceed !");
+                }
+                if(input.available() == 0){ break; }
+            }
+            bout.flush();
+            byte[] res = bout.toByteArray();
+            bout.close();
+
+            firmBean = (FirmBean)GsonUtil.fromJson(new String(res), FirmBean.class);
+
+        }catch(Exception e){
+            firmBean.resultCd = "XXXX";
+            firmBean.resultMsg = "펌뱅킹 시스템과의 통신장애 :"+e.getMessage();
+        }finally{
+            logger.info("-> FIRM : [{}]",reqJson);
+            logger.info("<- FIRM : [{}],{}",resJson,(System.currentTimeMillis()-time));
+
+            try{
+                if(input != null){ input.close();}
+                if(output != null){ output.close();}
+                if(socket != null){ socket.close();}
+            }catch(Exception ex){
+
+            }
+        }
+
+        return firmBean;
+
+    }
+
+
 
 
 
