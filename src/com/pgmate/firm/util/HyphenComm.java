@@ -20,9 +20,9 @@ public class HyphenComm {
     private SmsGw smsGw = null;
 
     //개발
-//    private static final String defaultURL = "https://cmsarstest.ksnet.co.kr/";
+    private static final String defaultURL = "https://cmsarstest.ksnet.co.kr/";
     //운영
-    private static final String defaultURL = "https://cmsars.ksnet.co.kr/";
+//    private static final String defaultURL = "https://cmsars.ksnet.co.kr/";
 
     public HyphenComm() { }
 
