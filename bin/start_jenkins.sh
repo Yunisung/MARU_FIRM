@@ -17,7 +17,7 @@ CP=`echo $CP | cut -c2-`
 
 # JVM_ARGS for VM
 ##########################
-JVM_ARGS="-DMARU_FIRM -server -DCP_CONF=$MARU_PATH/conf -Dlogback.configurationFile=$MARU_PATH/conf/logback.xml -Dfile.encoding=EUC-KR -Dhttps.protocols=TLSv1.3 -Djdk.tls.client.protocols=TLSv1.3"
+JVM_ARGS="-DMARU_FIRM -server -DCP_CONF=$MARU_PATH/conf -Dlogback.configurationFile=$MARU_PATH/conf/logback.xml -Dfile.encoding=EUC-KR -Dhttps.protocols=TLSv1.3,TLSv1.2 -Djdk.tls.client.protocols=TLSv1.3,TLSv1.2"
 JVM_ARGS="$JVM_ARGS -Xss256k -Xms128m -Xmx256m"
 JVM_ARGS="$JVM_ARGS -cp $CP"
 
