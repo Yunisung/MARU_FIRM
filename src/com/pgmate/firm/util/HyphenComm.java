@@ -10,6 +10,9 @@ import org.json.simple.parser.JSONParser;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.net.ssl.HttpsURLConnection;
+import javax.net.ssl.SSLSocket;
+import javax.net.ssl.SSLSocketFactory;
 import java.io.*;
 import java.net.HttpURLConnection;
 import java.net.URL;
@@ -44,7 +47,7 @@ public class HyphenComm {
 
             byte[] postDataBytes = postData.getBytes("utf-8");
 
-            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+            HttpsURLConnection conn = (HttpsURLConnection) url.openConnection();
             conn.setRequestProperty("Content-Type", "application/x-www-form-urlencoded;charset=utf-8");
             conn.setUseCaches(false);
             conn.setDoInput(true);
@@ -55,6 +58,18 @@ public class HyphenComm {
             conn.getOutputStream().write(postDataBytes);
             conn.getOutputStream().flush();
             conn.getOutputStream().close();
+
+            logger.info("Response Code : " + conn.getResponseCode());
+            logger.info("Cipher Suite : " + conn.getCipherSuite());
+
+            SSLSocketFactory factory = HttpsURLConnection.getDefaultSSLSocketFactory();
+            SSLSocket socket = (SSLSocket) factory.createSocket();
+
+            String[] enabledCiphers = socket.getEnabledCipherSuites();
+
+            for (String enabledCipher : enabledCiphers) {
+                logger.info("Enabled Ciphers: " + enabledCipher);
+            }
 
             BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(conn.getInputStream(), "UTF-8"));
             String inputLine;
