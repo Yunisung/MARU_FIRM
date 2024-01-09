@@ -40,6 +40,7 @@ public class HyphenComm {
         String urlAddress = defaultURL + bean.getSendurl();
         logger.info("SEND-URL : " + urlAddress);
 
+        HttpsURLConnection conn = null;
         try {
             URL url = new URL(urlAddress);
             String postData = "JSONData="+jsonParams;
@@ -47,7 +48,7 @@ public class HyphenComm {
 
             byte[] postDataBytes = postData.getBytes("utf-8");
 
-            HttpsURLConnection conn = (HttpsURLConnection) url.openConnection();
+            conn = (HttpsURLConnection) url.openConnection();
             conn.setRequestProperty("Content-Type", "application/x-www-form-urlencoded;charset=utf-8");
             conn.setUseCaches(false);
             conn.setDoInput(true);
@@ -55,18 +56,6 @@ public class HyphenComm {
             conn.setConnectTimeout(60000);
             conn.setReadTimeout(60000);
             conn.setRequestMethod("POST");
-
-            logger.info("Cipher Suite : " + conn.getCipherSuite());
-
-            SSLSocketFactory factory = HttpsURLConnection.getDefaultSSLSocketFactory();
-            SSLSocket socket = (SSLSocket) factory.createSocket();
-
-            String[] enabledCiphers = socket.getEnabledCipherSuites();
-
-            for (String enabledCipher : enabledCiphers) {
-                logger.info("Enabled Ciphers: " + enabledCipher);
-            }
-
             conn.getOutputStream().write(postDataBytes);
             conn.getOutputStream().flush();
             conn.getOutputStream().close();
@@ -84,6 +73,23 @@ public class HyphenComm {
 
         } catch (Exception e) {
             logger.info(e.getMessage().toString());
+
+            logger.info("Cipher Suite : " + conn.getCipherSuite());
+
+            SSLSocketFactory factory = HttpsURLConnection.getDefaultSSLSocketFactory();
+            SSLSocket socket = null;
+            try {
+                socket = (SSLSocket) factory.createSocket();
+            } catch (IOException ex) {
+                //throw new RuntimeException(ex);
+                logger.info(ex.getMessage().toString());
+            }
+
+            String[] enabledCiphers = socket.getEnabledCipherSuites();
+
+            for (String enabledCipher : enabledCiphers) {
+                logger.info("Enabled Ciphers: " + enabledCipher);
+            }
         }
 
         return stringBuffer.toString();
