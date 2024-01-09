@@ -49,6 +49,7 @@ public class HyphenComm {
             byte[] postDataBytes = postData.getBytes("utf-8");
 
             conn = (HttpsURLConnection) url.openConnection();
+
             conn.setRequestProperty("Content-Type", "application/x-www-form-urlencoded;charset=utf-8");
             conn.setUseCaches(false);
             conn.setDoInput(true);
@@ -59,6 +60,16 @@ public class HyphenComm {
             conn.getOutputStream().write(postDataBytes);
             conn.getOutputStream().flush();
             conn.getOutputStream().close();
+
+            logger.info("Cipher Suite : " + conn.getCipherSuite());
+
+            SSLSocketFactory factory = HttpsURLConnection.getDefaultSSLSocketFactory();
+            SSLSocket socket = (SSLSocket) factory.createSocket();
+            String[] enabledCiphers = socket.getEnabledCipherSuites();
+
+            for (String enabledCipher : enabledCiphers) {
+                logger.info("Enabled Ciphers: " + enabledCipher);
+            }
 
             BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(conn.getInputStream(), "UTF-8"));
             String inputLine;
@@ -73,23 +84,6 @@ public class HyphenComm {
 
         } catch (Exception e) {
             logger.info(e.getMessage().toString());
-
-            logger.info("Cipher Suite : " + conn.getCipherSuite());
-
-            SSLSocketFactory factory = HttpsURLConnection.getDefaultSSLSocketFactory();
-            SSLSocket socket = null;
-            try {
-                socket = (SSLSocket) factory.createSocket();
-            } catch (IOException ex) {
-                //throw new RuntimeException(ex);
-                logger.info(ex.getMessage().toString());
-            }
-
-            String[] enabledCiphers = socket.getEnabledCipherSuites();
-
-            for (String enabledCipher : enabledCiphers) {
-                logger.info("Enabled Ciphers: " + enabledCipher);
-            }
         }
 
         return stringBuffer.toString();
