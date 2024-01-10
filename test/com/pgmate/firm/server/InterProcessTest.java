@@ -39,10 +39,27 @@ public class InterProcessTest {
     public void balance() {
         // 잔액조회
         FirmBean firmBean = new FirmBean();
-        firmBean.bankCd 	= "039";
+        firmBean.bankCd 	= "089";
         firmBean.msgType 	= "0600300";
         firmBean.userId		= "SYSTEM";
-        firmBean.mAccnt     = "2070008840700";
+        firmBean.mAccnt     = "70022000000008";
+
+        String reqJson = GsonUtil.toJson(firmBean);
+        logger.info("reqJson: {} ", reqJson);
+        String send = interProcess.execute(reqJson);
+        logger.info("<- {} [{}]", FirmUtil.KSNET, CommonUtil.toString(send));
+
+//        comm(firmBean);
+    }
+
+    @Test
+    public void aggregate() {
+        // 집계
+        FirmBean firmBean = new FirmBean();
+        firmBean.bankCd 	= "089";
+        firmBean.msgType 	= "0700100";
+        firmBean.userId		= "SYSTEM";
+        firmBean.mAccnt     = "70022000000008";
 
         String reqJson = GsonUtil.toJson(firmBean);
         logger.info("reqJson: {} ", reqJson);
@@ -75,7 +92,7 @@ public class InterProcessTest {
     public void getExecutionResult() {
         // 처리결과조회
         FirmBean firmBean = new FirmBean();
-        firmBean.bankCd 	= "039";
+        firmBean.bankCd 	= "089";
         firmBean.msgType 	= "0600101";
         firmBean.userId		= "SYSTEM";
         firmBean.data.put("orgSeqNo", "000525");
@@ -92,7 +109,7 @@ public class InterProcessTest {
     public void transfer() {
         // 이체
         FirmBean firmBean = new FirmBean();
-        firmBean.bankCd 	= "039";
+        firmBean.bankCd 	= "089";
         firmBean.msgType 	= "0100100";
         firmBean.userId		= "SYSTEM";
         firmBean.data.put("amount",100);
@@ -112,17 +129,15 @@ public class InterProcessTest {
     public void withdrawAccountReg() {
         // 출금계좌등록
         FirmBean firmBean = new FirmBean();
-        firmBean.bankCd 	= "039";
+        firmBean.bankCd 	= "089";
         firmBean.msgType 	= "0900400";
         firmBean.userId		= "SYSTEM";
         firmBean.data.put("trxType", "1");         // (거래구분) '1':신규, '4':해지, '8':변경, '9':조회
-        firmBean.data.put("companyCd", "MBR00246");
+        firmBean.data.put("companyCd", "BKWIN001");
         firmBean.data.put("virtualAccount", "8008308817439");  // (가상계좌번호)
         firmBean.data.put("withdrawBankCd", "090");  // (출금은행코드) PG_CODE 테이블 참조
         firmBean.data.put("withdrawAccount", "3333064866100"); // (출금계좌번호)
         firmBean.data.put("customerName", "박윤성");    // (고객명)
-        firmBean.data.put("regType", "1");
-        firmBean.data.put("identity", "8901021");
 
         String reqJson = GsonUtil.toJson(firmBean);
         logger.info("reqJson: {} ", reqJson);
@@ -130,6 +145,30 @@ public class InterProcessTest {
         logger.info("<- {} [{}]", FirmUtil.KSNET, CommonUtil.toString(send));
 
 //        ServerTest(reqJson);
+    }
+
+    // 출금계좌해지(경남은행용)
+    @Test
+    public void withdrawAccountUnReg() {
+        // 출금계좌해지
+        FirmBean firmBean = new FirmBean();
+        firmBean.bankCd 	= "089";            // 089:케이뱅크, 039:경남은행
+        firmBean.msgType 	= "0900400";
+        firmBean.userId		= "SYSTEM";
+        firmBean.data.put("trxType", "4");         // (거래구분) '1':신규, '4':해지, '8':변경, '9':조회
+        firmBean.data.put("virtualAccount", "70022001894015");  // (가상계좌번호)
+        firmBean.data.put("withdrawBankCd", "230");  // (출금은행코드) PG_CODE 테이블 참조
+        firmBean.data.put("withdrawAccount", "144414442800"); // (출금계좌번호)
+        firmBean.data.put("customerName", "");    // (고객명)
+        firmBean.data.put("companyCd", "BKWIN001");        // (필수)
+
+        String reqJson = GsonUtil.toJson(firmBean);
+        logger.info("reqJson: {} ", reqJson);
+//        String send = interProcess.execute(reqJson);
+//        logger.info("<- {} [{}]", FirmUtil.KSNET, CommonUtil.toString(send));
+
+//        ServerTest(reqJson);
+        comm(firmBean);
     }
 
     @Test
@@ -156,7 +195,8 @@ public class InterProcessTest {
         String resJson = "";
         long time = System.currentTimeMillis();
         try{
-            socket = new Socket("10.100.200.10", 10006);
+            //socket = new Socket("10.100.200.10", 10006);
+            socket = new Socket("10.100.100.13", 10006);
             socket.setSoTimeout(40000);
 
             output = socket.getOutputStream();

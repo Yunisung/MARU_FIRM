@@ -57,16 +57,16 @@ public class InterDoznExecutorTest {
         firmBean.bankCd 	= "034";
         firmBean.msgType 	= "0600400";
         firmBean.userId		= "SYSTEM";
-        firmBean.data.put("bankCd", "088");
-        firmBean.data.put("account", "110487944164");
-        //firmBean.data.put("socialNumber", "890102"); // ÁÖ¹Î¹øÈ£
+        firmBean.data.put("bankCd", "032");
+        firmBean.data.put("account", "087120852531");
+        firmBean.data.put("socialNumber", ""); // ÁÖ¹Î¹øÈ£
 
-//        comm(firmBean);
+        comm(firmBean);
 
-        String reqJson = GsonUtil.toJson(firmBean);
-        logger.info("reqJson: {} ", reqJson);
-        String send = interProcess.execute(reqJson);
-        logger.info("<- {} [{}]", FirmUtil.DOZN, CommonUtil.toString(send));
+//        String reqJson = GsonUtil.toJson(firmBean);
+//        logger.info("reqJson: {} ", reqJson);
+//        String send = interProcess.execute(reqJson);
+//        logger.info("<- {} [{}]", FirmUtil.DOZN, CommonUtil.toString(send));
     }
 
     @Test
@@ -216,7 +216,8 @@ public class InterDoznExecutorTest {
         String resJson = "";
         long time = System.currentTimeMillis();
         try{
-            socket = new Socket("10.100.200.10", 10006);
+//            socket = new Socket("10.100.200.10", 10006);
+            socket = new Socket("10.100.100.13", 10006);
             socket.setSoTimeout(40000);
 
             output = socket.getOutputStream();

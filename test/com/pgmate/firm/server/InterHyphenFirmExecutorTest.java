@@ -46,6 +46,9 @@ public class InterHyphenFirmExecutorTest {
         firmBean.userId		= "SYSTEM";
         firmBean.data.put("bankCd", "032");
         firmBean.data.put("account", "087120852531");
+        firmBean.data.put("socialNumber", "791112");
+//        firmBean.data.put("bankCd", "004");
+//        firmBean.data.put("account", "33710204098738");
 
 //        String reqJson = GsonUtil.toJson(firmBean);
 //        logger.info("reqJson: {} ", reqJson);
