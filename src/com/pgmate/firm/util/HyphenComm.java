@@ -57,19 +57,10 @@ public class HyphenComm {
             conn.setConnectTimeout(60000);
             conn.setReadTimeout(60000);
             conn.setRequestMethod("POST");
+
             conn.getOutputStream().write(postDataBytes);
             conn.getOutputStream().flush();
             conn.getOutputStream().close();
-
-            logger.info("Cipher Suite : " + conn.getCipherSuite());
-
-            SSLSocketFactory factory = HttpsURLConnection.getDefaultSSLSocketFactory();
-            SSLSocket socket = (SSLSocket) factory.createSocket();
-            String[] enabledCiphers = socket.getEnabledCipherSuites();
-
-            for (String enabledCipher : enabledCiphers) {
-                logger.info("Enabled Ciphers: " + enabledCipher);
-            }
 
             BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(conn.getInputStream(), "UTF-8"));
             String inputLine;
