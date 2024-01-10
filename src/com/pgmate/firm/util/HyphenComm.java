@@ -5,6 +5,7 @@ import com.pgmate.firm.conf.ServerBean;
 import com.pgmate.firm.hyphen.BalanceBean;
 import com.pgmate.firm.hyphen.HyphenBean;
 import com.pgmate.firm.ksnet.FBHeaderBean;
+import com.pgmate.lib.util.lang.CommonUtil;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.slf4j.Logger;
@@ -41,6 +42,9 @@ public class HyphenComm {
         logger.info("SEND-URL : " + urlAddress);
 
         HttpsURLConnection conn = null;
+        InputStream is = null;
+        BufferedReader bufferedReader = null;
+
         try {
             URL url = new URL(urlAddress);
             String postData = "JSONData="+jsonParams;
@@ -62,19 +66,31 @@ public class HyphenComm {
             conn.getOutputStream().flush();
             conn.getOutputStream().close();
 
-            BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(conn.getInputStream(), "UTF-8"));
+            int responseCode = conn.getResponseCode();
+
+            if(responseCode == HttpsURLConnection.HTTP_OK) {
+                is = conn.getInputStream();
+            } else {
+                is = conn.getErrorStream();
+            }
+
+            bufferedReader = new BufferedReader(new InputStreamReader(is, "UTF-8"));
             String inputLine;
 
             while ((inputLine = bufferedReader.readLine()) != null)  {
                 stringBuffer.append(inputLine.replace("\\", ""));
             }
-            bufferedReader.close();
+            //bufferedReader.close();
 
             String result = stringBuffer.toString();
             logger.info("response : " + result);
 
         } catch (Exception e) {
             logger.info(e.getMessage().toString());
+        } finally {
+            if(bufferedReader != null) try {bufferedReader.close();} catch (IOException e) {}
+            if(is != null) try {is.close();} catch (IOException e) {}
+            if(conn != null) conn.disconnect();
         }
 
         return stringBuffer.toString();
