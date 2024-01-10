@@ -43,8 +43,6 @@ public class HyphenComm {
 
         HttpsURLConnection conn = null;
         InputStream is = null;
-        BufferedReader bufferedReader = null;
-
         try {
             URL url = new URL(urlAddress);
             String postData = "JSONData="+jsonParams;
@@ -66,29 +64,21 @@ public class HyphenComm {
             conn.getOutputStream().flush();
             conn.getOutputStream().close();
 
-            int responseCode = conn.getResponseCode();
-
-            if(responseCode == HttpsURLConnection.HTTP_OK) {
-                is = conn.getInputStream();
-            } else {
-                is = conn.getErrorStream();
-            }
-
-            bufferedReader = new BufferedReader(new InputStreamReader(is, "UTF-8"));
+            is = conn.getInputStream();
+            BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(is, "UTF-8"));
             String inputLine;
 
             while ((inputLine = bufferedReader.readLine()) != null)  {
                 stringBuffer.append(inputLine.replace("\\", ""));
             }
-            //bufferedReader.close();
+            bufferedReader.close();
 
             String result = stringBuffer.toString();
             logger.info("response : " + result);
 
         } catch (Exception e) {
-            logger.info(e.getMessage().toString());
+            logger.error("hyphen connection error: ", e);
         } finally {
-            if(bufferedReader != null) try {bufferedReader.close();} catch (IOException e) {}
             if(is != null) try {is.close();} catch (IOException e) {}
             if(conn != null) conn.disconnect();
         }
