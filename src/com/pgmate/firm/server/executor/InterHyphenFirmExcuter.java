@@ -266,6 +266,7 @@ public class InterHyphenFirmExcuter implements InterExcuter {
             hyphenBean.setReqdata(depositBean);
 
             //통신
+            hyphenComm = new HyphenComm();
             String resData = hyphenComm.connect(hyphenBean);
 
             //통신결과 클래스화
