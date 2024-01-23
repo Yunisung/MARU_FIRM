@@ -27,6 +27,7 @@ public class HyphenComm {
 //    private static final String defaultURL = "https://cmsarstest.ksnet.co.kr/";
     //운영
     private static final String defaultURL = "https://cmsars.ksnet.co.kr/";
+    private static final String distURL = "https://cmsapi.ksnet.co.kr/ksnet/";
 
     public HyphenComm() { }
 
@@ -38,7 +39,13 @@ public class HyphenComm {
         StringBuffer stringBuffer = new StringBuffer();
 
         String jsonParams = new Gson().toJson(bean);
-        String urlAddress = defaultURL + bean.getSendurl();
+        String sendUrl = bean.getSendurl();
+        String urlAddress = defaultURL + sendUrl;
+        //하이픈 대행 처리
+        if(sendUrl.equals("rfb/retail/deposit") || sendUrl.equals("rfb/retail/inquiry/transfer") || sendUrl.equals("rfb/retail/inquiry/balance")) {
+            urlAddress = distURL + sendUrl;
+        }
+
         logger.info("SEND-URL : " + urlAddress);
 
         HttpsURLConnection conn = null;
