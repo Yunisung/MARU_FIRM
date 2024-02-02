@@ -74,9 +74,12 @@ public class InterProcess implements java.io.Serializable{
 					firmBean = interExcuter.proc0800(firmBean);
 				}else if(firmBean.msgType.startsWith("0600300")){
 					//잔액조회
-					//firmBean = interExcuter.proc0600300(firmBean);
-					//하이픈 대행 사용
-					firmBean = interHyphenFirmExcuter.proc0600300(firmBean);
+					if(firmBean.bankCd.equals("089")) {
+						firmBean = interExcuter.proc0600300(firmBean);
+					} else {
+						//하이픈 대행 사용
+						firmBean = interHyphenFirmExcuter.proc0600300(firmBean);
+					}
 				}else if(firmBean.msgType.startsWith("0600400")){
 					//성명조회
 					firmBean = interHyphenFirmExcuter.proc0600400(firmBean);
@@ -85,14 +88,20 @@ public class InterProcess implements java.io.Serializable{
 					firmBean = interExcuter.proc0700100(firmBean);
 				}else if(firmBean.msgType.startsWith("0100100")){
 					//이체
-					//firmBean = interExcuter.proc0100100(firmBean);
-					//하이픈 대행 사용
-					firmBean = interHyphenFirmExcuter.proc0100100(firmBean);
+					if(firmBean.bankCd.equals("089")) {
+						firmBean = interExcuter.proc0100100(firmBean);
+					} else {
+						//하이픈 대행 사용
+						firmBean = interHyphenFirmExcuter.proc0100100(firmBean);
+					}
 				}else if(firmBean.msgType.startsWith("0600101")){
 					//처리결과조회
-					//firmBean = interExcuter.proc0600101(firmBean);
-					//하이픈 대행 사용
-					firmBean = interHyphenFirmExcuter.proc0600101(firmBean);
+					if(firmBean.bankCd.equals("089")) {
+						firmBean = interExcuter.proc0600101(firmBean);
+					} else {
+						//하이픈 대행 사용
+						firmBean = interHyphenFirmExcuter.proc0600101(firmBean);
+					}
 				}else if(firmBean.msgType.startsWith("0900400")){
 					//가상계좌 출금정보 등록
 					firmBean = interExcuter.proc0900400(firmBean);
