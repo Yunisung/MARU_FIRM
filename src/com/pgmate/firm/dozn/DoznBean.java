@@ -2,6 +2,7 @@ package com.pgmate.firm.dozn;
 
 public class DoznBean {
     private long index;
+    private String bankCd;
 
     //REQ DATA
     private String url;
@@ -23,6 +24,10 @@ public class DoznBean {
     public void setIndex(long idx) {
         this.index = idx;
     }
+
+    public String getBankCd() { return bankCd; }
+
+    public void setBankCd(String bankCd) { this.bankCd = bankCd; }
 
     public String getUrl() {
         return url;

@@ -49,7 +49,7 @@ public class DoznComm {
 
     public String connect(DoznBean bean) {
         String result = "";
-        BankBean bankBean = firm.bank.get("034");
+        BankBean bankBean = firm.bank.get(bean.getBankCd());
 
         StringBuffer stringBuffer = new StringBuffer();
         String urlAddress = defaultURL + bean.getUrl();
@@ -129,7 +129,7 @@ public class DoznComm {
 
     public String connectKyc(DoznBean bean) {
         String result = "";
-        BankBean bankBean = firm.bank.get("007");
+        BankBean bankBean = firm.bank.get(bean.getBankCd());
 
         StringBuffer stringBuffer = new StringBuffer();
         String urlAddress = kycURL + bean.getUrl();
@@ -156,8 +156,8 @@ public class DoznComm {
             conn.setRequestProperty("Content-Type", "application/json");
             conn.setRequestProperty("Accept", "*/*");
             conn.setRequestProperty("Accept-Charset", "UTF-8");
-            conn.setRequestProperty("api-key", bankBean.api_key);
-            conn.setRequestProperty("org-c", bankBean.org_code);
+            conn.setRequestProperty("api-key", bankBean.kyc_api_key);
+            conn.setRequestProperty("org-c", bankBean.kyc_org_code);
             conn.setDoOutput(true);
             conn.setConnectTimeout(60000);
             conn.setReadTimeout(60000);

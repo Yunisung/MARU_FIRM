@@ -27,6 +27,9 @@ public class BankBean {
 	public String api_key = ""; //더즌에서 발급한 KEY
 	public String org_code = ""; //더즌에서 발급한 코드
 	public String crypto = ""; //더즌 암호화 유무
+
+	public String kyc_api_key = ""; //더즌 KYC KEY
+	public String kyc_org_code = ""; //더즌 KYC 코드
 	
 	public BankBean() {
 		// TODO Auto-generated constructor stub

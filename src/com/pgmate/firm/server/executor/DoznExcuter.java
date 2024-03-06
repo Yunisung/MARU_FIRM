@@ -34,7 +34,7 @@ public class DoznExcuter implements InterExcuter {
 
         try {
             FirmMasterDAO masterDAO = new FirmMasterDAO();
-            FirmTrxDAO firmTrxDAO = new FirmTrxDAO();
+            FirmDAO firmDAO = new FirmDAO();
             BankBean configBean = firm.bank.get(firmBean.bankCd);
 
             //BEAN 세팅
@@ -53,8 +53,8 @@ public class DoznExcuter implements InterExcuter {
                 account = firmBean.mAccnt;
             }
 
-
-            String seqNo = firmTrxDAO.getFirmSeq();
+            String seqName = "FIRM_" + firmBean.bankCd;
+            String seqNo = FirmDAO.getSeqNO(seqName);
             bean.setTelegram_no(CommonUtil.parseLong(seqNo));
 
             //URL 세팅
@@ -105,7 +105,6 @@ public class DoznExcuter implements InterExcuter {
 
         try {
             FirmMasterDAO masterDAO = new FirmMasterDAO();
-            FirmTrxDAO firmTrxDAO = new FirmTrxDAO();
             BankBean configBean = firm.bank.get(firmBean.bankCd);
 
             //BEAN 세팅
@@ -123,7 +122,8 @@ public class DoznExcuter implements InterExcuter {
                 bean.setCheck_depositor("Y");
             }
 
-            String seqNo = firmTrxDAO.getFirmSeq();
+            String seqName = "FIRM_"+firmBean.bankCd;
+            String seqNo = FirmDAO.getSeqNO(seqName);
             bean.setTelegram_no(CommonUtil.parseLong(seqNo));
 
             //URL 세팅
@@ -184,7 +184,8 @@ public class DoznExcuter implements InterExcuter {
             bean.setDrw_bank_code(firmBean.bankCd);
             bean.setDivision_code(CommonUtil.parseLong(firmBean.data.getString("searchCode")));
 
-            String seqNo = firmTrxDAO.getFirmSeq();
+            String seqName = "FIRM_" + firmBean.bankCd;
+            String seqNo = FirmDAO.getSeqNO(seqName);
             bean.setTelegram_no(CommonUtil.parseLong(seqNo));
 
             //URL 세팅
@@ -243,11 +244,19 @@ public class DoznExcuter implements InterExcuter {
             return firmBean;
         }
 
+        //수협은행 타행이체 막기
+        if(firmBean.bankCd.equals("007") && !firmBean.data.getString("recvBankCd").equals("007")) {
+            firmBean.resultCd = "XXXX";
+            firmBean.resultMsg = "타행 이체 불능";
+            return firmBean;
+        }
+
         try {
             FirmMasterDAO masterDAO = new FirmMasterDAO();
             FirmTrxDAO firmTrxDAO = new FirmTrxDAO();
 
-            String seqNo = firmTrxDAO.getFirmSeq();
+            String seqName = "FIRM_" + firmBean.bankCd;
+            String seqNo = FirmDAO.getSeqNO(seqName);
             //MASTER DB 저장
             long idx = firmTrxDAO.insertTrx(seqNo, firmBean.bankCd, firmBean.data.getLong("amount"), firmBean.data.getString("recvBankCd"), firmBean.data.getString("recvAccount"), firmBean.data.getString("sender"), firmBean.data.getString("recordInfo"), firmBean.data.getString("procType"));
 
@@ -290,6 +299,9 @@ public class DoznExcuter implements InterExcuter {
             bean.setOrg_telegram_no(CommonUtil.parseLong(org_SeqNo));
             bean.setTr_dt(org_TranDate);
 
+            String seqName = "FIRM_" + firmBean.bankCd;
+            String seqNo = FirmDAO.getSeqNO(seqName);
+
             //URL 세팅
             String sendUrl = "api/rt/v1/transfer/check";
             if(configBean.crypto.equals("Y")) {
@@ -301,7 +313,7 @@ public class DoznExcuter implements InterExcuter {
             //logger.info("dozn json data : [{}]", jsonParams);
 
             //MASTER DB 저장
-            long idx = masterDAO.setMasterAddSearchDateByDozn(firmBean.msgType.substring(0,4), firmBean.msgType.substring(4), firmBean.bankCd, sendUrl, jsonParams, org_TranDate);
+            long idx = masterDAO.setMasterAddSearchDateByDozn(firmBean.msgType.substring(0,4), firmBean.msgType.substring(4), firmBean.bankCd, seqNo, sendUrl, jsonParams, org_TranDate);
             firmBean = processCheck(idx, firmBean, masterDAO);
 
         } catch (Exception e) {
@@ -323,10 +335,10 @@ public class DoznExcuter implements InterExcuter {
 
         try {
             FirmMasterDAO masterDAO = new FirmMasterDAO();
-            FirmTrxDAO firmTrxDAO = new FirmTrxDAO();
             BankBean configBean = firm.bank.get(firmBean.bankCd);
 
-            String seqNo = FirmDAO.getKycSeqNO();
+            String seqName = "KYC_" + firmBean.bankCd;
+            String seqNo = FirmDAO.getSeqNO(seqName);
 
             //BEAN 세팅
             DoznKycBean bean = new DoznKycBean();
@@ -367,10 +379,10 @@ public class DoznExcuter implements InterExcuter {
 
         try {
             FirmMasterDAO masterDAO = new FirmMasterDAO();
-            FirmTrxDAO firmTrxDAO = new FirmTrxDAO();
             BankBean configBean = firm.bank.get(firmBean.bankCd);
 
-            String seqNo = firmTrxDAO.getFirmSeq();
+            String seqName = "FIRM_" + firmBean.bankCd;
+            String seqNo = FirmDAO.getSeqNO(seqName);
 
             //BEAN 세팅
             DoznArsAuthenticateBean bean = new DoznArsAuthenticateBean();
@@ -432,7 +444,8 @@ public class DoznExcuter implements InterExcuter {
             FirmTrxDAO firmTrxDAO = new FirmTrxDAO();
             BankBean configBean = firm.bank.get(firmBean.bankCd);
 
-            String seqNo = firmTrxDAO.getFirmSeq();
+            String seqName = "FIRM_" + firmBean.bankCd;
+            String seqNo = FirmDAO.getSeqNO(seqName);
 
             //BEAN 세팅
             DoznAccountAuthBean bean = new DoznAccountAuthBean();
@@ -487,7 +500,8 @@ public class DoznExcuter implements InterExcuter {
             FirmTrxDAO firmTrxDAO = new FirmTrxDAO();
             BankBean configBean = firm.bank.get(firmBean.bankCd);
 
-            String seqNo = firmTrxDAO.getFirmSeq();
+            String seqName = "FIRM_" + firmBean.bankCd;
+            String seqNo = FirmDAO.getSeqNO(seqName);
 
             //BEAN 세팅
             DoznAccountAuthInquireBean bean = new DoznAccountAuthInquireBean();
@@ -540,7 +554,8 @@ public class DoznExcuter implements InterExcuter {
             FirmTrxDAO firmTrxDAO = new FirmTrxDAO();
             BankBean configBean = firm.bank.get(firmBean.bankCd);
 
-            String seqNo = firmTrxDAO.getFirmSeq();
+            String seqName = "FIRM_" + firmBean.bankCd;
+            String seqNo = FirmDAO.getSeqNO(seqName);
 
             //BEAN 세팅
             DoznArsAuthenticateCheckBean bean = new DoznArsAuthenticateCheckBean();
