@@ -103,7 +103,7 @@ public class FirmTrxDAO {
 	}
 
 	public List<FBHeaderBean> select(){
-		String query = " SELECT idx,bankCd,sendTime,seqNo,amount,recvBank,recvAccount,checkDigit,recvHolder,recordInfo,procType,procId	FROM PG_FIRM_TRX WHERE sendDate = DATE_FORMAT(now(), '%Y%m%d') 	AND procGb='R' AND procType != 'BT' AND bankCd != '034' ORDER BY idx ASC LIMIT 10";
+		String query = " SELECT idx,bankCd,sendTime,seqNo,amount,recvBank,recvAccount,checkDigit,recvHolder,recordInfo,procType,procId	FROM PG_FIRM_TRX WHERE sendDate = DATE_FORMAT(now(), '%Y%m%d') 	AND procGb='R' AND procType != 'BT' AND bankCd != '034' AND bankCd != '007' ORDER BY idx ASC LIMIT 10";
 
 		DBManager db 	= null;
 		PreparedStatement pstmt	= null;
@@ -853,7 +853,7 @@ public class FirmTrxDAO {
 	 * @return
 	 */
 	public List<DoznBean> selectByDozn(){
-		String query = " SELECT idx,bankCd,sendDate,sendTime,seqNo,amount,recvBank,recvAccount,checkDigit,recvHolder,recordInfo,procType,procId	FROM PG_FIRM_TRX WHERE sendDate = DATE_FORMAT(now(), '%Y%m%d') 	AND procGb='R' AND procType != 'BT' AND bankCd = '034' ORDER BY idx ASC LIMIT 10";
+		String query = " SELECT idx,bankCd,sendDate,sendTime,seqNo,amount,recvBank,recvAccount,checkDigit,recvHolder,recordInfo,procType,procId	FROM PG_FIRM_TRX WHERE sendDate = DATE_FORMAT(now(), '%Y%m%d') 	AND procGb='R' AND procType != 'BT' AND bankCd IN ('034', '007') ORDER BY idx ASC LIMIT 10";
 
 		DBManager db 	= null;
 		PreparedStatement pstmt	= null;
@@ -899,6 +899,7 @@ public class FirmTrxDAO {
 				}
 
 				DoznBean doznBean = new DoznBean();
+				doznBean.setBankCd(configBean.bankCd);
 				doznBean.setUrl(sendUrl);
 				doznBean.setReqData(jsonParams);
 				doznBean.setIndex(rset.getLong("idx"));
@@ -989,38 +990,6 @@ public class FirmTrxDAO {
 			db.close(conn,pstmt,rset);
 		}
 		return firmBean;
-	}
-
-	/**
-	 * 더즌용 거래번호
-	 * @return
-	 */
-	public String getFirmSeq(){
-		String query = "SELECT FN_FIRMSEQ() as seq";
-
-		DBManager db 	= null;
-		PreparedStatement pstmt	= null;
-		Connection conn			= null;
-		ResultSet rset			= null;
-		String result	= "";
-
-		try{
-			db 		= DBFactory.getInstance();
-			conn	= db.getConnection();
-			pstmt	= conn.prepareStatement(query);
-
-			rset 	= pstmt.executeQuery();
-
-			while(rset.next()){
-				result = rset.getString("seq");
-			}
-		}catch(Exception e){
-			logger.error(e.getMessage());
-		}finally{
-			db.close(conn,pstmt,rset);
-		}
-
-		return result;
 	}
 
 }

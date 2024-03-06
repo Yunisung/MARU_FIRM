@@ -990,6 +990,7 @@ public class FirmMasterDAO {
 				if(configBean != null) {
 					DoznBean doznBean = new DoznBean();
 					doznBean.setIndex(rset.getLong("idx"));
+					doznBean.setBankCd(rset.getString("bankCd"));
 					doznBean.setUrl(rset.getString("sendUrl"));
 					doznBean.setReqData(rset.getString("reqData"));
 					list.add(doznBean);
@@ -1055,9 +1056,9 @@ public class FirmMasterDAO {
 	 *
 	 * 더즌용 처리결과조회
 	 */
-	public long setMasterAddSearchDateByDozn(String msgCd, String jobGb, String bankCd, String url, String reqData, String searchDate) {
+	public long setMasterAddSearchDateByDozn(String msgCd, String jobGb, String bankCd, String seqNo, String url, String reqData, String searchDate) {
 		String query = "INSERT INTO PG_FIRM_MASTER (bankCd,msgCd,jobGb,seqNo,sendDate,sendTime,procGb, sendUrl, reqData, searchDate) "
-				+" VALUES (?,?,?,FN_FIRMSEQ(), DATE_FORMAT(now(), '%Y%m%d'), DATE_FORMAT(now(), '%H%i%s'),'D',?, ?, ?)";
+				+" VALUES (?,?,?,?, DATE_FORMAT(now(), '%Y%m%d'), DATE_FORMAT(now(), '%H%i%s'),'D',?, ?, ?)";
 
 		DBManager db 			= null;
 		PreparedStatement pstmt	= null;
@@ -1073,9 +1074,10 @@ public class FirmMasterDAO {
 			pstmt.setString(1,bankCd);
 			pstmt.setString(2,msgCd);
 			pstmt.setString(3,jobGb);
-			pstmt.setString(4,url);
-			pstmt.setString(5,reqData);
-			pstmt.setString(6,searchDate);
+			pstmt.setString(4,seqNo);
+			pstmt.setString(5,url);
+			pstmt.setString(6,reqData);
+			pstmt.setString(7,searchDate);
 			result = pstmt.executeUpdate();
 			rset		= pstmt.executeQuery("SELECT LAST_INSERT_ID() ");
 			while(rset.next()){
