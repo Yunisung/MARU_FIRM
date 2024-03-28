@@ -242,7 +242,7 @@ public class FirmMain{
 				//출금계좌등록 로직처리
 				if(doznBean.getUrl().equals("api/v1/kyc")) {
 					if(doznBean.getStatus().equals("200")) {
-						doznBean.setResultCode(apiRes.get("rspC").toString());
+						doznBean.setResultCode("0000");
 						doznBean.setResultMsg("정상");
 					} else {
 						doznBean.setResultCode(doznBean.getStatus());
