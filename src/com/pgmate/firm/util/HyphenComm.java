@@ -26,8 +26,8 @@ public class HyphenComm {
     //개발
 //    private static final String defaultURL = "https://cmsarstest.ksnet.co.kr/";
     //운영
-    private static final String defaultURL = "https://cmsars.ksnet.co.kr/";
-    private static final String distURL = "https://cmsapi.ksnet.co.kr/ksnet/";
+    private static final String defaultURL = "https://fbapi.hyphen.im/firmbk/auth/";
+    private static final String distURL = "https://fbapi.hyphen.im/firmbk/";
 
     public HyphenComm() { }
 
