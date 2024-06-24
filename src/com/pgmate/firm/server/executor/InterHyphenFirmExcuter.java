@@ -134,7 +134,7 @@ public class InterHyphenFirmExcuter implements InterExcuter {
             HyphenBean hyphenBean = new HyphenBean();
             hyphenBean.setAuth_key(configBean.auth_key);
             hyphenBean.setReqdata(fcsBean);
-            hyphenBean.setSendurl("ksnet/auth/account");
+            hyphenBean.setSendurl("account");
 
 
 
@@ -450,7 +450,7 @@ public class InterHyphenFirmExcuter implements InterExcuter {
             HyphenBean hyphenBean = new HyphenBean();
             hyphenBean.setAuth_key(configBean.auth_key);
             hyphenBean.setReqdata(arsBean);
-            hyphenBean.setSendurl("ksnet/auth/ars");
+            hyphenBean.setSendurl("ars");
 
             String jsonParams = new Gson().toJson(hyphenBean);
 
