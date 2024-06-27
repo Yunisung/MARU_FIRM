@@ -124,7 +124,7 @@ public class FirmMain{
 				apiRes = (JSONObject) jsonParser.parse(resData);
 
 				//230104_PYS : FCS¿ë
-				if(hyphenBean.getSendurl().equals("ksnet/auth/account")) {
+				if(hyphenBean.getSendurl().equals("account")) {
 					hyphenBean.setReply(apiRes.get("reply").toString());
 					hyphenBean.setReply_msg(apiRes.get("reply_msg").toString());
 
