@@ -379,7 +379,7 @@ public class FirmMasterDAO {
 						holderBean.setSeqNo(rset.getString("seqNo"));
 
 						hyphenBean.setReqdata(holderBean);
-					} else if(rset.getString("sendUrl").equals("ksnet/auth/account")) {
+					} else if(rset.getString("sendUrl").equals("account")) {
 						hyphenBean.setAuth_key(configBean.auth_key);
 
 						String reqJson = rset.getString("reqData");
