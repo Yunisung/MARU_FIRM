@@ -47,6 +47,12 @@
       "api_key" : "2d0af44e-964b-4081-832d-b15aa66d442e",
       "org_code" : "10000706",
       "crypto" : "Y"
+    },
+    "048" : {
+      "bankCd" : "048",
+      "account" : "131019267928",
+      "coocon_secr_key" : "wJTPdsfLZZ77wiKQtxGX",
+      "coocon_inst_cd" : "04847711"
     }
   },
   "server": {

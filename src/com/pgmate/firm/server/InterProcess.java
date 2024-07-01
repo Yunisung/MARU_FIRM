@@ -29,11 +29,48 @@ public class InterProcess implements java.io.Serializable{
 //		InterExcuter interExcuter = new InterHyphenExcuter(firm);
 		InterExcuter interHyphenFirmExcuter = new InterHyphenFirmExcuter(firm);
 		InterExcuter doznExcuter = new DoznExcuter(firm);
+		InterExcuter cooconExcuter = new CooconExcuter(firm);
 
 		if(firmBean.resultCd.equals("9999")){
 			return GsonUtil.toJson(firmBean);
 		}else{
-			if(firmBean.bankCd.equals("034") || firmBean.bankCd.equals("007")) {
+			if(firmBean.bankCd.equals("048")) {
+				//쿠콘 : 이체, 이체확인, 잔액조회, 출금계좌등록 사용
+				//인증은 더즌꺼 사용
+				if(firmBean.msgType.startsWith("0600300")) {
+					//잔액조회
+					firmBean = cooconExcuter.proc0600300(firmBean);
+				}else if(firmBean.msgType.startsWith("0600400")){
+					//성명조회
+					firmBean = doznExcuter.proc0600400(firmBean);
+				}else if(firmBean.msgType.startsWith("0700100")){
+					//집계
+					firmBean = doznExcuter.proc0700100(firmBean);
+				}else if(firmBean.msgType.startsWith("0100100")){
+					//이체
+					firmBean = cooconExcuter.proc0100100(firmBean);
+				}else if(firmBean.msgType.startsWith("0600101")){
+					//처리결과조회
+					firmBean = cooconExcuter.proc0600101(firmBean);
+				}else if(firmBean.msgType.startsWith("0900400")){
+					//가상계좌 출금정보 등록
+					firmBean = cooconExcuter.proc0900400(firmBean);
+				}else if(firmBean.msgType.startsWith("ARSAUTH")) {
+					//ARS 인증
+					firmBean = doznExcuter.procArsAuth(firmBean);
+				}else if(firmBean.msgType.startsWith("0600102")){
+					//이체 재시도
+					firmBean = doznExcuter.proc0600102(firmBean);
+				}else if(firmBean.msgType.startsWith("ACCAUTH")) {
+					//계좌점유인증(1원인증)
+					firmBean = doznExcuter.procAccAuth(firmBean);
+				}else if(firmBean.msgType.startsWith("ARSCHCK")) {
+					//ARS인증 체크
+					firmBean = doznExcuter.procArsChck(firmBean);
+				}else if(firmBean.msgType.startsWith("ACCCHCK")) {
+					firmBean = doznExcuter.procAccChck(firmBean);
+				}
+			} else if(firmBean.bankCd.equals("034") || firmBean.bankCd.equals("007")) {
 				//더즌은 따로 예외처리
 				if(firmBean.msgType.startsWith("0600300")) {
 					//잔액조회

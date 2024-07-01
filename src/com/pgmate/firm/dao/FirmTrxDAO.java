@@ -7,6 +7,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.google.gson.Gson;
+import com.pgmate.firm.coocon.CooconBean;
+import com.pgmate.firm.coocon.CooconReqBean;
+import com.pgmate.firm.coocon.CooconTransferBean;
 import com.pgmate.firm.dozn.DoznBean;
 import com.pgmate.firm.dozn.DoznTransferBean;
 import com.pgmate.firm.hyphen.DepositBean;
@@ -103,7 +106,7 @@ public class FirmTrxDAO {
 	}
 
 	public List<FBHeaderBean> select(){
-		String query = " SELECT idx,bankCd,sendTime,seqNo,amount,recvBank,recvAccount,checkDigit,recvHolder,recordInfo,procType,procId	FROM PG_FIRM_TRX WHERE sendDate = DATE_FORMAT(now(), '%Y%m%d') 	AND procGb='R' AND procType != 'BT' AND bankCd != '034' AND bankCd != '007' ORDER BY idx ASC LIMIT 10";
+		String query = " SELECT idx,bankCd,sendTime,seqNo,amount,recvBank,recvAccount,checkDigit,recvHolder,recordInfo,procType,procId	FROM PG_FIRM_TRX WHERE sendDate = DATE_FORMAT(now(), '%Y%m%d') 	AND procGb='R' AND procType != 'BT' AND bankCd IN ('039', '089')  ORDER BY idx ASC LIMIT 10";
 
 		DBManager db 	= null;
 		PreparedStatement pstmt	= null;
@@ -990,6 +993,154 @@ public class FirmTrxDAO {
 			db.close(conn,pstmt,rset);
 		}
 		return firmBean;
+	}
+
+	/**
+	 * 쿠콘용 이체데이터
+	 * @return
+	 */
+	public List<CooconBean> selectByCoocon(){
+		String query = " SELECT idx,bankCd,sendDate,sendTime,seqNo,amount,recvBank,recvAccount,checkDigit,recvHolder,recordInfo,procType,procId	FROM PG_FIRM_TRX WHERE sendDate = DATE_FORMAT(now(), '%Y%m%d') 	AND procGb='R' AND procType != 'BT' AND bankCd IN ('048') ORDER BY idx ASC LIMIT 10";
+
+		DBManager db 	= null;
+		PreparedStatement pstmt	= null;
+		Connection conn			= null;
+		ResultSet rset			= null;
+
+
+
+		List<CooconBean> list = new ArrayList<CooconBean>();
+
+
+		try{
+			db 		= DBFactory.getInstance();
+			conn	= db.getConnection();
+			pstmt	= conn.prepareStatement(query);
+			rset 	= pstmt.executeQuery();
+
+			while(rset.next()){
+				//쿠콘 이체전문은 여기서 생성
+				BankBean configBean = map.get(rset.getString("bankCd"));
+
+				String seqNo = rset.getString("seqNo");
+				String recvBankCd = rset.getString("recvBank");
+				String recvAccount = rset.getString("recvAccount");
+				String outName = rset.getString("recordInfo");
+				String inName = rset.getString("recvHolder");
+				String amount = rset.getString("amount");
+
+				CooconTransferBean bean = new CooconTransferBean();
+				bean.setTRT_INST_CD(configBean.coocon_inst_cd);
+				bean.setTRSC_DT(CommonUtil.getCurrentDate("yyyyMMdd"));
+				bean.setTRSC_SEQ_NO(seqNo);
+				bean.setBANK_CD(recvBankCd);
+				bean.setACCT_NO(recvAccount);
+				bean.setMO_BANK_CD(configBean.bankCd);
+				bean.setMO_ACCT_NO(configBean.account);
+				bean.setOUT_NAME(outName);
+				bean.setIN_NAME(inName);
+				bean.setTRSC_AMT(amount);
+				bean.setSEC_MARK("");
+
+				CooconReqBean reqBean = new CooconReqBean(bean);
+				reqBean.setSECR_KEY(configBean.coocon_secr_key);
+				reqBean.setKEY("WAPI_1100");
+
+				String jsonParams = new Gson().toJson(reqBean);
+
+				CooconBean cooconBean = new CooconBean();
+				cooconBean.setReqUrl("");
+				cooconBean.setReqData(jsonParams);
+				cooconBean.setIndex(rset.getLong("idx"));
+				cooconBean.setBankCd(configBean.bankCd);
+
+				list.add(cooconBean);
+			}
+		}catch(Exception e){
+			e.printStackTrace();
+			logger.error("DB Error : {} , {} , [{}]",Thread.currentThread().getStackTrace()[1].getMethodName(),e.getMessage(),query);
+		}finally{
+			db.close(conn,pstmt,rset);
+		}
+		return list;
+	}
+
+	public FirmBean checkResultByCoocon(long idx,FirmBean firmBean){
+		String query = " SELECT resultCd,resultMsg,recvHolder FROM PG_FIRM_TRX WHERE idx =?  AND procGb in ('N','Y') ";
+
+		DBManager db 	= null;
+		PreparedStatement pstmt	= null;
+		Connection conn			= null;
+		ResultSet rset			= null;
+
+
+		try{
+			db 		= DBFactory.getInstance();
+			conn	= db.getConnection();
+			pstmt	= conn.prepareStatement(query);
+			pstmt.setLong(1, idx);
+			rset 	= pstmt.executeQuery();
+
+			while(rset.next()){
+				firmBean.resultCd = rset.getString("resultCd");
+				firmBean.resultMsg = rset.getString("resultMsg").trim();
+				firmBean.idx  = idx;
+				if(firmBean.data == null){
+					firmBean.data = new SharedMap<String,Object>();
+				}
+				firmBean.data.put("recvHolder", rset.getString("recvHolder"));
+
+			}
+		}catch(Exception e){
+			logger.info("DB Error : {} , {} , [{}]",Thread.currentThread().getStackTrace()[1].getMethodName(),e.getMessage(),query);
+		}finally{
+			db.close(conn,pstmt,rset);
+		}
+		return firmBean;
+	}
+
+	/**
+	 * 쿠콘 통신결과 UPDATE
+	 */
+	public boolean updateByCoocon(CooconBean cooconBean){
+		String query = "UPDATE PG_FIRM_TRX SET procGb =?, recvDate=DATE_FORMAT(now(), '%Y%m%d'), recvTime=DATE_FORMAT(now(), '%H%i%s'), resultCd=?, resultMsg=?, modDt=now() WHERE idx =?";
+
+		DBManager db 	= null;
+		PreparedStatement pstmt	= null;
+		Connection conn			= null;
+		int result		=0;
+		try{
+			db 		= DBFactory.getInstance();
+			conn	= db.getConnection();
+			pstmt	= conn.prepareStatement(query);
+			if(cooconBean.getResultCode().equals("0000")){
+				pstmt.setString(1,"Y");
+			}else if(cooconBean.getResultCode().equals("XXXX")){
+				pstmt.setString(1,"X");
+			}else{
+				pstmt.setString(1,"N");
+			}
+
+			pstmt.setString(2, cooconBean.getResultCode());
+			pstmt.setString(3, cooconBean.getResultMsg());
+			pstmt.setLong(4, cooconBean.getIndex());
+
+			result = pstmt.executeUpdate();
+
+			conn.commit();
+
+		}catch(Exception e){
+			logger.info("DB Error : {} , {} , [{}]",Thread.currentThread().getStackTrace()[1].getMethodName(),e.getMessage(),query);
+		}finally{
+			db.close(pstmt);
+			db.close(conn);
+		}
+
+		if(result > 0){
+			return true;
+		}else{
+			return false;
+		}
 	}
 
 }

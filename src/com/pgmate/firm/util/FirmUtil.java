@@ -24,6 +24,7 @@ public class FirmUtil {
 	public static String KSNET		= "KSNET";
 	public static String HYPHEN		= "HYPHEN";
 	public static String DOZN		= "DOZN";
+	public static String COOCON		= "COOCON";
 
 	
 	public static String changeCharset(String str, String charset) {
