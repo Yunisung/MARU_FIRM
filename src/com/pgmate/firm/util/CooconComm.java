@@ -21,13 +21,13 @@ public class CooconComm {
     private SmsGw smsGw = null;
     private Firm firm = null;
 
-    //ê°œë°œ
+    //°³¹ß
     private String defaultURL = "https://dev2.coocon.co.kr:8443/sol/gateway/webilling_wapi.jsp";
     private String kycURL = "https://dev2.coocon.co.kr:8443/sol/gateway/vapg_wapi.jsp";
 
-    //ìš´ì˜
-//    private String defaultURL = "https://gw.coocon.co.kr/sol/gateway/webilling_wapi.jsp"; //ìš´ì˜
-//    private String kycURL = "https://apigw.coocon.co.kr/sol/gateway/vapg_wapi.jsp"; //ìš´ì˜
+    //¿î¿µ
+//    private String defaultURL = "https://gw.coocon.co.kr/sol/gateway/webilling_wapi.jsp";
+//    private String kycURL = "https://apigw.coocon.co.kr/sol/gateway/vapg_wapi.jsp";
 
 
     public CooconComm(Firm firm) {
