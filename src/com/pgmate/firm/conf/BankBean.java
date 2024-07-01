@@ -30,6 +30,10 @@ public class BankBean {
 
 	public String kyc_api_key = ""; //더즌 KYC KEY
 	public String kyc_org_code = ""; //더즌 KYC 코드
+
+	//240624_PYS : 쿠콘 추가
+	public String coocon_secr_key = ""; //이용기업 인증키값
+	public String coocon_inst_cd = ""; //취급기관코드
 	
 	public BankBean() {
 		// TODO Auto-generated constructor stub

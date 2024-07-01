@@ -77,6 +77,8 @@ public class AutoOpen {
 				long idx = new FirmMasterDAO().setMasterbyDozn("0800", "100", bankCd, seqNo, sendUrl, jsonParams);
 
 				logger.info("autoopen : bank:{} ,seq:{}, Index : {}", bankCd,seqNo, idx);
+			} else if(bankCd.equals("048")) {
+
 			}
 		}
 	}

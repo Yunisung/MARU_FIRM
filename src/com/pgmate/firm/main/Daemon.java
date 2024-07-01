@@ -41,6 +41,8 @@ public class Daemon extends Thread{
 						main.HyphenfirmArs();
 						main.DoznfirmMaster();
 						main.DoznFirmTrx();
+						main.CooconFirmMaster();
+						main.CooconFirmTrx();
 						//main.firmTrx();
 
 					}

@@ -3,15 +3,14 @@ package com.pgmate.firm.main;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 
+import com.pgmate.firm.coocon.CooconBean;
 import com.pgmate.firm.dao.FirmDAO;
 import com.pgmate.firm.dozn.DoznBaseBean;
 import com.pgmate.firm.dozn.DoznBean;
 import com.pgmate.firm.hyphen.BalanceBean;
 import com.pgmate.firm.hyphen.HyphenBaseBean;
 import com.pgmate.firm.hyphen.HyphenBean;
-import com.pgmate.firm.util.DoznComm;
-import com.pgmate.firm.util.FirmUtil;
-import com.pgmate.firm.util.HyphenComm;
+import com.pgmate.firm.util.*;
 import com.pgmate.lib.util.gson.GsonUtil;
 import com.pgmate.lib.util.lang.CommonUtil;
 import org.json.simple.JSONObject;
@@ -24,7 +23,6 @@ import com.pgmate.firm.conf.Firm;
 import com.pgmate.firm.dao.FirmMasterDAO;
 import com.pgmate.firm.dao.FirmTrxDAO;
 import com.pgmate.firm.ksnet.FBHeaderBean;
-import com.pgmate.firm.util.KsnetComm;
 
 /**
  * @author Administrator
@@ -36,12 +34,14 @@ public class FirmMain{
 	private KsnetComm comm			= null;
 	private HyphenComm hyphenComm 	= null;
 	private DoznComm doznComm		= null;
+	private CooconComm cooconComm	= null;
 
 	public FirmMain(Firm firm) {
 		this.firm = firm;
 		comm = new KsnetComm(firm.server);
 		hyphenComm = new HyphenComm();
 		doznComm = new DoznComm(firm);
+		cooconComm = new CooconComm(firm);
 	}
 
 
@@ -266,7 +266,7 @@ public class FirmMain{
 				doznBean.setResData(resData);
 
 			} catch (ParseException e) {
-				logger.error("DOZN Firm Master Error : [{}] [{}]", resData, e.getMessage());
+				logger.error("DOZN MASTER Error : [{}] [{}]", resData, e.getMessage());
 				doznBean.setResultCode("XXXX");
 				doznBean.setResultMsg("통신실패");
 				doznBean.setResData("");
@@ -318,6 +318,110 @@ public class FirmMain{
 
 			logger.info("DOZN TRX RESULT {},[{}]", doznBean.getStatus(), doznBean.getResData());
 			logger.info("DOZN TRX RESULT UPDATE : {} : {}",(i+1),firmTrxDAO.updateByDozn(doznBean));
+		}
+	}
+
+	public void CooconFirmMaster() {
+		FirmMasterDAO firmMasterDAO = new FirmMasterDAO(firm.bank);
+		List<CooconBean> list = firmMasterDAO.selectByCoocon();
+		for(int i=0;i<list.size();i++){
+			logger.info("COOCON MASTER TRANSFER : {}/{}",(i+1),list.size());
+			CooconBean cooconBean = list.get(i);
+			logger.info("COOCON MASTER STATUS UPDATE : {} : {}",(i+1),firmMasterDAO.updateStatus(cooconBean.getIndex(), "I"));
+
+			//출금계좌등록 로직처리
+			String resData = "";
+
+			if(cooconBean.getReqUrl().equals("kyc")) {
+				resData = cooconComm.connectKyc(cooconBean);
+			} else {
+				resData = cooconComm.connect(cooconBean);
+			}
+
+			logger.info("RES_DATA : [{}]", resData);
+			cooconBean.setResData(resData);
+
+			JSONObject apiRes = new JSONObject();
+			JSONParser jsonParser = new JSONParser();
+			try {
+				apiRes = (JSONObject) jsonParser.parse(resData);
+
+				//출금계좌등록 로직처리
+				if(cooconBean.getReqUrl().equals("kyc")) {
+					String resultCd = apiRes.get("RESP_CD").toString();
+					String resultMsg = apiRes.get("RESP_MSG").toString();
+
+					if(resultCd.equals("0000")) {
+						cooconBean.setResultCode("0000");
+					} else {
+						cooconBean.setResultCode(resultCd);
+					}
+
+					cooconBean.setResultMsg(resultMsg);
+				} else {
+					String resultCd = apiRes.get("RSLT_CD").toString();
+					String resultMsg = apiRes.get("RSLT_MSG").toString();
+
+					if(resultCd.equals("000")) {
+						cooconBean.setResultCode("0000");
+					} else {
+						cooconBean.setResultCode(resultCd);
+					}
+
+					cooconBean.setResultMsg(resultMsg);
+				}
+			} catch (ParseException e) {
+				logger.error("COOCON Firm Master Error : [{}] [{}]", resData, e.getMessage());
+				cooconBean.setResultCode("XXXX");
+				cooconBean.setResultMsg("통신실패");
+				cooconBean.setResData("");
+			}
+
+
+
+			logger.info("COOCON MASTER RESULT {},[{}]", cooconBean.getResultMsg(), cooconBean.getResData());
+			logger.info("COOCON MASTER RESULT UPDATE : {} : {}",(i+1),firmMasterDAO.updateByCoocon(cooconBean));
+		}
+
+	}
+
+	/**
+	 * PYS : 쿠콘용 이체전문 전송
+	 */
+	public void CooconFirmTrx() {
+		FirmTrxDAO firmTrxDAO = new FirmTrxDAO(firm.bank);
+		List<CooconBean> list = firmTrxDAO.selectByCoocon();
+		for(int i=0;i<list.size();i++){
+			logger.info("COOCON TRX TRANSFER : {}/{}",(i+1),list.size());
+			CooconBean cooconBean = list.get(i);
+			logger.info("COOCON TRX STATUS UPDATE : {} : {}",(i+1),firmTrxDAO.updateStatus(cooconBean.getIndex(), "I"));
+			String resData = cooconComm.connect(cooconBean);
+
+			JSONObject apiRes = new JSONObject();
+			JSONParser jsonParser = new JSONParser();
+			try {
+				apiRes = (JSONObject) jsonParser.parse(resData);
+
+				String resultCd = apiRes.get("RSLT_CD").toString();
+				String resultMsg = apiRes.get("RSLT_MSG").toString();
+
+				if(resultCd.equals("000")) {
+					cooconBean.setResultCode("0000");
+				} else {
+					cooconBean.setResultCode(resultCd);
+				}
+
+				cooconBean.setResultMsg(resultMsg);
+
+			} catch (ParseException e) {
+				logger.error("DOZN TRX Error : [{}] [{}]", resData, e.getMessage());
+				cooconBean.setResultCode("XXXX");
+				cooconBean.setResultMsg("통신실패");
+				cooconBean.setResData("");
+			}
+
+			logger.info("DOZN TRX RESULT {},[{}]", cooconBean.getResultMsg(), cooconBean.getResData());
+			logger.info("DOZN TRX RESULT UPDATE : {} : {}",(i+1),firmTrxDAO.updateByCoocon(cooconBean));
 		}
 	}
 

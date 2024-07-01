@@ -38,14 +38,14 @@ public class InterCooconExecutorTest {
     public void balance() {
         logger.info("잔액조회");
         FirmBean firmBean = new FirmBean();
-        firmBean.bankCd 	= "034";
+        firmBean.bankCd 	= "048";
         firmBean.msgType 	= "0600300";
         firmBean.userId		= "SYSTEM";
 
         String reqJson = GsonUtil.toJson(firmBean);
         logger.info("reqJson: {} ", reqJson);
         String send = interProcess.execute(reqJson);
-        logger.info("<- {} [{}]", FirmUtil.DOZN, CommonUtil.toString(send));
+        logger.info("<- {} [{}]", FirmUtil.COOCON, CommonUtil.toString(send));
 
 //        comm(firmBean);
     }
@@ -89,19 +89,19 @@ public class InterCooconExecutorTest {
     public void transfer() {
         // 이체
         FirmBean firmBean = new FirmBean();
-        firmBean.bankCd 	= "034";
+        firmBean.bankCd 	= "048";
         firmBean.msgType 	= "0100100";
         firmBean.userId		= "SYSTEM";
         firmBean.data.put("amount",1000);
-        firmBean.data.put("recvBankCd","007");
-        firmBean.data.put("recvAccount","113000509251");
+        firmBean.data.put("recvBankCd","088");
+        firmBean.data.put("recvAccount","110487944164");
         firmBean.data.put("sender", "");
         firmBean.data.put("procType", "CS");
 
         String reqJson = GsonUtil.toJson(firmBean);
         logger.info("reqJson: {} ", reqJson);
         String send = interProcess.execute(reqJson);
-        logger.info("<- {} [{}]", FirmUtil.DOZN, CommonUtil.toString(send));
+        logger.info("<- {} [{}]", FirmUtil.COOCON, CommonUtil.toString(send));
 
     }
 
@@ -109,15 +109,35 @@ public class InterCooconExecutorTest {
     public void getExecutionResult() {
         // 처리결과조회
         FirmBean firmBean = new FirmBean();
-        firmBean.bankCd 	= "034";
+        firmBean.bankCd 	= "048";
         firmBean.msgType 	= "0600101";
         firmBean.userId		= "SYSTEM";
-        firmBean.data.put("orgSeqNo", "000455");
+        firmBean.data.put("orgSeqNo", "000010");
 
         String reqJson = GsonUtil.toJson(firmBean);
         logger.info("reqJson: {} ", reqJson);
         String send = interProcess.execute(reqJson);
-        logger.info("<- {} [{}]", FirmUtil.DOZN, CommonUtil.toString(send));
+        logger.info("<- {} [{}]", FirmUtil.COOCON, CommonUtil.toString(send));
+    }
+
+    @Test
+    public void withdrawAccountReg() {
+        // 출금계좌등록
+        FirmBean firmBean = new FirmBean();
+        firmBean.bankCd 	= "048";
+        firmBean.msgType 	= "0900400";
+        firmBean.userId		= "SYSTEM";
+        firmBean.data.put("trxType", "1");         // (거래구분) 11: 등록, 41: 해지
+        firmBean.data.put("virtualAccount", "910007295186");  // (가상계좌번호)
+        firmBean.data.put("withdrawBankCd", "090");  // (출금은행코드) PG_CODE 테이블 참조
+        firmBean.data.put("withdrawAccount", "3333064866100"); // (출금계좌번호)
+        firmBean.data.put("customerName", "박윤성");    // (고객명)
+
+        String reqJson = GsonUtil.toJson(firmBean);
+        logger.info("reqJson: {} ", reqJson);
+        String send = interProcess.execute(reqJson);
+        logger.info("<- {} [{}]", FirmUtil.COOCON, CommonUtil.toString(send));
+
     }
 
     @Test
