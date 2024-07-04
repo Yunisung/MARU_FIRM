@@ -1218,7 +1218,7 @@ public class FirmMasterDAO {
 	 * @return
 	 */
 	public List<CooconBean> selectByCoocon() {
-		String query = " SELECT idx,bankCd,msgCd,jobGb,seqNo,sendDate,sendTime,searchDate,searchNo,bankSeqNo,filler,sendUrl,reqData FROM PG_FIRM_MASTER WHERE sendDate = DATE_FORMAT(now(), '%Y%m%d') AND procGb='C' AND filler IS null ORDER BY idx ASC";
+		String query = " SELECT idx,bankCd,msgCd,jobGb,seqNo,sendDate,sendTime,searchDate,searchNo,bankSeqNo,filler,sendUrl,reqData FROM PG_FIRM_MASTER WHERE sendDate = DATE_FORMAT(now(), '%Y%m%d') AND procGb='C' AND sendUrl = '' AND filler IS null ORDER BY idx ASC";
 
 		DBManager db 	= null;
 		PreparedStatement pstmt	= null;

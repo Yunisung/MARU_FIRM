@@ -332,11 +332,13 @@ public class FirmMain{
 			//출금계좌등록 로직처리
 			String resData = "";
 
-			if(cooconBean.getReqUrl().equals("kyc")) {
-				resData = cooconComm.connectKyc(cooconBean);
-			} else {
-				resData = cooconComm.connect(cooconBean);
-			}
+//			if(cooconBean.getReqUrl().equals("kyc")) {
+//				resData = cooconComm.connectKyc(cooconBean);
+//			} else {
+//				resData = cooconComm.connect(cooconBean);
+//			}
+
+			resData = cooconComm.connect(cooconBean);
 
 			logger.info("RES_DATA : [{}]", resData);
 			cooconBean.setResData(resData);
