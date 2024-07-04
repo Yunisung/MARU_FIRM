@@ -7,6 +7,7 @@ import org.json.simple.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.net.ssl.HttpsURLConnection;
 import java.io.ByteArrayOutputStream;
 import java.io.DataInputStream;
 import java.io.IOException;
@@ -41,14 +42,14 @@ public class CooconComm {
         String urlAddress = defaultURL + bean.getReqUrl();
         logger.info("SEND_URL : [{}]", urlAddress);
 
-        HttpURLConnection conn = null;
+        HttpsURLConnection conn = null;
 
         try {
             URL url = new URL(urlAddress);
-            String reqData = bean.getReqData();
+            String reqData = bean.getReqData().replaceAll("\\\\", "");
             logger.info("REQUEST_DATA : [{}]", reqData);
 
-            conn = (HttpURLConnection) url.openConnection();
+            conn = (HttpsURLConnection) url.openConnection();
             conn.setRequestProperty("Content-Type", "application/json");
             conn.setDoInput(true);
             conn.setDoOutput(true);
@@ -57,10 +58,7 @@ public class CooconComm {
 
             OutputStreamWriter os = new OutputStreamWriter(conn.getOutputStream());
 
-            JSONObject inputObj = new JSONObject();
-            inputObj.put("REQ_DATA", reqData);
-
-            os.write(inputObj.toString());
+            os.write(reqData);
             os.flush();
             os.close();
 
@@ -99,14 +97,14 @@ public class CooconComm {
         String urlAddress = kycURL;
         logger.info("SEND_URL : [{}]", urlAddress);
 
-        HttpURLConnection conn = null;
+        HttpsURLConnection conn = null;
 
         try {
             URL url = new URL(urlAddress);
             String reqData = bean.getReqData();
             logger.info("REQUEST_DATA : [{}]", reqData);
 
-            conn = (HttpURLConnection) url.openConnection();
+            conn = (HttpsURLConnection) url.openConnection();
             conn.setDoInput(true);
             conn.setDoOutput(true);
             conn.setRequestMethod("POST");
