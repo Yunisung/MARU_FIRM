@@ -20,6 +20,9 @@ public class CooconExcuter implements InterExcuter{
     private Logger logger = LoggerFactory.getLogger(getClass());
     private Firm firm = null;
 
+    String coocon_NameKey = "PbZpPBwIrutWKM13oj49";     //성명조회키
+    String coocon_RealNameKey = "cr6YGqD57Xu2r8cSz4a7"; //실명조회키
+
 
     public CooconExcuter(Firm firm) {
         this.firm = firm;
@@ -64,7 +67,7 @@ public class CooconExcuter implements InterExcuter{
             String jsonParams = new Gson().toJson(reqBean);
             logger.info("coocon JSON : [{}]", jsonParams);
 
-            long idx = masterDAO.setMasterbyCoocon(firmBean.msgType.substring(0,4), firmBean.msgType.substring(4), firmBean.bankCd, seqNo, "", jsonParams);
+            long idx = masterDAO.setMasterbyCoocon(firmBean.msgType.substring(0,4), firmBean.msgType.substring(4), firmBean.bankCd, seqNo, "webilling_wapi.jsp", jsonParams);
             firmBean = processCheck(idx, firmBean, masterDAO);
 
             String resJson = firmBean.data.getString("resData");
@@ -95,6 +98,65 @@ public class CooconExcuter implements InterExcuter{
 
     @Override
     public FirmBean proc0600400(FirmBean firmBean) {
+        logger.info("=============COOCON 성명조회==============");
+
+        try {
+            FirmMasterDAO masterDAO = new FirmMasterDAO();
+            FirmDAO firmDAO = new FirmDAO();
+            BankBean configBean = firm.bank.get(firmBean.bankCd);
+
+            String seqName = "FIRM_" + firmBean.bankCd;
+            String seqNo = "0"+FirmDAO.getSeqNO(seqName);
+            String bankCd = firmBean.data.getString("bankCd");
+            String account = firmBean.data.getString("account");
+            String socialNumber = firmBean.data.getString("socialNumber");
+
+            //Bean Setting
+            CooconAccountNameBean bean = new CooconAccountNameBean();
+            bean.setBANK_CD(bankCd);
+            bean.setSEARCH_ACCT_NO(account);
+            bean.setACNM_NO(socialNumber);
+            bean.setICHE_AMT("");
+            bean.setTRSC_SEQ_NO(seqNo);
+
+            CooconReqBean reqBean = new CooconReqBean(bean);
+            reqBean.setSECR_KEY(coocon_NameKey);
+            reqBean.setKEY("ACCTNM_RCMS_WAPI");
+
+            //실명조회할땐 키 바꿈
+            if(!CommonUtil.isNullOrSpace(socialNumber)) {
+                reqBean.setSECR_KEY(coocon_RealNameKey);
+            }
+
+            //DB에 저장
+            String jsonParams = new Gson().toJson(reqBean);
+            logger.info("coocon JSON : [{}]", jsonParams);
+
+            long idx = masterDAO.setMasterbyCoocon(firmBean.msgType.substring(0,4), firmBean.msgType.substring(4), firmBean.bankCd, seqNo, "acctnm_rcms_wapi.jsp", jsonParams);
+            firmBean = processCheck(idx, firmBean, masterDAO);
+
+            String resJson = firmBean.data.getString("resData");
+            logger.info("coocon response : [{}]", resJson);
+
+            //JSON 파싱
+            JSONParser jsonParser = new JSONParser();
+            JSONObject apiRes  = (JSONObject) jsonParser.parse(resJson);
+
+            //결과처리
+            if(firmBean.resultCd.equals("0000")) {
+                String name = apiRes.get("ACCT_NM").toString();
+                firmBean.data.put("accountName", name);
+                masterDAO.insertAccnt(firmBean.data.getString("bankCd"), firmBean.data.getString("account"), firmBean.data.getString("accountName"));
+            }
+
+
+        } catch (Exception e) {
+            firmBean.resultCd = "XXXX";
+            firmBean.resultMsg = "쿠콘 성명조회 오류";
+
+            e.printStackTrace();
+            logger.error("쿠콘 성명조회 오류 : [{}]", e.getMessage());
+        }
 
         return firmBean;
     }
@@ -172,7 +234,7 @@ public class CooconExcuter implements InterExcuter{
             String jsonParams = new Gson().toJson(reqBean);
             logger.info("coocon JSON : [{}]", jsonParams);
 
-            long idx = masterDAO.setMasterAddSearchDateByCoocon(firmBean.msgType.substring(0,4), firmBean.msgType.substring(4), firmBean.bankCd, seqNo, "", jsonParams, org_TranDate);
+            long idx = masterDAO.setMasterAddSearchDateByCoocon(firmBean.msgType.substring(0,4), firmBean.msgType.substring(4), firmBean.bankCd, seqNo, "webilling_wapi.jsp", jsonParams, org_TranDate);
             firmBean = processCheck(idx, firmBean, masterDAO);
 
 

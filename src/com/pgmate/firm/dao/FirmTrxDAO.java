@@ -1049,7 +1049,7 @@ public class FirmTrxDAO {
 				String jsonParams = new Gson().toJson(reqBean);
 
 				CooconBean cooconBean = new CooconBean();
-				cooconBean.setReqUrl("");
+				cooconBean.setReqUrl("webilling_wapi.jsp");
 				cooconBean.setReqData(jsonParams);
 				cooconBean.setIndex(rset.getLong("idx"));
 				cooconBean.setBankCd(configBean.bankCd);
