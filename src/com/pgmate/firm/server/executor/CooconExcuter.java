@@ -269,6 +269,10 @@ public class CooconExcuter implements InterExcuter{
             String account = firmBean.data.getString("withdrawAccount");
             String sts = "";
 
+            //금액체크
+            String startAmount = firmBean.data.getString("startAmount");
+            String endAmount = firmBean.data.getString("endAmount");
+
             //STS : 11(등록), 22(변경), 41(해지)
             if(trxType.equals("1")) {
                 sts = "11";
@@ -290,10 +294,26 @@ public class CooconExcuter implements InterExcuter{
             bean.setWDRW_BANK_CD(bankCd);
             bean.setWDRW_ACCT_NO(account);
             bean.setCUST_NO("");
-            bean.setCUST_GUBUN("2");
-            bean.setFIXED_AMT("0");
-            bean.setRANGE_START_AMT("0");
-            bean.setRANGE_END_AMT("0");
+
+            if(CommonUtil.isNullOrSpace(startAmount)) {
+                bean.setCUST_GUBUN("2");
+                bean.setFIXED_AMT("0");
+                bean.setRANGE_START_AMT("0");
+                bean.setRANGE_END_AMT("0");
+            } else {
+                if(startAmount.equals(endAmount)) {
+                    bean.setCUST_GUBUN("1");
+                    bean.setFIXED_AMT(startAmount);
+                    bean.setRANGE_START_AMT("0");
+                    bean.setRANGE_END_AMT("0");
+                } else if(Long.valueOf(startAmount) < Long.valueOf(endAmount)) {
+                    bean.setCUST_GUBUN("3");
+                    bean.setFIXED_AMT("0");
+                    bean.setRANGE_START_AMT(startAmount);
+                    bean.setRANGE_END_AMT(endAmount);
+                }
+            }
+
             bean.setPARENT_ACCT(configBean.account);
 
             //DB에 저장
