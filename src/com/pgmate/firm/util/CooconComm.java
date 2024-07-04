@@ -22,7 +22,7 @@ public class CooconComm {
     private Firm firm = null;
 
     //개발
-    private String defaultURL = "https://dev2.coocon.co.kr:8443/sol/gateway/webilling_wapi.jsp";
+    private String defaultURL = "https://dev2.coocon.co.kr:8443/sol/gateway/";
     private String kycURL = "https://dev2.coocon.co.kr:8443/sol/gateway/vapg_wapi.jsp";
 
     //운영
@@ -38,7 +38,7 @@ public class CooconComm {
         String result = "";
         BankBean bankBean = firm.bank.get(bean.getBankCd());
 
-        String urlAddress = defaultURL;
+        String urlAddress = defaultURL + bean.getReqUrl();
         logger.info("SEND_URL : [{}]", urlAddress);
 
         HttpURLConnection conn = null;

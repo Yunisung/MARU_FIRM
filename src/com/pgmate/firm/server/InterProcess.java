@@ -42,7 +42,7 @@ public class InterProcess implements java.io.Serializable{
 					firmBean = cooconExcuter.proc0600300(firmBean);
 				}else if(firmBean.msgType.startsWith("0600400")){
 					//성명조회
-					firmBean = doznExcuter.proc0600400(firmBean);
+					firmBean = cooconExcuter.proc0600400(firmBean);
 				}else if(firmBean.msgType.startsWith("0700100")){
 					//집계
 					firmBean = doznExcuter.proc0700100(firmBean);
