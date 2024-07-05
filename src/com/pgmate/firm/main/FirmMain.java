@@ -1,8 +1,15 @@
 package com.pgmate.firm.main;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
+import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
+import java.security.InvalidAlgorithmParameterException;
+import java.security.InvalidKeyException;
+import java.security.NoSuchAlgorithmException;
 import java.util.List;
 
+import cc.checkpay.common.CcSecurityUtil;
 import com.pgmate.firm.coocon.CooconBean;
 import com.pgmate.firm.dao.FirmDAO;
 import com.pgmate.firm.dozn.DoznBaseBean;
@@ -23,6 +30,10 @@ import com.pgmate.firm.conf.Firm;
 import com.pgmate.firm.dao.FirmMasterDAO;
 import com.pgmate.firm.dao.FirmTrxDAO;
 import com.pgmate.firm.ksnet.FBHeaderBean;
+
+import javax.crypto.BadPaddingException;
+import javax.crypto.IllegalBlockSizeException;
+import javax.crypto.NoSuchPaddingException;
 
 /**
  * @author Administrator
@@ -332,13 +343,15 @@ public class FirmMain{
 			//출금계좌등록 로직처리
 			String resData = "";
 
-//			if(cooconBean.getReqUrl().equals("kyc")) {
-//				resData = cooconComm.connectKyc(cooconBean);
-//			} else {
-//				resData = cooconComm.connect(cooconBean);
-//			}
+			if(cooconBean.getReqUrl().equals("kyc")) {
+				resData = cooconComm.connectKyc(cooconBean);
+			}else if(cooconBean.getReqUrl().equals("accountAuth") || cooconBean.getReqUrl().equals("accountAuthCheck")) {
+				resData = cooconComm.connectAccountAuth(cooconBean);
+			}else {
+				resData = cooconComm.connect(cooconBean);
+			}
 
-			resData = cooconComm.connect(cooconBean);
+//			resData = cooconComm.connect(cooconBean);
 
 			logger.info("RES_DATA : [{}]", resData);
 			cooconBean.setResData(resData);
@@ -360,7 +373,28 @@ public class FirmMain{
 					}
 
 					cooconBean.setResultMsg(resultMsg);
-				} else {
+				}else if(cooconBean.getReqUrl().equals("accountAuth") || cooconBean.getReqUrl().equals("accountAuthCheck")) {
+					String accountAuthKey = "82faff531e0f0830d6a098a0c6c14f6c";
+
+					net.sf.json.JSONObject rtn = net.sf.json.JSONObject.fromObject(resData);
+					String rRC = rtn.getString("RC");
+					String rRM = rtn.getString("RM");
+					String resultMsg = URLDecoder.decode(rRM, "UTF-8");
+
+					String rEV = rtn.getString("EV");
+					String rVV = rtn.getString("VV");
+
+					String decEV = CcSecurityUtil.DecryptAes256Base64(rEV, accountAuthKey, "UTF-8", true);
+					net.sf.json.JSONObject jsonEV = net.sf.json.JSONObject.fromObject(decEV.substring(14));
+
+					if(rRC.equals("0000")) {
+						cooconBean.setResultCode("0000");
+					}else {
+						cooconBean.setResultCode(rRC);
+					}
+
+					cooconBean.setResultMsg(jsonEV.toString());
+				}else {
 					String resultCd = apiRes.get("RSLT_CD").toString();
 					String resultMsg = apiRes.get("RSLT_MSG").toString();
 
@@ -377,8 +411,21 @@ public class FirmMain{
 				cooconBean.setResultCode("XXXX");
 				cooconBean.setResultMsg("통신실패");
 				cooconBean.setResData("");
+			} catch (InvalidAlgorithmParameterException e) {
+				e.printStackTrace();
+			} catch (NoSuchPaddingException e) {
+				e.printStackTrace();
+			} catch (IllegalBlockSizeException e) {
+				e.printStackTrace();
+			} catch (UnsupportedEncodingException e) {
+				e.printStackTrace();
+			} catch (NoSuchAlgorithmException e) {
+				e.printStackTrace();
+			} catch (BadPaddingException e) {
+				e.printStackTrace();
+			} catch (InvalidKeyException e) {
+				e.printStackTrace();
 			}
-
 
 
 			logger.info("COOCON MASTER RESULT {},[{}]", cooconBean.getResultMsg(), cooconBean.getResData());

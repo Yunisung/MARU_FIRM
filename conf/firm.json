@@ -50,9 +50,7 @@
     },
     "048" : {
       "bankCd" : "048",
-      "account" : "131019267928",
-      "coocon_secr_key" : "wJTPdsfLZZ77wiKQtxGX",
-      "coocon_inst_cd" : "04847711"
+      "account" : "131019267928"
     }
   },
   "server": {

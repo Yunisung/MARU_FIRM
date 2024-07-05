@@ -10,7 +10,7 @@ public class CooconRegAccountBean extends CooconBaseBean{
     private String VA_ACCT_NM;
     private String STS;
     private String D_COMPANY_NO;
-    private String WDRW_BANK_CD;
+    private String WDRW_BNK_CD;
     private String WDRW_ACCT_NO;
     private String CUST_NO;
     private String CUST_GUBUN;
@@ -87,9 +87,6 @@ public class CooconRegAccountBean extends CooconBaseBean{
         return WDRW_ACCT_NO;
     }
 
-    public String getWDRW_BANK_CD() {
-        return WDRW_BANK_CD;
-    }
 
     public void setCUST_GUBUN(String CUST_GUBUN) {
         this.CUST_GUBUN = CUST_GUBUN;
@@ -135,9 +132,6 @@ public class CooconRegAccountBean extends CooconBaseBean{
         this.WDRW_ACCT_NO = WDRW_ACCT_NO;
     }
 
-    public void setWDRW_BANK_CD(String WDRW_BANK_CD) {
-        this.WDRW_BANK_CD = WDRW_BANK_CD;
-    }
 
     public String getKEY() {
         return KEY;
@@ -153,5 +147,13 @@ public class CooconRegAccountBean extends CooconBaseBean{
 
     public void setSECR_KEY(String SECR_KEY) {
         this.SECR_KEY = SECR_KEY;
+    }
+
+    public String getWDRW_BNK_CD() {
+        return WDRW_BNK_CD;
+    }
+
+    public void setWDRW_BNK_CD(String WDRW_BNK_CD) {
+        this.WDRW_BNK_CD = WDRW_BNK_CD;
     }
 }

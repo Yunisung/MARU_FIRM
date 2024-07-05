@@ -1,5 +1,6 @@
 package com.pgmate.firm.server.executor;
 
+import com.google.common.reflect.TypeToken;
 import com.google.gson.Gson;
 import com.pgmate.firm.conf.BankBean;
 import com.pgmate.firm.conf.Firm;
@@ -15,14 +16,20 @@ import org.json.simple.parser.JSONParser;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.Map;
 import java.util.concurrent.ExecutionException;
 
 public class CooconExcuter implements InterExcuter{
     private Logger logger = LoggerFactory.getLogger(getClass());
     private Firm firm = null;
 
-    String coocon_NameKey = "PbZpPBwIrutWKM13oj49";     //¼º¸íÁ¶È¸Å°
-    String coocon_RealNameKey = "cr6YGqD57Xu2r8cSz4a7"; //½Ç¸íÁ¶È¸Å°
+    String balanceKey = "";                             //ï¿½Ü¾ï¿½ï¿½ï¿½È¸Å°
+    String balanceCode = "";                             //ï¿½Ü¾ï¿½ï¿½ï¿½È­ï¿½Úµï¿½
+    String coocon_NameKey = "PbZpPBwIrutWKM13oj49";     //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½È¸Å°
+    String coocon_RealNameKey = "cr6YGqD57Xu2r8cSz4a7"; //ï¿½Ç¸ï¿½ï¿½ï¿½È¸Å°
+    String regAccountKey = "wJTPdsfLZZ77wiKQtxGX";      //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Âµï¿½ï¿½Å°
+    String regAccountCode = "04847711";                 //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Âµï¿½ï¿½ï¿½Úµï¿½
+
 
 
     public CooconExcuter(Firm firm) {
@@ -36,7 +43,7 @@ public class CooconExcuter implements InterExcuter{
 
     @Override
     public FirmBean proc0600300(FirmBean firmBean) {
-        logger.info("=============COOCON ÀÜ¾×Á¶È¸==============");
+        logger.info("=============COOCON ï¿½Ü¾ï¿½ï¿½ï¿½È¸==============");
 
         try {
             FirmMasterDAO masterDAO = new FirmMasterDAO();
@@ -54,17 +61,17 @@ public class CooconExcuter implements InterExcuter{
 
             //Bean Setting
             CooconBalanceBean bean = new CooconBalanceBean();
-            bean.setTRT_INST_CD(configBean.coocon_inst_cd);
+            bean.setTRT_INST_CD(balanceCode);
             bean.setTRSC_DT(CommonUtil.getCurrentDate("yyyyMMdd"));
             bean.setTRSC_SEQ_NO(seqNo);
             bean.setBANK_CD(firmBean.bankCd);
             bean.setACCT_NO(account);
 
             CooconReqBean reqBean = new CooconReqBean(bean);
-            reqBean.setSECR_KEY(configBean.coocon_secr_key);
+            reqBean.setSECR_KEY(balanceKey);
             reqBean.setKEY("WAPI_2100");
 
-            //DB¿¡ ÀúÀå
+            //DBï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
             String jsonParams = new Gson().toJson(reqBean);
             logger.info("coocon JSON : [{}]", jsonParams);
 
@@ -74,11 +81,11 @@ public class CooconExcuter implements InterExcuter{
             String resJson = firmBean.data.getString("resData");
             logger.info("coocon response : [{}]", resJson);
 
-            //JSON ÆÄ½Ì
+            //JSON ï¿½Ä½ï¿½
             JSONParser jsonParser = new JSONParser();
             JSONObject apiRes  = (JSONObject) jsonParser.parse(resJson);
 
-            //°á°úÃ³¸®
+            //ï¿½ï¿½ï¿½Ã³ï¿½ï¿½
             if(firmBean.resultCd.equals("0000")) {
                 String balance_amount = apiRes.get("BAL_AMT").toString();
                 firmBean.data.put("amount", CommonUtil.parseLong(balance_amount.trim()));
@@ -88,10 +95,10 @@ public class CooconExcuter implements InterExcuter{
 
         } catch (Exception e) {
             firmBean.resultCd = "XXXX";
-            firmBean.resultMsg = "ÄíÄÜ ÀÜ¾×Á¶È¸ ¿À·ù";
+            firmBean.resultMsg = "ï¿½ï¿½ï¿½ï¿½ ï¿½Ü¾ï¿½ï¿½ï¿½È¸ ï¿½ï¿½ï¿½ï¿½";
 
             e.printStackTrace();
-            logger.error("ÄíÄÜ ÀÜ¾×Á¶È¸ ¿À·ù : [{}]", e.getMessage());
+            logger.error("ï¿½ï¿½ï¿½ï¿½ ï¿½Ü¾ï¿½ï¿½ï¿½È¸ ï¿½ï¿½ï¿½ï¿½ : [{}]", e.getMessage());
         }
 
         return firmBean;
@@ -99,7 +106,7 @@ public class CooconExcuter implements InterExcuter{
 
     @Override
     public FirmBean proc0600400(FirmBean firmBean) {
-        logger.info("=============COOCON ¼º¸íÁ¶È¸==============");
+        logger.info("=============COOCON ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½È¸==============");
 
         try {
             FirmMasterDAO masterDAO = new FirmMasterDAO();
@@ -124,12 +131,12 @@ public class CooconExcuter implements InterExcuter{
             reqBean.setSECR_KEY(coocon_NameKey);
             reqBean.setKEY("ACCTNM_RCMS_WAPI");
 
-            //½Ç¸íÁ¶È¸ÇÒ¶© Å° ¹Ù²Þ
+            //ï¿½Ç¸ï¿½ï¿½ï¿½È¸ï¿½Ò¶ï¿½ Å° ï¿½Ù²ï¿½
             if(!CommonUtil.isNullOrSpace(socialNumber)) {
                 reqBean.setSECR_KEY(coocon_RealNameKey);
             }
 
-            //DB¿¡ ÀúÀå
+            //DBï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
             String jsonParams = new Gson().toJson(reqBean);
             logger.info("coocon JSON : [{}]", jsonParams);
 
@@ -139,11 +146,12 @@ public class CooconExcuter implements InterExcuter{
             String resJson = firmBean.data.getString("resData");
             logger.info("coocon response : [{}]", resJson);
 
-            //JSON ÆÄ½Ì
+            //JSON ï¿½Ä½ï¿½
             JSONParser jsonParser = new JSONParser();
             JSONObject apiRes  = (JSONObject) jsonParser.parse(resJson);
+            logger.info("JSON : [{}]", apiRes.toString());
 
-            //°á°úÃ³¸®
+            //ï¿½ï¿½ï¿½Ã³ï¿½ï¿½
             if(firmBean.resultCd.equals("0000")) {
                 JSONArray respDataArr = (JSONArray) apiRes.get("RESP_DATA");
                 if(respDataArr.size() > 0) {
@@ -159,10 +167,10 @@ public class CooconExcuter implements InterExcuter{
 
         } catch (Exception e) {
             firmBean.resultCd = "XXXX";
-            firmBean.resultMsg = "ÄíÄÜ ¼º¸íÁ¶È¸ ¿À·ù";
+            firmBean.resultMsg = "ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½È¸ ï¿½ï¿½ï¿½ï¿½";
 
             e.printStackTrace();
-            logger.error("ÄíÄÜ ¼º¸íÁ¶È¸ ¿À·ù : [{}]", e.getMessage());
+            logger.error("ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½È¸ ï¿½ï¿½ï¿½ï¿½ : [{}]", e.getMessage());
         }
 
         return firmBean;
@@ -175,13 +183,13 @@ public class CooconExcuter implements InterExcuter{
 
     @Override
     public FirmBean proc0100100(FirmBean firmBean) {
-        logger.info("=============COOCON ÀÌÃ¼==============");
+        logger.info("=============COOCON ï¿½ï¿½Ã¼==============");
 
         long currentTime = CommonUtil.parseLong(CommonUtil.getCurrentDate("HHmmss"));
 
         if(firm.daemon.startTime > currentTime || currentTime > firm.daemon.stopTime){
             firmBean.resultCd ="XXXX";
-            firmBean.resultMsg ="ÀÌÃ¼ °¡´É ½Ã°£ ¾Æ´Ô";
+            firmBean.resultMsg ="ï¿½ï¿½Ã¼ ï¿½ï¿½ï¿½ï¿½ ï¿½Ã°ï¿½ ï¿½Æ´ï¿½";
             return firmBean;
         }
 
@@ -191,7 +199,7 @@ public class CooconExcuter implements InterExcuter{
 
             String seqName = "FIRM_" + firmBean.bankCd;
             String seqNo = FirmDAO.getSeqNO(seqName);
-            //MASTER DB ÀúÀå
+            //MASTER DB ï¿½ï¿½ï¿½ï¿½
             long idx = firmTrxDAO.insertTrx(seqNo, firmBean.bankCd, firmBean.data.getLong("amount"), firmBean.data.getString("recvBankCd"), firmBean.data.getString("recvAccount"), firmBean.data.getString("sender"), firmBean.data.getString("recordInfo"), firmBean.data.getString("procType"));
 
             if(idx == 0) {
@@ -203,17 +211,17 @@ public class CooconExcuter implements InterExcuter{
 
         } catch (Exception e) {
             firmBean.resultCd = "XXXX";
-            firmBean.resultMsg = "ÄíÄÜ ÀÌÃ¼ ¿À·ù";
+            firmBean.resultMsg = "ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½Ã¼ ï¿½ï¿½ï¿½ï¿½";
 
             e.printStackTrace();
-            logger.error("ÄíÄÜ ÀÌÃ¼ ¿À·ù : [{}]", e.getMessage());
+            logger.error("ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½Ã¼ ï¿½ï¿½ï¿½ï¿½ : [{}]", e.getMessage());
         }
         return null;
     }
 
     @Override
     public FirmBean proc0600101(FirmBean firmBean) {
-        logger.info("=============COOCON Ã³¸®°á°úÁ¶È¸==============");
+        logger.info("=============COOCON Ã³ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½È¸==============");
 
         try {
             FirmMasterDAO masterDAO = new FirmMasterDAO();
@@ -227,17 +235,17 @@ public class CooconExcuter implements InterExcuter{
 
             //Bean Setting
             CooconTransferCheckBean bean = new CooconTransferCheckBean();
-            bean.setTRT_INST_CD(configBean.coocon_inst_cd);
+            bean.setTRT_INST_CD("");
             bean.setTRSC_DT(CommonUtil.getCurrentDate("yyyyMMdd"));
             bean.setTRSC_SEQ_NO(seqNo);
             bean.setBANK_CD(firmBean.bankCd);
             bean.setRQRE_TMSG_NO(org_SeqNo);
 
             CooconReqBean reqBean = new CooconReqBean(bean);
-            reqBean.setSECR_KEY(configBean.coocon_secr_key);
+            reqBean.setSECR_KEY("");
             reqBean.setKEY("WAPI_6113");
 
-            //DB¿¡ ÀúÀå
+            //DBï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
             String jsonParams = new Gson().toJson(reqBean);
             logger.info("coocon JSON : [{}]", jsonParams);
 
@@ -248,10 +256,10 @@ public class CooconExcuter implements InterExcuter{
 
         } catch (Exception e) {
             firmBean.resultCd = "XXXX";
-            firmBean.resultMsg = "ÄíÄÜ Ã³¸®°á°úÁ¶È¸ ¿À·ù";
+            firmBean.resultMsg = "ï¿½ï¿½ï¿½ï¿½ Ã³ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½È¸ ï¿½ï¿½ï¿½ï¿½";
 
             e.printStackTrace();
-            logger.error("ÄíÄÜ Ã³¸®°á°úÁ¶È¸ ¿À·ù : [{}]", e.getMessage());
+            logger.error("ï¿½ï¿½ï¿½ï¿½ Ã³ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½È¸ ï¿½ï¿½ï¿½ï¿½ : [{}]", e.getMessage());
         }
         logger.info("===================================================");
 
@@ -260,7 +268,7 @@ public class CooconExcuter implements InterExcuter{
 
     @Override
     public FirmBean proc0900400(FirmBean firmBean) {
-        logger.info("=============COOCON Ãâ±Ý°èÁÂµî·Ï==============");
+        logger.info("=============COOCON ï¿½ï¿½Ý°ï¿½ï¿½Âµï¿½ï¿½==============");
 
         try {
             FirmMasterDAO masterDAO = new FirmMasterDAO();
@@ -276,11 +284,11 @@ public class CooconExcuter implements InterExcuter{
             String account = firmBean.data.getString("withdrawAccount");
             String sts = "";
 
-            //±Ý¾×Ã¼Å©
+            //ï¿½Ý¾ï¿½Ã¼Å©
             String startAmount = firmBean.data.getString("startAmount");
             String endAmount = firmBean.data.getString("endAmount");
 
-            //STS : 11(µî·Ï), 22(º¯°æ), 41(ÇØÁö)
+            //STS : 11(ï¿½ï¿½ï¿½), 22(ï¿½ï¿½ï¿½ï¿½), 41(ï¿½ï¿½ï¿½ï¿½)
             if(trxType.equals("1")) {
                 sts = "11";
             } else if(trxType.equals("3")) {
@@ -289,16 +297,16 @@ public class CooconExcuter implements InterExcuter{
 
             //Bean Setting
             CooconRegAccountBean bean = new CooconRegAccountBean();
-            bean.setSECR_KEY(configBean.coocon_secr_key);
+            bean.setSECR_KEY(regAccountKey);
             bean.setKEY("8160");
-            bean.setTRT_INST_CD(configBean.coocon_inst_cd);
+            bean.setTRT_INST_CD(regAccountCode);
             bean.setBANK_CD(firmBean.bankCd);
             bean.setTRSC_SEQ_NO(CommonUtil.getCurrentDate("yyMMdd") + seqNo);
             bean.setVA_ACCT_NO(vactAccount);
             bean.setVA_ACCT_NM(name);
             bean.setSTS(sts);
             bean.setD_COMPANY_NO("");
-            bean.setWDRW_BANK_CD(bankCd);
+            bean.setWDRW_BNK_CD(bankCd);
             bean.setWDRW_ACCT_NO(account);
             bean.setCUST_NO("");
 
@@ -321,23 +329,27 @@ public class CooconExcuter implements InterExcuter{
                 }
             }
 
+            if(bean.getSTS().equals("41")) {
+                bean.setCUST_GUBUN("2");
+            }
+
             bean.setPARENT_ACCT(configBean.account);
 
-            //DB¿¡ ÀúÀå
+            //DBï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
             String jsonParams = new Gson().toJson(bean);
             logger.info("coocon JSON : [{}]", jsonParams);
 
             long idx = masterDAO.setMasterbyCoocon(firmBean.msgType.substring(0,4), firmBean.msgType.substring(4), firmBean.bankCd, seqNo, "kyc", jsonParams);
             firmBean = processCheck(idx, firmBean, masterDAO);
 
-//            String resJson = firmBean.data.getString("resData");
-//            logger.info("coocon response : [{}]", resJson);
+            String resJson = firmBean.data.getString("resData");
+            logger.info("coocon response : [{}]", resJson);
 //
-//            //JSON ÆÄ½Ì
+//            //JSON ï¿½Ä½ï¿½
 //            JSONParser jsonParser = new JSONParser();
 //            JSONObject apiRes  = (JSONObject) jsonParser.parse(resJson);
 //
-//            //°á°úÃ³¸®
+//            //ï¿½ï¿½ï¿½Ã³ï¿½ï¿½
 //            if(firmBean.resultCd.equals("0000")) {
 //                String balance_amount = apiRes.get("BAL_AMT").toString();
 //                firmBean.data.put("amount", CommonUtil.parseLong(balance_amount.trim()));
@@ -349,10 +361,10 @@ public class CooconExcuter implements InterExcuter{
 
         } catch (Exception e) {
             firmBean.resultCd = "XXXX";
-            firmBean.resultMsg = "ÄíÄÜ Ãâ±Ý°èÁÂµî·Ï ¿À·ù";
+            firmBean.resultMsg = "ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½Ý°ï¿½ï¿½Âµï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½";
 
             e.printStackTrace();
-            logger.error("ÄíÄÜ Ãâ±Ý°èÁÂµî·Ï ¿À·ù : [{}]", e.getMessage());
+            logger.error("ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½Ý°ï¿½ï¿½Âµï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ : [{}]", e.getMessage());
         }
 
         return firmBean;
@@ -370,11 +382,92 @@ public class CooconExcuter implements InterExcuter{
 
     @Override
     public FirmBean procAccAuth(FirmBean firmBean) {
+        logger.info("=============COOCON ï¿½ï¿½ï¿½Â°ï¿½ï¿½ï¿½==============");
+
+        try {
+            FirmMasterDAO masterDAO = new FirmMasterDAO();
+            FirmDAO firmDAO = new FirmDAO();
+            BankBean configBean = firm.bank.get(firmBean.bankCd);
+
+            String seqName = "FIRM_" + firmBean.bankCd;
+            String seqNo = "0"+FirmDAO.getSeqNO(seqName);
+            String bankCd = firmBean.data.getString("recvBankCd");
+            String account = firmBean.data.getString("recvAccount");
+            String name = firmBean.data.getString("recvName");
+
+            //Bean Setting
+            CooconAccountAuthBean bean = new CooconAccountAuthBean();
+            bean.setFnni_cd(bankCd);
+            bean.setAcct_no(account);
+            bean.setMemb_nm(name);
+            bean.setVerify_tp("N");
+            bean.setVerify_len("4");
+            bean.setPtst_txt("BK");
+
+
+            //DBï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
+            String jsonParams = new Gson().toJson(bean);
+            logger.info("coocon JSON : [{}]", jsonParams);
+
+            long idx = masterDAO.setMasterbyCoocon(firmBean.msgType.substring(0,4), firmBean.msgType.substring(4), firmBean.bankCd, seqNo, "accountAuth", jsonParams);
+            firmBean = processCheck(idx, firmBean, masterDAO);
+
+            String resJson = firmBean.data.getString("resData");
+            logger.info("coocon response : [{}]", resJson);
+
+
+
+        } catch (Exception e) {
+            firmBean.resultCd = "XXXX";
+            firmBean.resultMsg = "ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½Â°ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½";
+
+            e.printStackTrace();
+            logger.error("ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½Â°ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ : [{}]", e.getMessage());
+        }
+        logger.info("===================================================");
+
         return firmBean;
     }
 
     @Override
     public FirmBean procAccChck(FirmBean firmBean) {
+        logger.info("=============COOCON ï¿½ï¿½ï¿½Â°ï¿½ï¿½ï¿½ È®ï¿½ï¿½==============");
+
+        try {
+            FirmMasterDAO masterDAO = new FirmMasterDAO();
+            FirmDAO firmDAO = new FirmDAO();
+            BankBean configBean = firm.bank.get(firmBean.bankCd);
+
+            String seqName = "FIRM_" + firmBean.bankCd;
+            String seqNo = "0"+FirmDAO.getSeqNO(seqName);
+            String orgSeqNo = firmBean.data.getString("orgSeqNo");
+            String orgResultMsg = masterDAO.getResultMsg(orgSeqNo);
+
+            Gson gson = new Gson();
+            CooconAccountAuthCheckBean bean = gson.fromJson(orgResultMsg, CooconAccountAuthCheckBean.class);
+            //ï¿½×½ï¿½Æ®ï¿½ï¿½ï¿½ï¿½ 123
+            bean.setVerify_val("123");
+
+
+            //DBï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
+            String jsonParams = new Gson().toJson(bean);
+            logger.info("coocon JSON : [{}]", jsonParams);
+
+            long idx = masterDAO.setMasterbyCoocon(firmBean.msgType.substring(0,4), firmBean.msgType.substring(4), firmBean.bankCd, seqNo, "accountAuthCheck", jsonParams);
+            firmBean = processCheck(idx, firmBean, masterDAO);
+
+            String resJson = firmBean.data.getString("resData");
+            logger.info("coocon response : [{}]", resJson);
+
+        } catch (Exception e) {
+            firmBean.resultCd = "XXXX";
+            firmBean.resultMsg = "ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½Â°ï¿½ï¿½ï¿½ È®ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½";
+
+            e.printStackTrace();
+            logger.error("ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½Â°ï¿½ï¿½ï¿½ È®ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ : [{}]", e.getMessage());
+        }
+        logger.info("===================================================");
+
         return firmBean;
     }
 

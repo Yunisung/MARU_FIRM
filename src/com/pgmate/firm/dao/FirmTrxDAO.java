@@ -1030,7 +1030,7 @@ public class FirmTrxDAO {
 				String amount = rset.getString("amount");
 
 				CooconTransferBean bean = new CooconTransferBean();
-				bean.setTRT_INST_CD(configBean.coocon_inst_cd);
+				bean.setTRT_INST_CD("");
 				bean.setTRSC_DT(CommonUtil.getCurrentDate("yyyyMMdd"));
 				bean.setTRSC_SEQ_NO(seqNo);
 				bean.setBANK_CD(recvBankCd);
@@ -1043,7 +1043,7 @@ public class FirmTrxDAO {
 				bean.setSEC_MARK("");
 
 				CooconReqBean reqBean = new CooconReqBean(bean);
-				reqBean.setSECR_KEY(configBean.coocon_secr_key);
+				reqBean.setSECR_KEY("");
 				reqBean.setKEY("WAPI_1100");
 
 				String jsonParams = new Gson().toJson(reqBean);
