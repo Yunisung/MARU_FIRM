@@ -9,6 +9,7 @@ import com.pgmate.firm.dao.FirmMasterDAO;
 import com.pgmate.firm.dao.FirmTrxDAO;
 import com.pgmate.firm.inter.FirmBean;
 import com.pgmate.lib.util.lang.CommonUtil;
+import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.slf4j.Logger;
@@ -144,9 +145,15 @@ public class CooconExcuter implements InterExcuter{
 
             //결과처리
             if(firmBean.resultCd.equals("0000")) {
-                String name = apiRes.get("ACCT_NM").toString();
-                firmBean.data.put("accountName", name);
-                masterDAO.insertAccnt(firmBean.data.getString("bankCd"), firmBean.data.getString("account"), firmBean.data.getString("accountName"));
+                JSONArray respDataArr = (JSONArray) apiRes.get("RESP_DATA");
+                if(respDataArr.size() > 0) {
+                    JSONObject respData = (JSONObject) respDataArr.get(0);
+                    String name = respData.get("ACCT_NM").toString();
+                    firmBean.data.put("accountName", name);
+                    masterDAO.insertAccnt(firmBean.data.getString("bankCd"), firmBean.data.getString("account"), firmBean.data.getString("accountName"));
+                } else {
+                    firmBean.data.put("accountName", "");
+                }
             }
 
 
