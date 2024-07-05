@@ -1218,7 +1218,7 @@ public class FirmMasterDAO {
 	 * @return
 	 */
 	public List<CooconBean> selectByCoocon() {
-		String query = " SELECT idx,bankCd,msgCd,jobGb,seqNo,sendDate,sendTime,searchDate,searchNo,bankSeqNo,filler,sendUrl,reqData FROM PG_FIRM_MASTER WHERE sendDate = DATE_FORMAT(now(), '%Y%m%d') AND procGb='C' AND sendUrl != 'kyc' AND filler IS null ORDER BY idx ASC";
+		String query = " SELECT idx,bankCd,msgCd,jobGb,seqNo,sendDate,sendTime,searchDate,searchNo,bankSeqNo,filler,sendUrl,reqData FROM PG_FIRM_MASTER WHERE sendDate = DATE_FORMAT(now(), '%Y%m%d') AND procGb='C' AND filler IS null ORDER BY idx ASC";
 
 		DBManager db 	= null;
 		PreparedStatement pstmt	= null;
@@ -1299,5 +1299,37 @@ public class FirmMasterDAO {
 		}else{
 			return false;
 		}
+	}
+
+	/**
+	 * 쿠콘용 통신결과 가져오기
+	 * @return
+	 */
+	public String getResultMsg(String seqNo){
+		String query = "SELECT resultMsg from PG_FIRM_MASTER where seqNo = ?";
+
+		DBManager db 	= null;
+		PreparedStatement pstmt	= null;
+		Connection conn			= null;
+		ResultSet rset			= null;
+		String result	= "";
+
+		try{
+			db 		= DBFactory.getInstance();
+			conn	= db.getConnection();
+			pstmt	= conn.prepareStatement(query);
+			pstmt.setString(1,seqNo);
+			rset 	= pstmt.executeQuery();
+
+			while(rset.next()){
+				result = rset.getString("resultMsg");
+			}
+		}catch(Exception e){
+			logger.error(e.getMessage());
+		}finally{
+			db.close(conn,pstmt,rset);
+		}
+
+		return result;
 	}
 }

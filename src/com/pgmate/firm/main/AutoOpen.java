@@ -78,7 +78,7 @@ public class AutoOpen {
 
 				logger.info("autoopen : bank:{} ,seq:{}, Index : {}", bankCd,seqNo, idx);
 			} else if(bankCd.equals("048")) {
-
+				FirmDAO.resetSeqNo("FIRM_048");
 			}
 		}
 	}
