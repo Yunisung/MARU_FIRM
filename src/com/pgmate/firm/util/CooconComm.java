@@ -27,17 +27,17 @@ public class CooconComm {
     private Firm firm = null;
 
     //개발
-    private String defaultURL = "https://dev2.coocon.co.kr:8443/sol/gateway/";
+//    private String defaultURL = "https://dev2.coocon.co.kr:8443/sol/gateway/";
     private String kycURL = "https://dev2.coocon.co.kr:8443/sol/gateway/vapg_wapi.jsp";
-    private String accountAuthURL = "https://dev.checkpay.co.kr/";
-
-    String accountAuthKey = "82faff531e0f0830d6a098a0c6c14f6c";
+//    private String accountAuthURL = "https://dev.checkpay.co.kr/";
+//    String accountAuthKey = "82faff531e0f0830d6a098a0c6c14f6c";
     String accountAuthCode = "07070001";
 
     //운영
-//    private String defaultURL = "https://gw.coocon.co.kr/sol/gateway/webilling_wapi.jsp";
+    private String defaultURL = "https://gw.coocon.co.kr/sol/gateway/webilling_wapi.jsp";
 //    private String kycURL = "https://apigw.coocon.co.kr/sol/gateway/vapg_wapi.jsp";
-
+    private String accountAuthURL = "https://www.checkpay.co.kr/";
+    String accountAuthKey = "0831b4a7db4183bc72cba684f63e03a5";
 
     public CooconComm(Firm firm) {
         this.firm = firm;
@@ -95,6 +95,9 @@ public class CooconComm {
             logger.info("CooconComm MalformedURLException");
         } catch (IOException e) {
             logger.error("CooconComm Exception : [{}]", e.getMessage());
+        } finally {
+            if(conn != null) conn.disconnect();
+
         }
 
         return result;
@@ -148,6 +151,7 @@ public class CooconComm {
             result = result.trim();
         } catch (Exception e) {
             logger.error("CooconComm KYC Exception : [{}]", e.getMessage());
+            return result;
         }
 
         return result;
