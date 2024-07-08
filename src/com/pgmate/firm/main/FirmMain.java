@@ -374,7 +374,10 @@ public class FirmMain{
 
 					cooconBean.setResultMsg(resultMsg);
 				}else if(cooconBean.getReqUrl().equals("accountAuth") || cooconBean.getReqUrl().equals("accountAuthCheck")) {
+					//개발
 					String accountAuthKey = "82faff531e0f0830d6a098a0c6c14f6c";
+					//운영
+//					String accountAuthKey = "0831b4a7db4183bc72cba684f63e03a5";
 
 					net.sf.json.JSONObject rtn = net.sf.json.JSONObject.fromObject(resData);
 					String rRC = rtn.getString("RC");
@@ -393,7 +396,12 @@ public class FirmMain{
 						cooconBean.setResultCode(rRC);
 					}
 
-					cooconBean.setResultMsg(jsonEV.toString());
+					cooconBean.setResultMsg(resultMsg);
+					cooconBean.setResData(jsonEV.toString());
+
+					logger.info("resultCd : {}", cooconBean.getResultCode());
+					logger.info("resultMsg : {}", cooconBean.getResultMsg());
+
 				}else {
 					String resultCd = apiRes.get("RSLT_CD").toString();
 					String resultMsg = apiRes.get("RSLT_MSG").toString();
