@@ -50,7 +50,15 @@
     },
     "048" : {
       "bankCd" : "048",
-      "account" : "131019267928"
+      "account" : "131019633127",
+      "coocon_firm_key" : "3MfRBIdeGBMHVrOcn5Rs",
+      "coocon_firm_code" : "20034306",
+      "coocon_accountAuth_key" : "82faff531e0f0830d6a098a0c6c14f6c",
+      "coocon_accountAuth_code" : "07070001",
+      "coocon_kyc_key" : "wJTPdsfLZZ77wiKQtxGX",
+      "coocon_kyc_code" : "04847711",
+      "coocon_name_key" : "PbZpPBwIrutWKM13oj49",
+      "coocon_realname_key" : "cr6YGqD57Xu2r8cSz4a7"
     }
   },
   "server": {

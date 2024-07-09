@@ -30,6 +30,21 @@ public class BankBean {
 
 	public String kyc_api_key = ""; //더즌 KYC KEY
 	public String kyc_org_code = ""; //더즌 KYC 코드
+
+	//쿠콘 추가
+	//펌뱅킹
+	public String coocon_firm_key = "3MfRBIdeGBMHVrOcn5Rs";
+	public String coocon_firm_code = "20034306";
+	//1원인증
+	public String coocon_accountAuth_key = "82faff531e0f0830d6a098a0c6c14f6c";
+	public String coocon_accountAuth_code = "07070001";
+	//kyc
+	public String coocon_kyc_key = "wJTPdsfLZZ77wiKQtxGX";
+	public String coocon_kyc_code = "04847711";
+	//예금주조회
+	public String coocon_name_key = "PbZpPBwIrutWKM13oj49";
+	public String coocon_realname_key = "cr6YGqD57Xu2r8cSz4a7";
+
 	
 	public BankBean() {
 		// TODO Auto-generated constructor stub
