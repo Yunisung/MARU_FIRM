@@ -1019,7 +1019,6 @@ public class FirmTrxDAO {
 			rset 	= pstmt.executeQuery();
 
 			while(rset.next()){
-				//쿠콘 이체전문은 여기서 생성
 				BankBean configBean = map.get(rset.getString("bankCd"));
 
 				String seqNo = rset.getString("seqNo");
@@ -1030,7 +1029,7 @@ public class FirmTrxDAO {
 				String amount = rset.getString("amount");
 
 				CooconTransferBean bean = new CooconTransferBean();
-				bean.setTRT_INST_CD("");
+				bean.setTRT_INST_CD(configBean.coocon_firm_code);
 				bean.setTRSC_DT(CommonUtil.getCurrentDate("yyyyMMdd"));
 				bean.setTRSC_SEQ_NO(seqNo);
 				bean.setBANK_CD(recvBankCd);
@@ -1043,7 +1042,7 @@ public class FirmTrxDAO {
 				bean.setSEC_MARK("");
 
 				CooconReqBean reqBean = new CooconReqBean(bean);
-				reqBean.setSECR_KEY("");
+				reqBean.setSECR_KEY(configBean.coocon_firm_key);
 				reqBean.setKEY("WAPI_1100");
 
 				String jsonParams = new Gson().toJson(reqBean);
@@ -1102,8 +1101,8 @@ public class FirmTrxDAO {
 	/**
 	 * 쿠콘 통신결과 UPDATE
 	 */
-	public boolean updateByCoocon(CooconBean cooconBean){
-		String query = "UPDATE PG_FIRM_TRX SET procGb =?, recvDate=DATE_FORMAT(now(), '%Y%m%d'), recvTime=DATE_FORMAT(now(), '%H%i%s'), resultCd=?, resultMsg=?, modDt=now() WHERE idx =?";
+	public boolean updateByCoocon(CooconBean cooconBean, String balance){
+		String query = "UPDATE PG_FIRM_TRX SET procGb =?, recvDate=DATE_FORMAT(now(), '%Y%m%d'), recvTime=DATE_FORMAT(now(), '%H%i%s'), resultCd=?, resultMsg=?, balance=?, modDt=now() WHERE idx =?";
 
 		DBManager db 	= null;
 		PreparedStatement pstmt	= null;
@@ -1123,7 +1122,8 @@ public class FirmTrxDAO {
 
 			pstmt.setString(2, cooconBean.getResultCode());
 			pstmt.setString(3, cooconBean.getResultMsg());
-			pstmt.setLong(4, cooconBean.getIndex());
+			pstmt.setLong(4, CommonUtil.parseLong(balance.trim()));
+			pstmt.setLong(5, cooconBean.getIndex());
 
 			result = pstmt.executeUpdate();
 

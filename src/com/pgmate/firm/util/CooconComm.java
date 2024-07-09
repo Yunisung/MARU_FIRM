@@ -27,17 +27,14 @@ public class CooconComm {
     private Firm firm = null;
 
     //개발
-//    private String defaultURL = "https://dev2.coocon.co.kr:8443/sol/gateway/";
+    private String defaultURL = "https://dev2.coocon.co.kr:8443/sol/gateway/";
     private String kycURL = "https://dev2.coocon.co.kr:8443/sol/gateway/vapg_wapi.jsp";
-//    private String accountAuthURL = "https://dev.checkpay.co.kr/";
-//    String accountAuthKey = "82faff531e0f0830d6a098a0c6c14f6c";
-    String accountAuthCode = "07070001";
+    private String accountAuthURL = "https://dev.checkpay.co.kr/";
 
     //운영
-    private String defaultURL = "https://gw.coocon.co.kr/sol/gateway/webilling_wapi.jsp";
+//    private String defaultURL = "https://gw.coocon.co.kr/sol/gateway/";
 //    private String kycURL = "https://apigw.coocon.co.kr/sol/gateway/vapg_wapi.jsp";
-    private String accountAuthURL = "https://www.checkpay.co.kr/";
-    String accountAuthKey = "0831b4a7db4183bc72cba684f63e03a5";
+//    private String accountAuthURL = "https://www.checkpay.co.kr/";
 
     public CooconComm(Firm firm) {
         this.firm = firm;
@@ -93,8 +90,10 @@ public class CooconComm {
             result = result.trim();
         } catch (MalformedURLException e) {
             logger.info("CooconComm MalformedURLException");
+            return result;
         } catch (IOException e) {
             logger.error("CooconComm Exception : [{}]", e.getMessage());
+            return result;
         } finally {
             if(conn != null) conn.disconnect();
 
@@ -204,10 +203,10 @@ public class CooconComm {
 
         try {
             //암호화 데이터 세팅
-            String EV = CcSecurityUtil.EncryptAes256Base64(trx_dt + trx_tm + param.toJSONString(), accountAuthKey, true);
-            String W = CcSecurityUtil.getHmacSha256(param.toJSONString(), accountAuthKey, true);
+            String EV = CcSecurityUtil.EncryptAes256Base64(trx_dt + trx_tm + param.toJSONString(), bankBean.coocon_accountAuth_key, true);
+            String W = CcSecurityUtil.getHmacSha256(param.toJSONString(), bankBean.coocon_accountAuth_key, true);
 
-            String data = "ID=" + accountAuthCode +
+            String data = "ID=" + bankBean.coocon_accountAuth_code +
                     "&RQ_DTIME=" + trx_dt+trx_tm +
                     "&TNO=" + trx_dt+trx_dt +
                     "&EV=" + EV +
@@ -261,7 +260,7 @@ public class CooconComm {
             String rEV = rtn.getString("EV");
             String rVV = rtn.getString("VV");
 
-            if(!CcSecurityUtil.VerifyMac(accountAuthKey, rEV, rVV, "UTF-8", true)) {
+            if(!CcSecurityUtil.VerifyMac(bankBean.coocon_accountAuth_key, rEV, rVV, "UTF-8", true)) {
                 logger.info("Coocon 1원인증 암호화 검증 Faild");
 
             }

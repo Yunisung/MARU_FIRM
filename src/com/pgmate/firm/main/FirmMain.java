@@ -10,6 +10,7 @@ import java.security.NoSuchAlgorithmException;
 import java.util.List;
 
 import cc.checkpay.common.CcSecurityUtil;
+import com.pgmate.firm.conf.BankBean;
 import com.pgmate.firm.coocon.CooconBean;
 import com.pgmate.firm.dao.FirmDAO;
 import com.pgmate.firm.dozn.DoznBaseBean;
@@ -374,10 +375,7 @@ public class FirmMain{
 
 					cooconBean.setResultMsg(resultMsg);
 				}else if(cooconBean.getReqUrl().equals("accountAuth") || cooconBean.getReqUrl().equals("accountAuthCheck")) {
-					//개발
-					String accountAuthKey = "82faff531e0f0830d6a098a0c6c14f6c";
-					//운영
-//					String accountAuthKey = "0831b4a7db4183bc72cba684f63e03a5";
+					BankBean configBean = firm.bank.get(cooconBean.getBankCd());
 
 					net.sf.json.JSONObject rtn = net.sf.json.JSONObject.fromObject(resData);
 					String rRC = rtn.getString("RC");
@@ -387,7 +385,7 @@ public class FirmMain{
 					String rEV = rtn.getString("EV");
 					String rVV = rtn.getString("VV");
 
-					String decEV = CcSecurityUtil.DecryptAes256Base64(rEV, accountAuthKey, "UTF-8", true);
+					String decEV = CcSecurityUtil.DecryptAes256Base64(rEV, configBean.coocon_accountAuth_key , "UTF-8", true);
 					net.sf.json.JSONObject jsonEV = net.sf.json.JSONObject.fromObject(decEV.substring(14));
 
 					if(rRC.equals("0000")) {
@@ -454,6 +452,12 @@ public class FirmMain{
 			logger.info("COOCON TRX STATUS UPDATE : {} : {}",(i+1),firmTrxDAO.updateStatus(cooconBean.getIndex(), "I"));
 			String resData = cooconComm.connect(cooconBean);
 
+			logger.info("RES_DATA : [{}]", resData);
+			cooconBean.setResData(resData);
+
+			String balance = "";
+
+
 			JSONObject apiRes = new JSONObject();
 			JSONParser jsonParser = new JSONParser();
 			try {
@@ -462,8 +466,10 @@ public class FirmMain{
 				String resultCd = apiRes.get("RSLT_CD").toString();
 				String resultMsg = apiRes.get("RSLT_MSG").toString();
 
+
 				if(resultCd.equals("000")) {
 					cooconBean.setResultCode("0000");
+					balance = apiRes.get("BAL_AMT").toString();
 				} else {
 					cooconBean.setResultCode(resultCd);
 				}
@@ -478,7 +484,7 @@ public class FirmMain{
 			}
 
 			logger.info("DOZN TRX RESULT {},[{}]", cooconBean.getResultMsg(), cooconBean.getResData());
-			logger.info("DOZN TRX RESULT UPDATE : {} : {}",(i+1),firmTrxDAO.updateByCoocon(cooconBean));
+			logger.info("DOZN TRX RESULT UPDATE : {} : {}",(i+1),firmTrxDAO.updateByCoocon(cooconBean, balance));
 		}
 	}
 

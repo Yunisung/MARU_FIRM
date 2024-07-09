@@ -23,15 +23,6 @@ public class CooconExcuter implements InterExcuter{
     private Logger logger = LoggerFactory.getLogger(getClass());
     private Firm firm = null;
 
-    String balanceKey = "";                             //잔액조회 키
-    String balanceCode = "";                             //잔액조회 코드
-    String coocon_NameKey = "PbZpPBwIrutWKM13oj49";     //예금주조회 키
-    String coocon_RealNameKey = "cr6YGqD57Xu2r8cSz4a7"; //예금주조회 코드
-    String regAccountKey = "wJTPdsfLZZ77wiKQtxGX";      //가상계좌등록 키
-    String regAccountCode = "04847711";                 //가상계좌등록 코드
-
-
-
     public CooconExcuter(Firm firm) {
         this.firm = firm;
     }
@@ -43,7 +34,7 @@ public class CooconExcuter implements InterExcuter{
 
     @Override
     public FirmBean proc0600300(FirmBean firmBean) {
-        logger.info("=============COOCON 예금주조회==============");
+        logger.info("=============COOCON 잔액조회==============");
 
         try {
             FirmMasterDAO masterDAO = new FirmMasterDAO();
@@ -61,14 +52,14 @@ public class CooconExcuter implements InterExcuter{
 
             //Bean Setting
             CooconBalanceBean bean = new CooconBalanceBean();
-            bean.setTRT_INST_CD(balanceCode);
+            bean.setTRT_INST_CD(configBean.coocon_firm_code);
             bean.setTRSC_DT(CommonUtil.getCurrentDate("yyyyMMdd"));
             bean.setTRSC_SEQ_NO(seqNo);
             bean.setBANK_CD(firmBean.bankCd);
             bean.setACCT_NO(account);
 
             CooconReqBean reqBean = new CooconReqBean(bean);
-            reqBean.setSECR_KEY(balanceKey);
+            reqBean.setSECR_KEY(configBean.coocon_firm_key);
             reqBean.setKEY("WAPI_2100");
 
             String jsonParams = new Gson().toJson(reqBean);
@@ -78,7 +69,7 @@ public class CooconExcuter implements InterExcuter{
             firmBean = processCheck(idx, firmBean, masterDAO);
 
             String resJson = firmBean.data.getString("resData");
-            logger.info("coocon response : [{}]", resJson);
+            //logger.info("coocon response : [{}]", resJson);
 
             JSONParser jsonParser = new JSONParser();
             JSONObject apiRes  = (JSONObject) jsonParser.parse(resJson);
@@ -125,11 +116,11 @@ public class CooconExcuter implements InterExcuter{
             bean.setTRSC_SEQ_NO(seqNo);
 
             CooconReqBean reqBean = new CooconReqBean(bean);
-            reqBean.setSECR_KEY(coocon_NameKey);
+            reqBean.setSECR_KEY(configBean.coocon_name_key);
             reqBean.setKEY("ACCTNM_RCMS_WAPI");
 
             if(!CommonUtil.isNullOrSpace(socialNumber)) {
-                reqBean.setSECR_KEY(coocon_RealNameKey);
+                reqBean.setSECR_KEY(configBean.coocon_realname_key);
             }
 
             String jsonParams = new Gson().toJson(reqBean);
@@ -192,11 +183,12 @@ public class CooconExcuter implements InterExcuter{
 
             String seqName = "FIRM_" + firmBean.bankCd;
             String seqNo = FirmDAO.getSeqNO(seqName);
-            //MASTER DB ????
+
             long idx = firmTrxDAO.insertTrx(seqNo, firmBean.bankCd, firmBean.data.getLong("amount"), firmBean.data.getString("recvBankCd"), firmBean.data.getString("recvAccount"), firmBean.data.getString("sender"), firmBean.data.getString("recordInfo"), firmBean.data.getString("procType"));
 
             if(idx == 0) {
-
+                firmBean.resultCd ="XXXX";
+                firmBean.resultMsg ="이체데이터 등록실패";
             } else {
                 firmBean = processCheck(idx, firmBean, firmTrxDAO);
             }
@@ -228,14 +220,14 @@ public class CooconExcuter implements InterExcuter{
 
             //Bean Setting
             CooconTransferCheckBean bean = new CooconTransferCheckBean();
-            bean.setTRT_INST_CD("");
+            bean.setTRT_INST_CD(configBean.coocon_firm_code);
             bean.setTRSC_DT(CommonUtil.getCurrentDate("yyyyMMdd"));
             bean.setTRSC_SEQ_NO(seqNo);
             bean.setBANK_CD(firmBean.bankCd);
             bean.setRQRE_TMSG_NO(org_SeqNo);
 
             CooconReqBean reqBean = new CooconReqBean(bean);
-            reqBean.setSECR_KEY("");
+            reqBean.setSECR_KEY(configBean.coocon_firm_key);
             reqBean.setKEY("WAPI_6113");
 
             String jsonParams = new Gson().toJson(reqBean);
@@ -287,9 +279,9 @@ public class CooconExcuter implements InterExcuter{
 
             //Bean Setting
             CooconRegAccountBean bean = new CooconRegAccountBean();
-            bean.setSECR_KEY(regAccountKey);
+            bean.setSECR_KEY(configBean.coocon_kyc_key);
             bean.setKEY("8160");
-            bean.setTRT_INST_CD(regAccountCode);
+            bean.setTRT_INST_CD(configBean.coocon_kyc_code);
             bean.setBANK_CD(firmBean.bankCd);
             bean.setTRSC_SEQ_NO(CommonUtil.getCurrentDate("yyMMdd") + seqNo);
             bean.setVA_ACCT_NO(vactAccount);
