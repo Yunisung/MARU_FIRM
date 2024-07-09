@@ -27,14 +27,14 @@ public class CooconComm {
     private Firm firm = null;
 
     //개발
-    private String defaultURL = "https://dev2.coocon.co.kr:8443/sol/gateway/";
-    private String kycURL = "https://dev2.coocon.co.kr:8443/sol/gateway/vapg_wapi.jsp";
-    private String accountAuthURL = "https://dev.checkpay.co.kr/";
+//    private String defaultURL = "https://dev2.coocon.co.kr:8443/sol/gateway/";
+//    private String kycURL = "https://dev2.coocon.co.kr:8443/sol/gateway/vapg_wapi.jsp";
+//    private String accountAuthURL = "https://dev.checkpay.co.kr/";
 
     //운영
-//    private String defaultURL = "https://gw.coocon.co.kr/sol/gateway/";
-//    private String kycURL = "https://apigw.coocon.co.kr/sol/gateway/vapg_wapi.jsp";
-//    private String accountAuthURL = "https://www.checkpay.co.kr/";
+    private String defaultURL = "https://gw.coocon.co.kr/sol/gateway/";
+    private String kycURL = "https://apigw.coocon.co.kr/sol/gateway/vapg_wapi.jsp";
+    private String accountAuthURL = "https://www.checkpay.co.kr/";
 
     public CooconComm(Firm firm) {
         this.firm = firm;

@@ -31,52 +31,52 @@ public class AutoOpen {
 
 		for(String bankCd : firm.keySet()){
 			if(bankCd.equals("039")){
-//				String seqNo = FirmDAO.getSeqNO();
-//				logger.info("autoopen : bank:{} ,seq:{},insert : {}", bankCd,seqNo,new FirmMasterDAO(firm).insert0800100(bankCd,seqNo));
+				String seqNo = FirmDAO.getSeqNO();
+				logger.info("autoopen : bank:{} ,seq:{},insert : {}", bankCd,seqNo,new FirmMasterDAO(firm).insert0800100(bankCd,seqNo));
 			} else if(bankCd.equals("034")) {
-//				FirmDAO.resetSeqNo("FIRM_034");
-//				String seqNo = FirmDAO.getSeqNO("FIRM_034");
-//				String crypto = firm.get(bankCd).crypto;
-//
-//				//BEAN 세팅
-//				DoznAccountOpenBean bean = new DoznAccountOpenBean();
-//				bean.setApiKey(firm.get(bankCd).api_key);
-//				bean.setOrgCode(firm.get(bankCd).org_code);
-//				bean.setTelegram_no(CommonUtil.parseLong(seqNo));
-//				bean.setDrw_bank_code(bankCd);
-//
-//				String sendUrl = "api/rt/v1/account/open";
-//				if(crypto.equals("Y")) {
-//					sendUrl = "crypto/rt/v1/account/open";
-//				}
-//
-//				String jsonParams = new Gson().toJson(bean);
-//
-//				long idx = new FirmMasterDAO().setMasterbyDozn("0800", "100", bankCd, seqNo, sendUrl, jsonParams);
-//
-//				logger.info("autoopen : bank:{} ,seq:{}, Index : {}", bankCd,seqNo, idx);
+				FirmDAO.resetSeqNo("FIRM_034");
+				String seqNo = FirmDAO.getSeqNO("FIRM_034");
+				String crypto = firm.get(bankCd).crypto;
+
+				//BEAN 세팅
+				DoznAccountOpenBean bean = new DoznAccountOpenBean();
+				bean.setApiKey(firm.get(bankCd).api_key);
+				bean.setOrgCode(firm.get(bankCd).org_code);
+				bean.setTelegram_no(CommonUtil.parseLong(seqNo));
+				bean.setDrw_bank_code(bankCd);
+
+				String sendUrl = "api/rt/v1/account/open";
+				if(crypto.equals("Y")) {
+					sendUrl = "crypto/rt/v1/account/open";
+				}
+
+				String jsonParams = new Gson().toJson(bean);
+
+				long idx = new FirmMasterDAO().setMasterbyDozn("0800", "100", bankCd, seqNo, sendUrl, jsonParams);
+
+				logger.info("autoopen : bank:{} ,seq:{}, Index : {}", bankCd,seqNo, idx);
 			} else if(bankCd.equals("007")) {
-//				FirmDAO.resetSeqNo("KYC_007");
-//				FirmDAO.resetSeqNo("FIRM_007");
-//				String seqNo = FirmDAO.getSeqNO("FIRM_007");
-//				String crypto = firm.get(bankCd).crypto;
-//
-//				DoznAccountOpenBean bean = new DoznAccountOpenBean();
-//				bean.setApiKey(firm.get(bankCd).api_key);
-//				bean.setOrgCode(firm.get(bankCd).org_code);
-//				bean.setTelegram_no(CommonUtil.parseLong(seqNo));
-//				bean.setDrw_bank_code(bankCd);
-//
-//				String sendUrl = "api/rt/v1/account/open";
-//				if(crypto.equals("Y")) {
-//					sendUrl = "crypto/rt/v1/account/open";
-//				}
-//
-//				String jsonParams = new Gson().toJson(bean);
-//
-//				long idx = new FirmMasterDAO().setMasterbyDozn("0800", "100", bankCd, seqNo, sendUrl, jsonParams);
-//
-//				logger.info("autoopen : bank:{} ,seq:{}, Index : {}", bankCd,seqNo, idx);
+				FirmDAO.resetSeqNo("KYC_007");
+				FirmDAO.resetSeqNo("FIRM_007");
+				String seqNo = FirmDAO.getSeqNO("FIRM_007");
+				String crypto = firm.get(bankCd).crypto;
+
+				DoznAccountOpenBean bean = new DoznAccountOpenBean();
+				bean.setApiKey(firm.get(bankCd).api_key);
+				bean.setOrgCode(firm.get(bankCd).org_code);
+				bean.setTelegram_no(CommonUtil.parseLong(seqNo));
+				bean.setDrw_bank_code(bankCd);
+
+				String sendUrl = "api/rt/v1/account/open";
+				if(crypto.equals("Y")) {
+					sendUrl = "crypto/rt/v1/account/open";
+				}
+
+				String jsonParams = new Gson().toJson(bean);
+
+				long idx = new FirmMasterDAO().setMasterbyDozn("0800", "100", bankCd, seqNo, sendUrl, jsonParams);
+
+				logger.info("autoopen : bank:{} ,seq:{}, Index : {}", bankCd,seqNo, idx);
 			} else if(bankCd.equals("048")) {
 				FirmDAO.resetSeqNo("FIRM_048");
 				FirmDAO.resetSeqNo("KYC_048");
