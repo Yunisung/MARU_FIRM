@@ -142,7 +142,7 @@ public class CooconComm {
             }
 
             bout.flush();
-            result = new String(bout.toByteArray(), "UTF-8");
+            result = new String(bout.toByteArray(), "EUC-KR");
             conn.disconnect();
 
             result = result.trim();
