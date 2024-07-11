@@ -63,11 +63,9 @@ public class CooconComm {
             conn.setConnectTimeout(10000);
             conn.setReadTimeout(10000);
 
-            OutputStreamWriter os = new OutputStreamWriter(conn.getOutputStream());
-
-            os.write(reqData);
-            os.flush();
-            os.close();
+            conn.getOutputStream().write(reqData.getBytes("EUC-KR"));
+            conn.getOutputStream().flush();
+            conn.getOutputStream().close();
 
             DataInputStream in = new DataInputStream(conn.getInputStream());
             ByteArrayOutputStream bout = new ByteArrayOutputStream();
