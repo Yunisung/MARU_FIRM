@@ -63,7 +63,7 @@ public class CooconComm {
             conn.setConnectTimeout(10000);
             conn.setReadTimeout(10000);
 
-            conn.getOutputStream().write(reqData.getBytes("EUC-KR"));
+            conn.getOutputStream().write(reqData.getBytes("UTF-8"));
             conn.getOutputStream().flush();
             conn.getOutputStream().close();
 
