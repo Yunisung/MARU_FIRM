@@ -63,12 +63,12 @@ public class InterProcess implements java.io.Serializable{
 					firmBean = doznExcuter.proc0600102(firmBean);
 				}else if(firmBean.msgType.startsWith("ACCAUTH")) {
 					//계좌점유인증(1원인증)
-					firmBean = cooconExcuter.procAccAuth(firmBean);
+					firmBean = doznExcuter.procAccAuth(firmBean);
 				}else if(firmBean.msgType.startsWith("ARSCHCK")) {
 					//ARS인증 체크
 					firmBean = doznExcuter.procArsChck(firmBean);
 				}else if(firmBean.msgType.startsWith("ACCCHCK")) {
-					firmBean = cooconExcuter.procAccChck(firmBean);
+					firmBean = doznExcuter.procAccChck(firmBean);
 				}
 			} else if(firmBean.bankCd.equals("034") || firmBean.bankCd.equals("007")) {
 				//더즌은 따로 예외처리
