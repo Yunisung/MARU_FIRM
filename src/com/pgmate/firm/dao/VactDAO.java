@@ -2162,4 +2162,52 @@ public class VactDAO{
 
 		return result;
 	}
+
+	public SharedMap<String,Object> getLimitAmount(String account){
+		SharedMap<String,Object> result = null;
+
+		String query = " SELECT A.*,B.limitOnce FROM PG_VACT_DTL A LEFT JOIN PG_MCHT_MNG_VACT B ON A.mchtId = B.mchtId WHERE A.account =? order by A.issueId desc limit 1";
+
+		DBManager db 			= null;
+		PreparedStatement pstmt	= null;
+		Connection conn			= null;
+		ResultSet rset			= null;
+
+		try{
+			db 		= DBFactory.getInstance();
+			conn	= db.getConnection();
+			pstmt	= conn.prepareStatement(query);
+			pstmt.setString(1,account);
+
+			rset 	= pstmt.executeQuery();
+
+			while(rset.next()){
+				result = new SharedMap<String,Object>();
+				result.put("issueId",rset.getString("issueId"));
+				result.put("account",rset.getString("account"));
+				result.put("vactType",rset.getString("vactType"));
+				result.put("status",rset.getString("status"));
+				result.put("mchtId",rset.getString("mchtId"));
+				result.put("holderName",rset.getString("holderName"));
+				result.put("amount",rset.getLong("amount"));
+				result.put("oper",rset.getString("oper"));
+				result.put("trackId",rset.getString("trackId"));
+				result.put("expireAt",rset.getString("expireAt"));
+				Timestamp expireDate = rset.getTimestamp("expireDate");
+				if(expireDate != null) {
+					result.put("expireDate",expireDate);
+				}
+				result.put("udf1",rset.getString("udf1"));
+				result.put("udf2",rset.getString("udf2"));
+				result.put("limitOnce", rset.getLong("limitOnce"));
+			}
+		}catch(Exception e){
+			e.printStackTrace();
+			logger.error("getLimitAmount ERROR : {}, query : {}", e.getMessage(), query);
+		}finally{
+			db.close(conn,pstmt,rset);
+		}
+
+		return result;
+	}
 }

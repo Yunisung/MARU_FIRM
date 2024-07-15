@@ -8,8 +8,10 @@ import com.pgmate.firm.coocon.*;
 import com.pgmate.firm.dao.FirmDAO;
 import com.pgmate.firm.dao.FirmMasterDAO;
 import com.pgmate.firm.dao.FirmTrxDAO;
+import com.pgmate.firm.dao.VactDAO;
 import com.pgmate.firm.inter.FirmBean;
 import com.pgmate.lib.util.lang.CommonUtil;
+import com.pgmate.lib.util.map.SharedMap;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -269,6 +271,16 @@ public class CooconExcuter implements InterExcuter{
             String sts = "";
             String startAmount = firmBean.data.getString("startAmount");
             String endAmount = firmBean.data.getString("endAmount");
+
+            //최대금액설정
+            VactDAO vactDAO = new VactDAO();
+            SharedMap<String, Object> vactMap = vactDAO.getLimitAmount(vactAccount);
+            if(vactMap != null && vactMap.getLong("limitOnce") > 0) {
+                startAmount = "0";
+                endAmount = CommonUtil.toString(vactMap.getLong("limitOnce"));
+            }
+
+
 
             //STS : 11(등록), 22(변경), 41(해지)
             if(trxType.equals("1")) {
