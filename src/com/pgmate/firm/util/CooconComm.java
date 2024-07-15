@@ -14,10 +14,8 @@ import org.slf4j.LoggerFactory;
 
 import javax.net.ssl.HttpsURLConnection;
 import java.io.*;
-import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.net.URLEncoder;
+import java.net.*;
+import java.nio.charset.Charset;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
@@ -123,6 +121,7 @@ public class CooconComm {
             conn.setConnectTimeout(10000);
             conn.setReadTimeout(10000);
 
+
             OutputStreamWriter os = new OutputStreamWriter(conn.getOutputStream());
             reqData = URLEncoder.encode(URLEncoder.encode(reqData, "UTF-8"), "UTF-8");
             String postString = "JSONData=" + reqData;
@@ -131,18 +130,38 @@ public class CooconComm {
             os.flush();
             os.close();
 
-            DataInputStream in = new DataInputStream(conn.getInputStream());
-            ByteArrayOutputStream bout = new ByteArrayOutputStream();
-            int bcount = 0;
-            byte[] buf = new byte[2048];
-            while(true) {
-                int n = in.read(buf);
-                if (n == -1) break;
-                bout.write(buf, 0, n);
-            }
+            InputStream is = conn.getInputStream();
+            InputStreamReader ir = new InputStreamReader(is, "EUC-KR");
+            BufferedReader bufferedReader = new BufferedReader(ir);
+            String inputLine;
 
-            bout.flush();
-            result = new String(bout.toByteArray(), "EUC-KR");
+            StringBuffer stringBuffer = new StringBuffer();
+            while ((inputLine = bufferedReader.readLine()) != null)  {
+                stringBuffer.append(inputLine.replace("\\", ""));
+                logger.info("input : {}", inputLine);
+            }
+            bufferedReader.close();
+            result = stringBuffer.toString();
+            logger.info("Result : {}", result);
+            logger.info("convert : {}", convertKR(result));
+
+
+//            DataInputStream in = new DataInputStream(conn.getInputStream());
+//            ByteArrayOutputStream bout = new ByteArrayOutputStream();
+//            int bcount = 0;
+//            byte[] buf = new byte[2048];
+//            while(true) {
+//                int n = in.read(buf);
+//                if (n == -1) break;
+//                bout.write(buf, 0, n);
+//            }
+//
+//            bout.flush();
+//            result = new String(bout.toByteArray(),"UTF-8");
+//            logger.info("Result : {}", result);
+//
+//            logger.info("convert : {}", convertKR(result));
+
             conn.disconnect();
 
             result = result.trim();
@@ -152,6 +171,22 @@ public class CooconComm {
         }
 
         return result;
+    }
+
+    public String convertKR(String s) {
+        if(s == null) {
+            return null;
+        }
+
+        try {
+//            return new String(s.getBytes("8859_1"), "KSC5601");
+//            return new String(s.getBytes("8859_1"), "EUC-KR");
+//            return URLDecoder.decode((URLDecoder.decode(s, "8859_1")), "UTF-8");
+            return new String(s.getBytes("UTF-8"), "MS949");
+        }catch (Exception e) {
+            return s;
+        }
+
     }
 
     public String connectAccountAuth(CooconBean bean) {
