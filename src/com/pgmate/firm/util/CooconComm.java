@@ -131,14 +131,13 @@ public class CooconComm {
             os.close();
 
             InputStream is = conn.getInputStream();
-            InputStreamReader ir = new InputStreamReader(is, "EUC-KR");
+            InputStreamReader ir = new InputStreamReader(is, "UTF-8");
             BufferedReader bufferedReader = new BufferedReader(ir);
             String inputLine;
 
             StringBuffer stringBuffer = new StringBuffer();
             while ((inputLine = bufferedReader.readLine()) != null)  {
                 stringBuffer.append(inputLine.replace("\\", ""));
-                logger.info("input : {}", inputLine);
             }
             bufferedReader.close();
             result = stringBuffer.toString();
@@ -182,7 +181,7 @@ public class CooconComm {
 //            return new String(s.getBytes("8859_1"), "KSC5601");
 //            return new String(s.getBytes("8859_1"), "EUC-KR");
 //            return URLDecoder.decode((URLDecoder.decode(s, "8859_1")), "UTF-8");
-            return new String(s.getBytes("UTF-8"), "MS949");
+            return new String(s.getBytes("UTF-8"), "EUC-KR");
         }catch (Exception e) {
             return s;
         }
