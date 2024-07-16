@@ -116,51 +116,34 @@ public class CooconComm {
             conn.setDoInput(true);
             conn.setDoOutput(true);
             conn.setRequestMethod("POST");
-            conn.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
+            //conn.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
+            conn.setRequestProperty("Content-Type", "application/json");
             conn.setUseCaches(false);
             conn.setConnectTimeout(10000);
             conn.setReadTimeout(10000);
 
 
             OutputStreamWriter os = new OutputStreamWriter(conn.getOutputStream());
-            reqData = URLEncoder.encode(URLEncoder.encode(reqData, "UTF-8"), "UTF-8");
-            String postString = "JSONData=" + reqData;
+//            reqData = URLEncoder.encode(URLEncoder.encode(reqData, "UTF-8"), "UTF-8");
+//            String postString = "JSONData=" + reqData;
+            String postString = reqData;
 
             os.write(postString);
             os.flush();
             os.close();
 
-            InputStream is = conn.getInputStream();
-            InputStreamReader ir = new InputStreamReader(is, "UTF-8");
-            BufferedReader bufferedReader = new BufferedReader(ir);
-            String inputLine;
-
-            StringBuffer stringBuffer = new StringBuffer();
-            while ((inputLine = bufferedReader.readLine()) != null)  {
-                stringBuffer.append(inputLine.replace("\\", ""));
+            DataInputStream in = new DataInputStream(conn.getInputStream());
+            ByteArrayOutputStream bout = new ByteArrayOutputStream();
+            int bcount = 0;
+            byte[] buf = new byte[2048];
+            while(true) {
+                int n = in.read(buf);
+                if (n == -1) break;
+                bout.write(buf, 0, n);
             }
-            bufferedReader.close();
-            result = stringBuffer.toString();
-            logger.info("Result : {}", result);
-            logger.info("convert : {}", convertKR(result));
 
-
-//            DataInputStream in = new DataInputStream(conn.getInputStream());
-//            ByteArrayOutputStream bout = new ByteArrayOutputStream();
-//            int bcount = 0;
-//            byte[] buf = new byte[2048];
-//            while(true) {
-//                int n = in.read(buf);
-//                if (n == -1) break;
-//                bout.write(buf, 0, n);
-//            }
-//
-//            bout.flush();
-//            result = new String(bout.toByteArray(),"UTF-8");
-//            logger.info("Result : {}", result);
-//
-//            logger.info("convert : {}", convertKR(result));
-
+            bout.flush();
+            result = new String(bout.toByteArray(), "UTF-8");
             conn.disconnect();
 
             result = result.trim();

@@ -365,7 +365,11 @@ public class FirmMain{
 				//출금계좌등록 로직처리
 				if(cooconBean.getReqUrl().equals("kyc")) {
 					String resultCd = apiRes.get("RESP_CD").toString();
-					String resultMsg = apiRes.get("RESP_MSG").toString();
+					String resultMsg = FirmDAO.getVactResultMsg(cooconBean.getBankCd(), resultCd);
+
+					if(CommonUtil.isNullOrSpace(resultMsg)) {
+						resultMsg = apiRes.get("RESP_MSG").toString();
+					}
 
 					if(resultCd.equals("0000")) {
 						cooconBean.setResultCode("0000");
