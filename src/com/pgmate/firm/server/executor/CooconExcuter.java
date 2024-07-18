@@ -430,12 +430,13 @@ public class CooconExcuter implements InterExcuter{
             String seqName = "FIRM_" + firmBean.bankCd;
             String seqNo = "0"+FirmDAO.getSeqNO(seqName);
             String orgSeqNo = firmBean.data.getString("orgSeqNo");
-            String orgResData = masterDAO.getResData(orgSeqNo);
+            String orgResData = masterDAO.getResData(Long.valueOf(orgSeqNo));
+            String authNo = firmBean.data.getString("authNo");
 
             Gson gson = new Gson();
             CooconAccountAuthCheckBean bean = gson.fromJson(orgResData, CooconAccountAuthCheckBean.class);
             //TEST ONLY
-            bean.setVerify_val("123");
+            bean.setVerify_val(authNo);
 
 
             //INSERT DB

@@ -1305,8 +1305,8 @@ public class FirmMasterDAO {
 	 * 쿠콘용 통신결과 가져오기
 	 * @return
 	 */
-	public String getResData(String seqNo){
-		String query = "SELECT resData from PG_FIRM_MASTER where seqNo = ?";
+	public String getResData(long idx){
+		String query = "SELECT resData from PG_FIRM_MASTER where idx = ?";
 
 		DBManager db 	= null;
 		PreparedStatement pstmt	= null;
@@ -1318,7 +1318,7 @@ public class FirmMasterDAO {
 			db 		= DBFactory.getInstance();
 			conn	= db.getConnection();
 			pstmt	= conn.prepareStatement(query);
-			pstmt.setString(1,seqNo);
+			pstmt.setLong(1, idx);
 			rset 	= pstmt.executeQuery();
 
 			while(rset.next()){
