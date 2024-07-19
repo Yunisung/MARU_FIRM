@@ -57,7 +57,7 @@ public class InterProcess implements java.io.Serializable{
 					firmBean = cooconExcuter.proc0900400(firmBean);
 				}else if(firmBean.msgType.startsWith("ARSAUTH")) {
 					//ARS 인증
-					firmBean = doznExcuter.procArsAuth(firmBean);
+					firmBean = cooconExcuter.procArsAuth(firmBean);
 				}else if(firmBean.msgType.startsWith("0600102")){
 					//이체 재시도
 					firmBean = doznExcuter.proc0600102(firmBean);
@@ -66,7 +66,7 @@ public class InterProcess implements java.io.Serializable{
 					firmBean = cooconExcuter.procAccAuth(firmBean);
 				}else if(firmBean.msgType.startsWith("ARSCHCK")) {
 					//ARS인증 체크
-					firmBean = doznExcuter.procArsChck(firmBean);
+					firmBean = cooconExcuter.procArsChck(firmBean);
 				}else if(firmBean.msgType.startsWith("ACCCHCK")) {
 					firmBean = cooconExcuter.procAccChck(firmBean);
 				}

@@ -365,6 +365,49 @@ public class CooconExcuter implements InterExcuter{
 
     @Override
     public FirmBean procArsAuth(FirmBean firmBean) {
+        logger.info("=============COOCON ARS=============");
+        try {
+            FirmMasterDAO masterDAO = new FirmMasterDAO();
+            FirmDAO firmDAO = new FirmDAO();
+            BankBean configBean = firm.bank.get(firmBean.bankCd);
+
+            String seqName = "FIRM_" + firmBean.bankCd;
+            String seqNo = FirmDAO.getSeqNO(seqName);
+            String phoneNo = firmBean.data.getString("phoneNo");
+            String authNo = firmBean.data.getString("authNo");
+
+            //Bean Setting
+            CooconArsBean bean = new CooconArsBean();
+            //공통
+            bean.setSECR_KEY(configBean.coocon_ars_key);
+            bean.setTR_CD("2100");
+            bean.setENC_YN("N");
+            bean.setENC_DATA("");
+            //개별
+            bean.setORG_CD(configBean.coocon_ars_code);
+            bean.setDATE(CommonUtil.getCurrentDate("yyyyMMddHHmmss"));
+            bean.setPHONE(phoneNo);
+            bean.setAUTH_NO(authNo);
+            bean.setAUTH_INQUERY("안녕하세요. 부국위너스입니다. 출금계좌 등록 가상계좌 서비스가 일반거래 외에 보이스 피싱 코인거래등 불법을 목적으로 사용 될 경우 모든 법적책임이 본인에게 있다는점을 인지 하여 등록바랍니다.");
+            bean.setTXT_NO(bean.getORG_CD() + CommonUtil.getCurrentDate("yyMMdd") + seqNo.substring(2));
+
+            //Insert DB
+            String jsonParams = new Gson().toJson(bean);
+            logger.info("coocon JSON : [{}]", jsonParams);
+
+            long idx = masterDAO.setMasterbyCoocon(firmBean.msgType.substring(0,4), firmBean.msgType.substring(4), firmBean.bankCd, seqNo, "ars", jsonParams);
+            firmBean = processCheck(idx, firmBean, masterDAO);
+
+
+        } catch (Exception e) {
+            firmBean.resultCd = "XXXX";
+            firmBean.resultMsg = "쿠콘 통신 에러";
+
+            e.printStackTrace();
+            logger.error("쿠콘 ARS 에러 : [{}]", e.getMessage());
+        }
+        logger.info("===================================================");
+
         return firmBean;
     }
 

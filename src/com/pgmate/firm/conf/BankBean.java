@@ -44,6 +44,9 @@ public class BankBean {
 	//예금주조회
 	public String coocon_name_key = "PbZpPBwIrutWKM13oj49";
 	public String coocon_realname_key = "cr6YGqD57Xu2r8cSz4a7";
+	//ARS
+	public String coocon_ars_key = "";
+	public String coocon_ars_code = "";
 
 	
 	public BankBean() {

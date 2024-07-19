@@ -28,11 +28,13 @@ public class CooconComm {
     private String defaultURL = "https://dev2.coocon.co.kr:8443/sol/gateway/";
     private String kycURL = "https://dev2.coocon.co.kr:8443/sol/gateway/vapg_wapi.jsp";
     private String accountAuthURL = "https://dev.checkpay.co.kr/";
+    private String arsURL = "https://dev2.coocon.co.kr:8443/sol/gateway/ars_wapi.jsp";
 
     //¿î¿µ
 //    private String defaultURL = "https://gw.coocon.co.kr/sol/gateway/";
 //    private String kycURL = "https://apigw.coocon.co.kr/sol/gateway/vapg_wapi.jsp";
 //    private String accountAuthURL = "https://www.checkpay.co.kr/";
+//    private String arsURL = "https://gw2.coocon.co.kr/sol/gateway/ars_wapi.jsp";
 
     public CooconComm(Firm firm) {
         this.firm = firm;
@@ -149,6 +151,60 @@ public class CooconComm {
             result = result.trim();
         } catch (Exception e) {
             logger.error("CooconComm KYC Exception : [{}]", e.getMessage());
+            return result;
+        }
+
+        return result;
+    }
+
+    public String connectArs(CooconBean bean) {
+        String result = "";
+        BankBean bankBean = firm.bank.get(bean.getBankCd());
+
+        String urlAddress = arsURL;
+        logger.info("SEND_URL : [{}]", urlAddress);
+
+        HttpsURLConnection conn = null;
+
+        try {
+            URL url = new URL(urlAddress);
+            String reqData = bean.getReqData().replaceAll("\\\\", "");
+            logger.info("REQUEST_DATA : [{}]", reqData);
+
+            conn = (HttpsURLConnection) url.openConnection();
+            conn.setDoInput(true);
+            conn.setDoOutput(true);
+            conn.setRequestMethod("POST");
+            conn.setRequestProperty("Content-Type", "application/json");
+            conn.setUseCaches(false);
+            conn.setConnectTimeout(60000);
+            conn.setReadTimeout(60000);
+
+
+            OutputStreamWriter os = new OutputStreamWriter(conn.getOutputStream());
+            String postString = reqData;
+
+            os.write(postString);
+            os.flush();
+            os.close();
+
+            DataInputStream in = new DataInputStream(conn.getInputStream());
+            ByteArrayOutputStream bout = new ByteArrayOutputStream();
+            int bcount = 0;
+            byte[] buf = new byte[2048];
+            while(true) {
+                int n = in.read(buf);
+                if (n == -1) break;
+                bout.write(buf, 0, n);
+            }
+
+            bout.flush();
+            result = new String(bout.toByteArray(), "EUC-KR");
+            conn.disconnect();
+
+            result = result.trim();
+        } catch (Exception e) {
+            logger.error("CooconComm ARS Exception : [{}]", e.getMessage());
             return result;
         }
 
