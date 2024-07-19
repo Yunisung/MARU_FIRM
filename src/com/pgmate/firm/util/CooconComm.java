@@ -24,17 +24,17 @@ public class CooconComm {
     private SmsGw smsGw = null;
     private Firm firm = null;
 
-    //ï¿½ï¿½ï¿½ï¿½
-    private String defaultURL = "https://dev2.coocon.co.kr:8443/sol/gateway/";
-    private String kycURL = "https://dev2.coocon.co.kr:8443/sol/gateway/vapg_wapi.jsp";
-    private String accountAuthURL = "https://dev.checkpay.co.kr/";
-    private String arsURL = "https://dev2.coocon.co.kr:8443/sol/gateway/ars_wapi.jsp";
+    //°³¹ß
+//    private String defaultURL = "https://dev2.coocon.co.kr:8443/sol/gateway/";
+//    private String kycURL = "https://dev2.coocon.co.kr:8443/sol/gateway/vapg_wapi.jsp";
+//    private String accountAuthURL = "https://dev.checkpay.co.kr/";
+//    private String arsURL = "https://dev2.coocon.co.kr:8443/sol/gateway/ars_wapi.jsp";
 
-    //ï¿½î¿µ
-//    private String defaultURL = "https://gw.coocon.co.kr/sol/gateway/";
-//    private String kycURL = "https://apigw.coocon.co.kr/sol/gateway/vapg_wapi.jsp";
-//    private String accountAuthURL = "https://www.checkpay.co.kr/";
-//    private String arsURL = "https://gw2.coocon.co.kr/sol/gateway/ars_wapi.jsp";
+    //¿î¿µ
+    private String defaultURL = "https://gw.coocon.co.kr/sol/gateway/";
+    private String kycURL = "https://apigw.coocon.co.kr/sol/gateway/vapg_wapi.jsp";
+    private String accountAuthURL = "https://www.checkpay.co.kr/";
+    private String arsURL = "https://gw2.coocon.co.kr/sol/gateway/ars_wapi.jsp";
 
     public CooconComm(Firm firm) {
         this.firm = firm;
@@ -241,7 +241,7 @@ public class CooconComm {
 
         logger.info("SEND_URL : [{}]", urlAddress);
 
-        //ï¿½ï¿½ï¿½Ûµï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
+        //Àü¼Ûµ¥ÀÌÅÍ ¼¼ÆÃ
         Date d = new Date();
         SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd");
         String trx_dt = sdf.format(d);
@@ -273,7 +273,7 @@ public class CooconComm {
         ByteArrayOutputStream bout = null;
 
         try {
-            //ï¿½ï¿½È£È­ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
+            //¾ÏÈ£È­ µ¥ÀÌÅÍ ¼¼ÆÃ
             String EV = CcSecurityUtil.EncryptAes256Base64(trx_dt + trx_tm + param.toJSONString(), bankBean.coocon_accountAuth_key, true);
             String W = CcSecurityUtil.getHmacSha256(param.toJSONString(), bankBean.coocon_accountAuth_key, true);
 
@@ -332,7 +332,7 @@ public class CooconComm {
             String rVV = rtn.getString("VV");
 
             if(!CcSecurityUtil.VerifyMac(bankBean.coocon_accountAuth_key, rEV, rVV, "UTF-8", true)) {
-                logger.info("Coocon 1ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½È£È­ ï¿½ï¿½ï¿½ï¿½ Faild");
+                logger.info("Coocon 1¿øÀÎÁõ ¾ÏÈ£È­ °ËÁõ Faild");
 
             }
         } catch (Exception e) {
