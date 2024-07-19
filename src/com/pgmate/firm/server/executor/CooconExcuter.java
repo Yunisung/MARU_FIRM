@@ -388,7 +388,7 @@ public class CooconExcuter implements InterExcuter{
             bean.setDATE(CommonUtil.getCurrentDate("yyyyMMddHHmmss"));
             bean.setPHONE(phoneNo);
             bean.setAUTH_NO(authNo);
-            bean.setAUTH_INQUERY("안녕하세요. 부국위너스입니다. 출금계좌 등록 가상계좌 서비스가 일반거래 외에 보이스 피싱 코인거래등 불법을 목적으로 사용 될 경우 모든 법적책임이 본인에게 있다는점을 인지 하여 등록바랍니다.");
+            bean.setAUTH_INQUERY("안녕하세요. 출금계좌 등록 가상계좌 서비스가 일반거래 외에 보이스 피싱 코인거래등 불법을 목적으로 사용 될 경우 모든 법적책임이 본인에게 있다는점을 인지 하여 등록바랍니다.");
             bean.setTXT_NO(bean.getORG_CD() + CommonUtil.getCurrentDate("yyMMdd") + seqNo.substring(2));
 
             //Insert DB
