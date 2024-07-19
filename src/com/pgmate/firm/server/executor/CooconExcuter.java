@@ -398,6 +398,11 @@ public class CooconExcuter implements InterExcuter{
             long idx = masterDAO.setMasterbyCoocon(firmBean.msgType.substring(0,4), firmBean.msgType.substring(4), firmBean.bankCd, seqNo, "ars", jsonParams);
             firmBean = processCheck(idx, firmBean, masterDAO);
 
+            //결과처리
+            if(firmBean.resultCd.equals("0000")) {
+                firmBean.data.put("firmIdx", String.valueOf(idx));
+            }
+
 
         } catch (Exception e) {
             firmBean.resultCd = "XXXX";
