@@ -24,15 +24,17 @@ public class CooconComm {
     private SmsGw smsGw = null;
     private Firm firm = null;
 
-    //°³¹ß
-//    private String defaultURL = "https://dev2.coocon.co.kr:8443/sol/gateway/";
-//    private String kycURL = "https://dev2.coocon.co.kr:8443/sol/gateway/vapg_wapi.jsp";
-//    private String accountAuthURL = "https://dev.checkpay.co.kr/";
+    //ï¿½ï¿½ï¿½ï¿½
+    private String defaultURL = "https://dev2.coocon.co.kr:8443/sol/gateway/";
+    private String kycURL = "https://dev2.coocon.co.kr:8443/sol/gateway/vapg_wapi.jsp";
+    private String accountAuthURL = "https://dev.checkpay.co.kr/";
+    private String arsURL = "https://dev2.coocon.co.kr:8443/sol/gateway/ars_wapi.jsp";
 
-    //¿î¿µ
-    private String defaultURL = "https://gw.coocon.co.kr/sol/gateway/";
-    private String kycURL = "https://apigw.coocon.co.kr/sol/gateway/vapg_wapi.jsp";
-    private String accountAuthURL = "https://www.checkpay.co.kr/";
+    //ï¿½î¿µ
+//    private String defaultURL = "https://gw.coocon.co.kr/sol/gateway/";
+//    private String kycURL = "https://apigw.coocon.co.kr/sol/gateway/vapg_wapi.jsp";
+//    private String accountAuthURL = "https://www.checkpay.co.kr/";
+//    private String arsURL = "https://gw2.coocon.co.kr/sol/gateway/ars_wapi.jsp";
 
     public CooconComm(Firm firm) {
         this.firm = firm;
@@ -155,6 +157,60 @@ public class CooconComm {
         return result;
     }
 
+    public String connectArs(CooconBean bean) {
+        String result = "";
+        BankBean bankBean = firm.bank.get(bean.getBankCd());
+
+        String urlAddress = arsURL;
+        logger.info("SEND_URL : [{}]", urlAddress);
+
+        HttpsURLConnection conn = null;
+
+        try {
+            URL url = new URL(urlAddress);
+            String reqData = bean.getReqData().replaceAll("\\\\", "");
+            logger.info("REQUEST_DATA : [{}]", reqData);
+
+            conn = (HttpsURLConnection) url.openConnection();
+            conn.setDoInput(true);
+            conn.setDoOutput(true);
+            conn.setRequestMethod("POST");
+            conn.setRequestProperty("Content-Type", "application/json");
+            conn.setUseCaches(false);
+            conn.setConnectTimeout(60000);
+            conn.setReadTimeout(60000);
+
+
+            OutputStreamWriter os = new OutputStreamWriter(conn.getOutputStream());
+            String postString = reqData;
+
+            os.write(postString);
+            os.flush();
+            os.close();
+
+            DataInputStream in = new DataInputStream(conn.getInputStream());
+            ByteArrayOutputStream bout = new ByteArrayOutputStream();
+            int bcount = 0;
+            byte[] buf = new byte[2048];
+            while(true) {
+                int n = in.read(buf);
+                if (n == -1) break;
+                bout.write(buf, 0, n);
+            }
+
+            bout.flush();
+            result = new String(bout.toByteArray(), "EUC-KR");
+            conn.disconnect();
+
+            result = result.trim();
+        } catch (Exception e) {
+            logger.error("CooconComm ARS Exception : [{}]", e.getMessage());
+            return result;
+        }
+
+        return result;
+    }
+
     public String convertKR(String s) {
         if(s == null) {
             return null;
@@ -185,7 +241,7 @@ public class CooconComm {
 
         logger.info("SEND_URL : [{}]", urlAddress);
 
-        //Àü¼Ûµ¥ÀÌÅÍ ¼¼ÆÃ
+        //ï¿½ï¿½ï¿½Ûµï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
         Date d = new Date();
         SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd");
         String trx_dt = sdf.format(d);
@@ -217,7 +273,7 @@ public class CooconComm {
         ByteArrayOutputStream bout = null;
 
         try {
-            //¾ÏÈ£È­ µ¥ÀÌÅÍ ¼¼ÆÃ
+            //ï¿½ï¿½È£È­ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
             String EV = CcSecurityUtil.EncryptAes256Base64(trx_dt + trx_tm + param.toJSONString(), bankBean.coocon_accountAuth_key, true);
             String W = CcSecurityUtil.getHmacSha256(param.toJSONString(), bankBean.coocon_accountAuth_key, true);
 
@@ -276,7 +332,7 @@ public class CooconComm {
             String rVV = rtn.getString("VV");
 
             if(!CcSecurityUtil.VerifyMac(bankBean.coocon_accountAuth_key, rEV, rVV, "UTF-8", true)) {
-                logger.info("Coocon 1¿øÀÎÁõ ¾ÏÈ£È­ °ËÁõ Faild");
+                logger.info("Coocon 1ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½È£È­ ï¿½ï¿½ï¿½ï¿½ Faild");
 
             }
         } catch (Exception e) {

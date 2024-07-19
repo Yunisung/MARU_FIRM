@@ -348,6 +348,8 @@ public class FirmMain{
 				resData = cooconComm.connectKyc(cooconBean);
 			}else if(cooconBean.getReqUrl().equals("accountAuth") || cooconBean.getReqUrl().equals("accountAuthCheck")) {
 				resData = cooconComm.connectAccountAuth(cooconBean);
+			}else if(cooconBean.getReqUrl().equals("ars")) {
+				resData = cooconComm.connectArs(cooconBean);
 			}else {
 				resData = cooconComm.connect(cooconBean);
 			}
@@ -404,6 +406,12 @@ public class FirmMain{
 					logger.info("resultCd : {}", cooconBean.getResultCode());
 					logger.info("resultMsg : {}", cooconBean.getResultMsg());
 
+				}else if(cooconBean.getReqUrl().equals("ars")) {
+					String resultCd = apiRes.get("RSLT_CD").toString();
+					String resultMsg = apiRes.get("RSLT_MSG").toString();
+
+					cooconBean.setResultCode(resultCd);
+					cooconBean.setResultMsg(resultMsg);
 				}else {
 					String resultCd = apiRes.get("RSLT_CD").toString();
 					String resultMsg = apiRes.get("RSLT_MSG").toString();
