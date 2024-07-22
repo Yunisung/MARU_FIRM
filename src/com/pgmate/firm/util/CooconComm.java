@@ -118,7 +118,7 @@ public class CooconComm {
             conn.setDoInput(true);
             conn.setDoOutput(true);
             conn.setRequestMethod("POST");
-            //conn.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
+            conn.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
             conn.setRequestProperty("Content-Type", "application/json");
             conn.setUseCaches(false);
             conn.setConnectTimeout(10000);
@@ -126,9 +126,9 @@ public class CooconComm {
 
 
             OutputStreamWriter os = new OutputStreamWriter(conn.getOutputStream());
-//            reqData = URLEncoder.encode(URLEncoder.encode(reqData, "UTF-8"), "UTF-8");
-//            String postString = "JSONData=" + reqData;
-            String postString = reqData;
+            reqData = URLEncoder.encode(URLEncoder.encode(reqData, "UTF-8"), "UTF-8");
+            String postString = "JSONData=" + reqData;
+//            String postString = reqData;
 
             os.write(postString);
             os.flush();
