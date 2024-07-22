@@ -119,7 +119,7 @@ public class CooconComm {
             conn.setDoOutput(true);
             conn.setRequestMethod("POST");
             conn.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
-            conn.setRequestProperty("Content-Type", "application/json");
+//            conn.setRequestProperty("Content-Type", "application/json");
             conn.setUseCaches(false);
             conn.setConnectTimeout(10000);
             conn.setReadTimeout(10000);
