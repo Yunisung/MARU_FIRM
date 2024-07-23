@@ -269,14 +269,14 @@ public class CooconExcuter implements InterExcuter{
             String bankCd = firmBean.data.getString("withdrawBankCd");
             String account = firmBean.data.getString("withdrawAccount");
             String sts = "";
-            String startAmount = "0";
-            String endAmount = "0";
+            String startAmount = firmBean.data.getString("startAmount");
+            String endAmount = firmBean.data.getString("endAmount");
 
             //최대금액설정
             VactDAO vactDAO = new VactDAO();
             SharedMap<String, Object> vactMap = vactDAO.getLimitAmount(vactAccount);
-            if(vactMap.getLong("limitOnce") > 0) {
-                startAmount = "0";
+            if(vactMap != null && vactMap.getLong("limitOnce") > 0) {
+                startAmount = "2000";
                 endAmount = CommonUtil.toString(vactMap.getLong("limitOnce"));
             }
 
