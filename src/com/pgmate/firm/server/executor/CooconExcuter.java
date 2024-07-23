@@ -269,8 +269,8 @@ public class CooconExcuter implements InterExcuter{
             String bankCd = firmBean.data.getString("withdrawBankCd");
             String account = firmBean.data.getString("withdrawAccount");
             String sts = "";
-            String startAmount = firmBean.data.getString("startAmount");
-            String endAmount = firmBean.data.getString("endAmount");
+            String startAmount = "0";
+            String endAmount = "0";
 
             //최대금액설정
             VactDAO vactDAO = new VactDAO();
