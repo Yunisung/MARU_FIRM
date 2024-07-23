@@ -275,8 +275,8 @@ public class CooconExcuter implements InterExcuter{
             //최대금액설정
             VactDAO vactDAO = new VactDAO();
             SharedMap<String, Object> vactMap = vactDAO.getLimitAmount(vactAccount);
-            if(vactMap != null && vactMap.getLong("limitOnce") > 0) {
-                startAmount = "2000";
+            if(vactMap.getLong("limitOnce") > 0) {
+                startAmount = "0";
                 endAmount = CommonUtil.toString(vactMap.getLong("limitOnce"));
             }
 
