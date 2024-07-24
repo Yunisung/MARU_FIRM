@@ -2183,27 +2183,11 @@ public class VactDAO{
 
 			while(rset.next()){
 				result = new SharedMap<String,Object>();
-				result.put("issueId",rset.getString("issueId"));
-				result.put("account",rset.getString("account"));
-				result.put("vactType",rset.getString("vactType"));
-				result.put("status",rset.getString("status"));
-				result.put("mchtId",rset.getString("mchtId"));
-				result.put("holderName",rset.getString("holderName"));
-				result.put("amount",rset.getLong("amount"));
-				result.put("oper",rset.getString("oper"));
-				result.put("trackId",rset.getString("trackId"));
-				result.put("expireAt",rset.getString("expireAt"));
-				Timestamp expireDate = rset.getTimestamp("expireDate");
-				if(expireDate != null) {
-					result.put("expireDate",expireDate);
-				}
-				result.put("udf1",rset.getString("udf1"));
-				result.put("udf2",rset.getString("udf2"));
 				result.put("limitOnce", rset.getLong("limitOnce"));
 			}
 		}catch(Exception e){
 			e.printStackTrace();
-			logger.error("getLimitAmount ERROR : {}, query : {}", e.getMessage(), query);
+			logger.error("getLimitAmount ERROR :{}, {}, query : {}",Thread.currentThread().getStackTrace()[1].getMethodName(), e.getMessage(), query);
 		}finally{
 			db.close(conn,pstmt,rset);
 		}
