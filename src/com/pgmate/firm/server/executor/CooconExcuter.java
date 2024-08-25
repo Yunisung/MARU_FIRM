@@ -238,7 +238,21 @@ public class CooconExcuter implements InterExcuter{
             long idx = masterDAO.setMasterAddSearchDateByCoocon(firmBean.msgType.substring(0,4), firmBean.msgType.substring(4), firmBean.bankCd, seqNo, "webilling_wapi.jsp", jsonParams, org_TranDate);
             firmBean = processCheck(idx, firmBean, masterDAO);
 
+            String resJson = firmBean.data.getString("resData");
+            logger.info("coocon response : [{}]", resJson);
 
+            JSONParser jsonParser = new JSONParser();
+            JSONObject apiRes  = (JSONObject) jsonParser.parse(resJson);
+            logger.info("JSON : [{}]", apiRes.toString());
+
+            if(firmBean.resultCd.equals("0000")) {
+                JSONArray respDataArr = (JSONArray) apiRes.get("RESP_DATA");
+                if(respDataArr.size() > 0) {
+                    JSONObject respData = (JSONObject) respDataArr.get(0);
+                    String resultCd = respData.get("RSPS_CD").toString();
+                    firmBean.resultCd = resultCd;
+                } 
+            }
 
         } catch (Exception e) {
             firmBean.resultCd = "XXXX";
