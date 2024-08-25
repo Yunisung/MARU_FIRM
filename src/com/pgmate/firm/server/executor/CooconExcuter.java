@@ -246,12 +246,10 @@ public class CooconExcuter implements InterExcuter{
             logger.info("JSON : [{}]", apiRes.toString());
 
             if(firmBean.resultCd.equals("0000")) {
-                JSONArray respDataArr = (JSONArray) apiRes.get("RESP_DATA");
-                if(respDataArr.size() > 0) {
-                    JSONObject respData = (JSONObject) respDataArr.get(0);
-                    String resultCd = respData.get("RSPS_CD").toString();
-                    firmBean.resultCd = resultCd;
-                } 
+                String resultCd = (String) apiRes.get("RSPS_CD").toString();
+                String resultMsg = (String) apiRes.get("RSLT_MSG").toString();
+                firmBean.resultCd = resultCd;
+                firmBean.resultMsg = resultMsg;
             }
 
         } catch (Exception e) {
