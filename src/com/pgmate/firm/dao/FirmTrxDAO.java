@@ -575,8 +575,8 @@ public class FirmTrxDAO {
 		return result;
 	}
 
-	public long insertTrx(String seqNo, String bankCd,long amount,String recvBankCd,String recvAccount,String sender,String recordInfo,String procType){
-		String query = "INSERT INTO PG_FIRM_TRX  (bankCd,sendDate,sendTime,seqNo,amount,recvBank,recvAccount,recordInfo,recvHolder,procType,filler ) values (?,DATE_FORMAT(now(),'%Y%m%d') , DATE_FORMAT(now(),'%H%i%s'), ?,?,?,?,?,?,?,?)";
+	public long insertTrx(String seqNo, String bankCd,long amount,String recvBankCd,String recvAccount,String sender,String recordInfo,String procType, String mAccount){
+		String query = "INSERT INTO PG_FIRM_TRX  (bankCd,sendDate,sendTime,seqNo,amount,recvBank,recvAccount,recordInfo,recvHolder,procType,filler, mAccount ) values (?,DATE_FORMAT(now(),'%Y%m%d') , DATE_FORMAT(now(),'%H%i%s'), ?,?,?,?,?,?,?,?,?)";
 
 		DBManager db 			= null;
 		PreparedStatement pstmt	= null;
@@ -619,6 +619,7 @@ public class FirmTrxDAO {
 			pstmt.setString(7,sender);
 			pstmt.setString(8,procType);
 			pstmt.setString(9,recordInfo);
+			pstmt.setString(10,mAccount);
 
 			result = pstmt.executeUpdate();
 			rset		= pstmt.executeQuery("SELECT LAST_INSERT_ID() ");
@@ -1027,6 +1028,7 @@ public class FirmTrxDAO {
 				String outName = rset.getString("recordInfo");
 				String inName = rset.getString("recvHolder");
 				String amount = rset.getString("amount");
+				String mAccount = rset.getString("mAccount");
 
 				CooconTransferBean bean = new CooconTransferBean();
 				bean.setTRT_INST_CD(configBean.coocon_firm_code);
@@ -1035,7 +1037,15 @@ public class FirmTrxDAO {
 				bean.setBANK_CD(recvBankCd);
 				bean.setACCT_NO(recvAccount);
 				bean.setMO_BANK_CD(configBean.bankCd);
-				bean.setMO_ACCT_NO(configBean.account);
+
+				//240906_PYS : 이체 모계좌 세팅
+				if(CommonUtil.isNullOrSpace(mAccount)) {
+					bean.setMO_ACCT_NO(configBean.account);
+				} else {
+					bean.setMO_ACCT_NO(mAccount);
+				}
+
+
 				bean.setOUT_NAME(outName);
 				bean.setIN_NAME(inName);
 				bean.setTRSC_AMT(amount);

@@ -258,7 +258,7 @@ public class DoznExcuter implements InterExcuter {
             String seqName = "FIRM_" + firmBean.bankCd;
             String seqNo = FirmDAO.getSeqNO(seqName);
             //MASTER DB ¿˙¿Â
-            long idx = firmTrxDAO.insertTrx(seqNo, firmBean.bankCd, firmBean.data.getLong("amount"), firmBean.data.getString("recvBankCd"), firmBean.data.getString("recvAccount"), firmBean.data.getString("sender"), firmBean.data.getString("recordInfo"), firmBean.data.getString("procType"));
+            long idx = firmTrxDAO.insertTrx(seqNo, firmBean.bankCd, firmBean.data.getLong("amount"), firmBean.data.getString("recvBankCd"), firmBean.data.getString("recvAccount"), firmBean.data.getString("sender"), firmBean.data.getString("recordInfo"), firmBean.data.getString("procType"), "");
 
             if(idx == 0) {
 

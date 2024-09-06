@@ -186,7 +186,7 @@ public class CooconExcuter implements InterExcuter{
             String seqName = "FIRM_" + firmBean.bankCd;
             String seqNo = FirmDAO.getSeqNO(seqName);
 
-            long idx = firmTrxDAO.insertTrx(seqNo, firmBean.bankCd, firmBean.data.getLong("amount"), firmBean.data.getString("recvBankCd"), firmBean.data.getString("recvAccount"), firmBean.data.getString("sender"), firmBean.data.getString("recordInfo"), firmBean.data.getString("procType"));
+            long idx = firmTrxDAO.insertTrx(seqNo, firmBean.bankCd, firmBean.data.getLong("amount"), firmBean.data.getString("recvBankCd"), firmBean.data.getString("recvAccount"), firmBean.data.getString("sender"), firmBean.data.getString("recordInfo"), firmBean.data.getString("procType"), firmBean.data.getString("mAccount"));
 
             if(idx == 0) {
                 firmBean.resultCd ="XXXX";
@@ -339,7 +339,7 @@ public class CooconExcuter implements InterExcuter{
                 bean.setCUST_GUBUN("2");
             }
 
-            bean.setPARENT_ACCT(configBean.account);
+            bean.setPARENT_ACCT(masterDAO.getMotherAccount(vactAccount));
 
             String jsonParams = new Gson().toJson(bean);
             logger.info("coocon JSON : [{}]", jsonParams);
