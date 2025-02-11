@@ -1001,7 +1001,7 @@ public class FirmTrxDAO {
 	 * @return
 	 */
 	public List<CooconBean> selectByCoocon(){
-		String query = " SELECT idx,bankCd,sendDate,sendTime,seqNo,amount,recvBank,recvAccount,checkDigit,recvHolder,recordInfo,procType,procId	FROM PG_FIRM_TRX WHERE sendDate = DATE_FORMAT(now(), '%Y%m%d') 	AND procGb='R' AND procType != 'BT' AND bankCd IN ('048') ORDER BY idx ASC LIMIT 10";
+		String query = " SELECT idx,bankCd,sendDate,sendTime,seqNo,amount,recvBank,recvAccount,checkDigit,recvHolder,recordInfo,procType,procId,mAccount	FROM PG_FIRM_TRX WHERE sendDate = DATE_FORMAT(now(), '%Y%m%d') 	AND procGb='R' AND procType != 'BT' AND bankCd IN ('048') ORDER BY idx ASC LIMIT 10";
 
 		DBManager db 	= null;
 		PreparedStatement pstmt	= null;
