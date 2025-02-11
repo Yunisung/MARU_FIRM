@@ -1334,7 +1334,7 @@ public class FirmMasterDAO {
 	}
 
 	public String getMotherAccount(String account) {
-		String query = "SELECT mAccount from PG_VACT account = ?";
+		String query = "SELECT mAccount from PG_VACT WHERE account = ?";
 
 		DBManager db 	= null;
 		PreparedStatement pstmt	= null;
