@@ -223,7 +223,7 @@ public class InterHyphenFirmExcuter implements InterExcuter {
 
         String sender = firmBean.data.getString("sender");
         if("".equals(sender)) {
-            sender = "(주)부국위너스";
+            sender = "(주)건흥페이먼츠";
         }
 
         logger.info("account : {}",bankBean.account);
