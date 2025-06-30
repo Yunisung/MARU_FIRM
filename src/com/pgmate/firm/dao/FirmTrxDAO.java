@@ -546,7 +546,7 @@ public class FirmTrxDAO {
 			}
 
 			if("".equals(sender)) {
-				sender = "(주)부국위너스";
+				sender = "(주)건흥페이먼츠";
 			}
 
 			pstmt.setString(1,bankCd);
@@ -607,7 +607,7 @@ public class FirmTrxDAO {
 			}
 
 			if("".equals(sender)) {
-				sender = "(주)부국위너스";
+				sender = "(주)건흥페이먼츠";
 			}
 
 			pstmt.setString(1,bankCd);
